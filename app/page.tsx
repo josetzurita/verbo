@@ -1,3 +1,4 @@
+import { CoordinateCursor } from "@/components/coordinate-cursor";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { Reveal } from "@/components/reveal";
 import { belief, cases, discoveryLabel } from "@/lib/home-content";
@@ -5,30 +6,31 @@ import { belief, cases, discoveryLabel } from "@/lib/home-content";
 export default function HomePage() {
   return (
     <>
+      <CoordinateCursor />
       <section id="top" className="flex min-h-[100dvh] flex-col">
-        <div className="px-5 pt-24 md:px-12">
-          <div className="w-fit max-w-full">
-            <Reveal as="h1" y={28}>
-              <span className="block whitespace-nowrap text-[clamp(1.7rem,6.66vw,7.184rem)] font-light leading-[0.96] tracking-[-0.04em]">
-                Creating to
-              </span>
-              <span className="block whitespace-nowrap text-[clamp(1.7rem,6.66vw,7.184rem)] font-light leading-[0.96] tracking-[-0.04em]">
-                shape the world.
-              </span>
-            </Reveal>
-            <Reveal delay={0.12} y={20} className="mt-2 flex justify-end">
-              <a
-                id="discovery"
-                href="mailto:hola@verbobrands.co"
-                className="inline-flex max-w-full items-center gap-4 border-b border-foreground py-1 text-[clamp(0.95rem,3.4vw,1.5rem)] font-light leading-none tracking-[-0.04em] whitespace-nowrap text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground active:translate-y-px"
-              >
-                {discoveryLabel}
-                <span aria-hidden="true" className="block h-px w-5 bg-foreground" />
-              </a>
-            </Reveal>
-          </div>
+        <div className="flex min-h-0 w-full flex-1 items-center overflow-x-auto px-5 pt-[4.5rem] md:px-12">
+          <Reveal y={28} className="flex w-max items-end gap-[22px]">
+            <h1 className="text-[clamp(1.7rem,6.66vw,7.184rem)] font-light leading-[0.96] tracking-[-0.04em]">
+              <span className="block whitespace-nowrap">Creating to</span>
+              <span className="block whitespace-nowrap">shape the world.</span>
+            </h1>
+            <a
+              id="discovery"
+              href="mailto:hola@verbobrands.co"
+              className="inline-flex shrink-0 items-center gap-4 border-b border-foreground py-5 text-[24px] font-light leading-none tracking-[-0.04em] whitespace-nowrap text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground active:translate-y-px"
+            >
+              {discoveryLabel}
+              <img
+                src="/brand/discovery-arrow.svg"
+                alt=""
+                width={22.3005}
+                height={14.7281}
+                className="block shrink-0"
+              />
+            </a>
+          </Reveal>
         </div>
-        <Reveal as="div" delay={0.18} y={24} className="mt-auto px-5 pb-[3vh] md:px-12">
+        <Reveal as="div" delay={0.18} y={24} className="px-5 pb-[3vh] md:px-12">
           <img
             src="/brand/verbo-wordmark.svg"
             alt="Verbo"

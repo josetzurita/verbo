@@ -16,6 +16,13 @@ body {
   font-weight: 300;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  html.coordinate-cursor,
+  html.coordinate-cursor * {
+    cursor: none !important;
+  }
+}
+
 [data-radius="sm"] {
   --radius-md: var(--radius-sm);
   --radius-lg: var(--radius-sm);
