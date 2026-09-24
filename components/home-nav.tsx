@@ -1,15 +1,77 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { services } from "@/lib/home-content";
+import { gsap, registerGsap, ScrollTrigger, useGSAP } from "./gsap";
 
 const linkClass =
   "whitespace-nowrap text-2xl font-light leading-none tracking-[-0.04em] text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground";
 
 export function HomeNav() {
+  const headerRef = useRef<HTMLElement>(null);
+  const openRef = useRef(false);
   const [open, setOpen] = useState(false);
   const [showServices, setShowServices] = useState(false);
+
+  openRef.current = open;
+  registerGsap();
+
+  useGSAP(
+    () => {
+      const header = headerRef.current;
+      if (!header) {
+        return;
+      }
+
+      const mm = gsap.matchMedia();
+
+      const bind = (reduce: boolean) => {
+        let hidden = false;
+        const apply = (next: boolean) => {
+          if (next === hidden) {
+            return;
+          }
+          hidden = next;
+          gsap.to(header, {
+            yPercent: next ? -100 : 0,
+            autoAlpha: next ? 0 : 1,
+            duration: reduce ? 0 : next ? 0.4 : 0.55,
+            ease: next ? "power3.in" : "power3.out",
+            overwrite: "auto",
+          });
+        };
+
+        const trigger = ScrollTrigger.create({
+          start: 0,
+          end: "max",
+          onUpdate: (self) => {
+            if (openRef.current || self.scroll() < 48) {
+              apply(false);
+              return;
+            }
+            if (self.direction === 1) {
+              apply(true);
+            } else if (self.direction === -1) {
+              apply(false);
+            }
+          },
+        });
+
+        return () => {
+          trigger.kill();
+        };
+      };
+
+      mm.add("(prefers-reduced-motion: reduce)", () => bind(true));
+      mm.add("(prefers-reduced-motion: no-preference)", () => bind(false));
+
+      return () => {
+        mm.revert();
+      };
+    },
+    { scope: headerRef },
+  );
 
   useEffect(() => {
     if (!open || !showServices) {
@@ -28,7 +90,8 @@ export function HomeNav() {
 
   return (
     <header
-      className="sticky top-0 bg-background"
+      ref={headerRef}
+      className="fixed inset-x-0 top-0 bg-transparent"
       style={{ zIndex: "var(--z-sticky)" }}
     >
       <div className="grid h-[4.5rem] grid-cols-[1fr_auto_1fr] items-center px-5 md:px-12">

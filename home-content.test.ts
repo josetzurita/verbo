@@ -12,7 +12,7 @@ describe("visible home copy", () => {
 
   it("keeps the headline to two lines of copy", () => {
     expect(discoveryLabel.split(/\s+/).length).toBeGreaterThan(0);
-    expect("Creating to shape".includes("\u2014")).toBe(false);
+    expect("Creating to".includes("\u2014")).toBe(false);
   });
 });
 
@@ -20,5 +20,13 @@ describe("page source", () => {
   it("does not render banned dashes in the home page", () => {
     const page = readFileSync(new URL("./app/page.tsx", import.meta.url), "utf8");
     expect(page).not.toMatch(banned);
+  });
+
+  it("breaks the hero after to", () => {
+    const page = readFileSync(new URL("./app/page.tsx", import.meta.url), "utf8");
+    expect(page).toContain("Creating to");
+    expect(page).toContain("shape the world.");
+    expect(page).not.toContain("Creating to shape");
+    expect(page).not.toContain("to shape the world");
   });
 });

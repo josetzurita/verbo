@@ -5,22 +5,22 @@ import { belief, cases, discoveryLabel } from "@/lib/home-content";
 export default function HomePage() {
   return (
     <>
-      <section id="top" className="flex min-h-[calc(100dvh-4.5rem)] flex-col">
-        <div className="px-5 pt-8 md:px-12 md:pt-[12vh]">
-          <div className="flex flex-col gap-10 xl:flex-row xl:items-end xl:justify-between">
+      <section id="top" className="flex min-h-[100dvh] flex-col">
+        <div className="px-5 pt-24 md:px-12">
+          <div className="w-fit max-w-full">
             <Reveal as="h1" y={28}>
               <span className="block whitespace-nowrap text-[clamp(1.7rem,6.66vw,7.184rem)] font-light leading-[0.96] tracking-[-0.04em]">
-                Creating to shape
+                Creating to
               </span>
               <span className="block whitespace-nowrap text-[clamp(1.7rem,6.66vw,7.184rem)] font-light leading-[0.96] tracking-[-0.04em]">
-                the world.
+                shape the world.
               </span>
             </Reveal>
-            <Reveal delay={0.12} y={20} className="shrink-0 xl:pb-3">
+            <Reveal delay={0.12} y={20} className="mt-2 flex justify-end">
               <a
                 id="discovery"
                 href="mailto:hola@verbobrands.co"
-                className="inline-flex max-w-full items-center gap-4 border-b border-foreground py-5 text-[clamp(0.95rem,3.4vw,1.5rem)] font-light leading-none tracking-[-0.04em] whitespace-nowrap text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground active:translate-y-px"
+                className="inline-flex max-w-full items-center gap-4 border-b border-foreground py-1 text-[clamp(0.95rem,3.4vw,1.5rem)] font-light leading-none tracking-[-0.04em] whitespace-nowrap text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground active:translate-y-px"
               >
                 {discoveryLabel}
                 <span aria-hidden="true" className="block h-px w-5 bg-foreground" />
@@ -28,13 +28,13 @@ export default function HomePage() {
             </Reveal>
           </div>
         </div>
-        <Reveal as="div" delay={0.18} y={24} className="mt-auto px-[2.78vw] pb-[3vh]">
+        <Reveal as="div" delay={0.18} y={24} className="mt-auto px-5 pb-[3vh] md:px-12">
           <img
             src="/brand/verbo-wordmark.svg"
             alt="Verbo"
             width={1632}
             height={405}
-            className="mx-auto block h-auto w-auto max-h-[34dvh] max-w-full"
+            className="block h-auto w-full"
           />
         </Reveal>
       </section>
