@@ -1,0 +1,27 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+@source "../components/**/*.{ts,tsx}";
+@source "./**/*.{ts,tsx}";
+
+html,
+body {
+  min-height: 100dvh;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 300;
+}
+
+[data-radius="sm"] {
+  --radius-md: var(--radius-sm);
+  --radius-lg: var(--radius-sm);
+}
+
+[data-radius="lg"] {
+  --radius-sm: var(--radius-lg);
+  --radius-md: var(--radius-lg);
+}
