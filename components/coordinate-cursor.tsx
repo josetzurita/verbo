@@ -14,7 +14,7 @@ const sourceSerif = Source_Serif_4({
 });
 
 const CURSOR_CLASS = "coordinate-cursor";
-const FOLLOW_DURATION = 0.2;
+const FOLLOW_DURATION = 0.1;
 const FOLLOW_EASE = "power2.out";
 const MARK_SELECTOR = "[data-coordinate-mark]";
 const MARK_SQUARE_SCALE = 2.5;

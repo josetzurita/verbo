@@ -234,7 +234,7 @@ export function BeliefSection() {
           </div>
         </div>
       </section>
-      <div aria-hidden="true" className="h-[80dvh]" />
+      <div aria-hidden="true" className="h-[40dvh]" />
     </>
   );
 }

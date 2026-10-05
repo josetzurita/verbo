@@ -13,7 +13,7 @@ export type SmoothScrollOptions = {
 };
 
 export const SMOOTH_SCROLL_DEFAULTS: SmoothScrollOptions = {
-  lerp: 0.1,
+  lerp: 0.25,
   anchors: true,
   stopInertiaOnNavigate: true,
   syncTouch: false,
