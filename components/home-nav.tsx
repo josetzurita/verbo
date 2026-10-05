@@ -4,6 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";
 import { services } from "@/lib/home-content";
 import { gsap, registerGsap, ScrollTrigger, useGSAP } from "./gsap";
+import { NavMark } from "./nav-mark";
 
 const linkClass =
   "whitespace-nowrap text-2xl font-light leading-none tracking-[-0.04em] text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground";
@@ -58,14 +59,55 @@ export function HomeNav() {
           },
         });
 
+        const work = document.getElementById("work");
+        const syncPaper = (active: boolean) => {
+          if (active) {
+            header.dataset.surface = "paper";
+            return;
+          }
+          delete header.dataset.surface;
+        };
+        const paper = work
+          ? ScrollTrigger.create({
+              trigger: work,
+              start: "top top",
+              end: "bottom top",
+              onToggle: (self) => {
+                syncPaper(self.isActive);
+              },
+            })
+          : null;
+        syncPaper(paper?.isActive ?? false);
+
         return () => {
           trigger.kill();
+          paper?.kill();
+          delete header.dataset.surface;
         };
       };
 
       mm.add("(prefers-reduced-motion: reduce)", () => bind(true));
       mm.add("(prefers-reduced-motion: no-preference)", () => bind(false));
 
+      return () => {
+        mm.revert();
+      };
+    },
+    { scope: headerRef },
+  );
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        gsap.from(".nav-enter", {
+          yPercent: -120,
+          autoAlpha: 0,
+          duration: 0.7,
+          ease: "power3.out",
+          stagger: 0.08,
+        });
+      });
       return () => {
         mm.revert();
       };
@@ -94,43 +136,45 @@ export function HomeNav() {
       className="fixed inset-x-0 top-0 bg-transparent"
       style={{ zIndex: "var(--z-sticky)" }}
     >
-      <div className="grid h-[4.5rem] grid-cols-[1fr_auto_1fr] items-center px-5 md:px-12">
+      <div className="grid h-[8rem] grid-cols-[1fr_auto_1fr] items-center px-5 md:px-12">
         <div className="justify-self-start">
-          <button
-            type="button"
-            className={linkClass}
-            aria-haspopup="dialog"
-            aria-expanded={open}
-            onClick={() => openMenu(false)}
-          >
-            Menu
-          </button>
+          <span className="inline-block overflow-hidden">
+            <button
+              type="button"
+              className={`nav-enter ${linkClass}`}
+              aria-haspopup="dialog"
+              aria-expanded={open}
+              onClick={() => openMenu(false)}
+            >
+              Menu
+            </button>
+          </span>
         </div>
-        <a href="#top" className="justify-self-center" aria-label="Verbo, home">
-          <img
-            src="/brand/verbo-mark.svg"
-            alt=""
-            width={37}
-            height={35}
-            className="h-[35px] w-[37px]"
-          />
+        <a href="#top" className="nav-enter justify-self-center" aria-label="Verbo, home" data-coordinate-mark="">
+          <NavMark />
         </a>
         <nav aria-label="Primary" className="hidden justify-self-end lg:block">
           <ul className="flex flex-nowrap items-center gap-10 xl:gap-16">
             <li>
-              <a href="#belief" className={linkClass}>
-                Why us?
-              </a>
+              <span className="inline-block overflow-hidden">
+                <a href="#belief" className={`nav-enter ${linkClass}`}>
+                  Why us?
+                </a>
+              </span>
             </li>
             <li>
-              <button type="button" className={linkClass} onClick={() => openMenu(true)}>
-                Services
-              </button>
+              <span className="inline-block overflow-hidden">
+                <button type="button" className={`nav-enter ${linkClass}`} onClick={() => openMenu(true)}>
+                  Services
+                </button>
+              </span>
             </li>
             <li>
-              <a href="#discovery" className={linkClass}>
-                Contact
-              </a>
+              <span className="inline-block overflow-hidden">
+                <a href="#discovery" className={`nav-enter ${linkClass}`}>
+                  Contact
+                </a>
+              </span>
             </li>
           </ul>
         </nav>

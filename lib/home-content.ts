@@ -1,15 +1,21 @@
 export const discoveryLabel = "Schedule a free discovery session";
 
 export const belief = {
-  eyebrow: "En qué creemos",
-  headline:
-    "El branding no es arte. Es la decisión de negocio más importante que una empresa puede tomar.",
+  lines: ["Branding isn’t art.", "It’s the most", "important"] as const,
+  resting: ["business", "decision a", "company can", "make."] as const,
+  frames: [
+    { src: "/belief/sequence-1.png", border: "var(--trail-blue)" },
+    { src: "/belief/sequence-2.png", border: "var(--trail-amber)" },
+    { src: "/belief/sequence-3.png", border: "var(--trail-yellow)" },
+  ] as const,
   paragraphs: [
-    "En un mundo donde el diseño vive en lo visual y la estrategia vive en las hojas de cálculo, Verbo propone que la marca más poderosa no se imagina.",
-    "Se construye desde el entendimiento profundo de un negocio, sus personas y su potencial.",
-    "Porque cuando el rigor y la belleza se encuentran, las marcas no solo se ven bien. Conectan, crecen y crean mundos donde las personas encuentran su lugar.",
-    "Para conectar hay que conocer, no suponer. Esa es nuestra única regla.",
-  ],
+    "In a world where design lives in the visual and strategy lives in spreadsheets, Verbo proposes that the most powerful brand is not imagined.",
+    "It is built from a deep understanding of a business, its people, and its potential.",
+    "Because when thoroughness and beauty meet, brands don’t just look good. They connect, grow, and create worlds where people find their place.",
+    "In order to connect, you must know, not assume. That, is our only rule.",
+  ] as const,
+  cta: "Get to know us",
+  ctaHref: "#work",
 };
 
 export const services = [

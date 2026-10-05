@@ -16,6 +16,11 @@ body {
   font-weight: 300;
 }
 
+[data-cursor-trail] {
+  position: relative;
+  z-index: 78;
+}
+
 @media (hover: hover) and (pointer: fine) {
   html.coordinate-cursor,
   html.coordinate-cursor * {

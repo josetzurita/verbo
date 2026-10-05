@@ -9,6 +9,9 @@
   --accent-foreground: #39170d;
   --destructive: #8f3d32;
   --destructive-foreground: #faf5ee;
+  --trail-amber: #faab2a;
+  --trail-blue: #2d83ea;
+  --trail-yellow: #fefd04;
 
   --font-sans: var(--font-figtree), "Figtree", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", monospace;
@@ -183,8 +186,28 @@
     --accent-foreground: #39170d;
     --destructive: #8f3d32;
     --destructive-foreground: #faf5ee;
+    --trail-amber: #faab2a;
+    --trail-blue: #2d83ea;
+    --trail-yellow: #fefd04;
     --elevation-dialog: 0 16px 40px color-mix(in srgb, #39170d 55%, transparent);
   }
+}
+
+.theme-paper,
+header[data-surface="paper"] {
+  --background: #faf5ee;
+  --foreground: #39170d;
+  --surface: color-mix(in srgb, #39170d 6%, #faf5ee);
+  --surface-muted: color-mix(in srgb, #39170d 10%, #faf5ee);
+  --border: color-mix(in srgb, #39170d 28%, #faf5ee);
+  --ring: #39170d;
+  --accent: #39170d;
+  --accent-foreground: #faf5ee;
+}
+
+.theme-paper {
+  background: var(--background);
+  color: var(--foreground);
 }
 
 [data-theme="dark"],
@@ -199,6 +222,9 @@
   --accent-foreground: #39170d;
   --destructive: #8f3d32;
   --destructive-foreground: #faf5ee;
+  --trail-amber: #faab2a;
+  --trail-blue: #2d83ea;
+  --trail-yellow: #fefd04;
   --elevation-dialog: 0 16px 40px color-mix(in srgb, #39170d 55%, transparent);
 }
 

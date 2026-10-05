@@ -23,10 +23,8 @@ describe("page source", () => {
   });
 
   it("breaks the hero after to", () => {
-    const page = readFileSync(new URL("./app/page.tsx", import.meta.url), "utf8");
-    expect(page).toContain("Creating to");
-    expect(page).toContain("shape the world.");
-    expect(page).not.toContain("Creating to shape");
-    expect(page).not.toContain("to shape the world");
+    const hero = readFileSync(new URL("./components/hero-intro.tsx", import.meta.url), "utf8");
+    expect(hero).toContain('["Creating", "to"]');
+    expect(hero).toContain('["shape", "the", "world."]');
   });
 });
