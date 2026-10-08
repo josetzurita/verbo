@@ -61,27 +61,42 @@ export function HomeNav() {
 
         const work = document.getElementById("work");
         const syncPaper = (active: boolean) => {
-          if (active) {
+          if (active && work?.dataset.returning !== "true") {
             header.dataset.surface = "paper";
             return;
           }
           delete header.dataset.surface;
         };
-        const paper = work
-          ? ScrollTrigger.create({
-              trigger: work,
-              start: "top top",
-              end: "bottom top",
-              onToggle: (self) => {
-                syncPaper(self.isActive);
-              },
-            })
-          : null;
-        syncPaper(paper?.isActive ?? false);
+        let paper: ScrollTrigger | null = null;
+        const stageQuery = window.matchMedia(
+          "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+        );
+        const mountPaper = () => {
+          paper?.kill();
+          if (!work) {
+            paper = null;
+            return;
+          }
+          const handoff = work.querySelector<HTMLElement>(".services-handoff-reading");
+          const followReading = !stageQuery.matches && Boolean(handoff);
+          paper = ScrollTrigger.create({
+            trigger: work,
+            start: "top top",
+            endTrigger: followReading ? handoff ?? undefined : work,
+            end: followReading ? "top top" : "bottom top",
+            onUpdate: (self) => {
+              syncPaper(self.isActive);
+            },
+          });
+          syncPaper(paper.isActive);
+        };
+        mountPaper();
+        stageQuery.addEventListener("change", mountPaper);
 
         return () => {
           trigger.kill();
           paper?.kill();
+          stageQuery.removeEventListener("change", mountPaper);
           delete header.dataset.surface;
         };
       };

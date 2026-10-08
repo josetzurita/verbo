@@ -1,5 +1,10 @@
 export const discoveryLabel = "Schedule a free discovery session";
 
+export const heroSlogan = ["Strategy", "Brand & Growth"] as const;
+
+export const heroLead =
+  "We are a boutique strategic branding consultancy. We build brands from a deep understanding of the business and the people, with discernment, and with soul.";
+
 export const belief = {
   lines: ["Branding isn’t art.", "It’s the most", "important"] as const,
   resting: ["business", "decision a", "company can", "make."] as const,
@@ -20,34 +25,46 @@ export const belief = {
 
 export const services = [
   {
-    name: "Investigación y benchmark",
+    name: "Research and benchmark",
+    title: ["Research and", "benchmark"],
+    deliverables: ["Positioning map", "Category review", "Reference study", "Opportunity brief"],
     description:
-      "Análisis del mercado, la categoría y los referentes. Mapa de posicionamiento y oportunidades reales antes de tomar cualquier decisión.",
+      "Before we start designing, we take the time to understand your market, your audience, and the world your brand lives in. We look closely at competitors, compare how they present themselves, and explore references within and beyond your category. From there, we map out where everyone stands, what feels overdone, and where there is room to do something different, so every creative decision starts with a clear sense of direction.",
   },
   {
-    name: "Norte estratégico",
+    name: "Strategic north",
+    title: ["Strategic", "north"],
+    deliverables: ["Purpose", "Belief", "Differentials", "Personality"],
     description:
-      "El alma del negocio. Propósito, creencia, diferenciales y personalidad, para que todo lo que venga después tenga dirección.",
+      "The strategic north is the soul of the business, set down so everything that follows has a direction. We define the purpose, the belief, the differentials, and the personality, and we test them against how the company actually behaves. The point is a north that people inside the company can use, not a sentence that only looks good on a wall. When it is clear, naming and identity stop pulling in different directions.",
   },
   {
-    name: "Arquitectura de marca",
+    name: "Brand architecture",
+    title: ["Brand", "architecture"],
+    deliverables: ["Portfolio map", "Hierarchy", "Roles", "Growth rules"],
     description:
-      "Organización del portafolio de productos, servicios e iniciativas. Un sistema que crece con orden y sin canibalizar lo que ya existe.",
+      "Brand architecture is the organization of the portfolio: products, services, and initiatives, each with a role that does not eat the others. We map what exists, what is coming, and how the pieces should relate, so the system can grow with order. A clear architecture keeps the brand from splitting into versions that no longer sound like the same company.",
   },
   {
-    name: "Naming e identidad",
+    name: "Naming and identity",
+    title: ["Naming and", "identity"],
+    deliverables: ["Name", "Logo", "Typography", "Color and tone"],
     description:
-      "Un nombre con estrategia y una identidad que lo hace visible. Logo, tipografía, color, tono y los sistemas que hacen a una marca reconocible.",
+      "Naming and identity begin with a name that carries the strategy, then an identity that makes that name visible. We shape the logo, the typography, the color, and the tone, and the systems that keep the brand recognizable when other people have to use it. The aim is not a single clever mark. It is a brand someone can recognize before they read the name.",
   },
   {
-    name: "Manual y aplicaciones",
+    name: "Brand book",
+    title: ["Brand", "book"],
+    deliverables: ["Brand book", "Applications", "Voice and tone", "Channel rules"],
     description:
-      "El sistema que garantiza que la marca se vea y se sienta igual en todo, sin importar quién lo ejecute o en qué canal.",
+      "The brand book is the system that keeps the brand looking and feeling the same everywhere, no matter who executes it or which channel it lands on. It holds the applications, the voice, and the rules for when the brand has to stretch. It is written for the people who will build the next page, the next post, and the next space, so they are not guessing once the identity leaves our hands.",
   },
   {
-    name: "Acompañamiento estratégico",
+    name: "Strategic accompaniment",
+    title: ["Strategic", "accompaniment"],
+    deliverables: ["Retainer", "Counsel", "Review", "Partnership"],
     description:
-      "Retainers y asesoría continua para marcas que quieren seguir creciendo con criterio. No somos proveedores. Somos aliados.",
+      "Strategic accompaniment is a retainer and ongoing counsel for brands that want to keep growing with judgment. We stay after the identity is in the world, reviewing the choices that show up in real use and helping decide what comes next. We are not vendors who deliver a file and disappear. We are allies for the stretch of work that follows.",
   },
 ] as const;
 

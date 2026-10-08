@@ -21,6 +21,217 @@ body {
   z-index: 78;
 }
 
+.work-stage {
+  display: none;
+}
+
+.work-reading {
+  display: grid;
+}
+
+.services-handoff-stage {
+  display: none;
+}
+
+.services-handoff-reading {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.services-card {
+  border: 2px solid var(--trail-blue);
+  background: var(--background);
+  color: var(--foreground);
+  padding: clamp(1.75rem, 3vw, 3.5rem);
+}
+
+.services-card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4.5rem;
+  width: 100%;
+  min-height: 100%;
+}
+
+.services-card-title {
+  margin: 0;
+  font-size: clamp(2.75rem, 4.6vw, 6.5rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.services-card-lead,
+.services-card-muted {
+  display: block;
+}
+
+.services-card-muted {
+  color: color-mix(in srgb, var(--foreground) 44%, transparent);
+}
+
+.services-card-foot {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.75rem, 2.55vw, 2.75rem);
+}
+
+.services-deliverables {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.825rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.services-deliverables li {
+  border: 1px solid color-mix(in srgb, var(--foreground) 44%, transparent);
+  padding: 0.825rem;
+  font-size: 0.96rem;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.services-card-copy {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 300;
+  line-height: 1.45;
+  letter-spacing: -0.03em;
+}
+
+@media (min-width: 768px) {
+  .services-card-body {
+    width: 67%;
+  }
+}
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .work-stage {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .work-stage-meta {
+    grid-column: span 3;
+  }
+
+  .work-stage-scene {
+    grid-column: span 5;
+  }
+
+  .work-stage-copy {
+    grid-column: span 4;
+  }
+
+  .work-reading-title {
+    display: none;
+  }
+
+  .work-reading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .services-handoff-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    display: block;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .services-veil {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 220%;
+    opacity: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      color-mix(in srgb, var(--background) 22%, transparent) 12%,
+      color-mix(in srgb, var(--background) 58%, transparent) 26%,
+      var(--background) 42%,
+      var(--background) 100%
+    );
+    will-change: transform;
+  }
+
+  .services-title {
+    position: absolute;
+    top: 2vh;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .services-title-row {
+    display: flex;
+    width: max-content;
+    gap: 0.22em;
+    margin: 0;
+    padding-left: 3vw;
+    font-size: 20.5vw;
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    will-change: transform;
+  }
+
+  .services-title-clip {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.08em;
+  }
+
+  .services-title-word {
+    display: block;
+    color: var(--foreground);
+    transform: translateY(110%);
+    will-change: transform;
+  }
+
+  .services-handoff-stage .services-card {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 84vw;
+    min-height: clamp(28rem, 47dvh, 36rem);
+    opacity: 1;
+    transform: translate3d(-50%, 100vh, 0);
+    user-select: text;
+    -webkit-user-select: text;
+    will-change: transform;
+  }
+
+  .services-handoff-reading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
   html.coordinate-cursor,
   html.coordinate-cursor * {

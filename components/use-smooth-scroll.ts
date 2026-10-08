@@ -15,6 +15,7 @@ export type SmoothScrollToOptions = {
   immediate?: boolean;
   offset?: number;
   lock?: boolean;
+  duration?: number;
 };
 
 export type SmoothScrollApi = {

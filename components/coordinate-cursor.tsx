@@ -17,13 +17,27 @@ const CURSOR_CLASS = "coordinate-cursor";
 const FOLLOW_DURATION = 0.1;
 const FOLLOW_EASE = "power2.out";
 const MARK_SELECTOR = "[data-coordinate-mark]";
+const PROJECT_SELECTOR = "[data-coordinate-project]";
+const SQUARE_SIZE_PX = 7;
 const MARK_SQUARE_SCALE = 2.5;
 const MARK_SQUARE_DURATION = 0.35;
 const MARK_LINE_DURATION = 0.5;
 const digits = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
+type CursorMode = "idle" | "mark" | "project";
+
 function isMarkTarget(target: EventTarget | null) {
   return target instanceof Element && Boolean(target.closest(MARK_SELECTOR));
+}
+
+function isProjectTarget(target: EventTarget | null) {
+  return target instanceof Element && Boolean(target.closest(PROJECT_SELECTOR));
+}
+
+function projectSquareScale() {
+  const root = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+  const target = (Number.isFinite(root) ? root : 16) * 9;
+  return target / SQUARE_SIZE_PX;
 }
 
 function CoordinateCursorActive() {
@@ -34,6 +48,7 @@ function CoordinateCursorActive() {
   const squareRef = useRef<HTMLDivElement>(null);
   const squareFaceRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
+  const projectLabelRef = useRef<HTMLDivElement>(null);
   const trailRef = useRef<HTMLDivElement>(null);
   const xRef = useRef<HTMLSpanElement>(null);
   const yRef = useRef<HTMLSpanElement>(null);
@@ -46,24 +61,27 @@ function CoordinateCursorActive() {
     const square = squareRef.current;
     const squareFace = squareFaceRef.current;
     const label = labelRef.current;
+    const projectLabel = projectLabelRef.current;
     const trailHost = trailRef.current;
-    if (!horizontal || !horizontalBar || !vertical || !verticalBar || !square || !squareFace || !label || !trailHost) {
+    if (!horizontal || !horizontalBar || !vertical || !verticalBar || !square || !squareFace || !label || !projectLabel || !trailHost) {
       return;
     }
 
     registerGsap();
     const media = window.matchMedia(FINE_POINTER_QUERY);
     const motion = window.matchMedia(reducedMotionQuery);
-    const parts = [horizontal, vertical, square, label];
+    const parts = [horizontal, vertical, square, label, projectLabel];
     let shown = false;
     let primed = false;
     let trailActive = false;
-    let overMark = false;
+    let mode: CursorMode = "idle";
     let lineCollapsed = false;
     let lineProgress = 1;
     let squareScale = 1;
+    let projectOpacity = 0;
     let lineTween: gsap.core.Tween | null = null;
     let squareTween: gsap.core.Tween | null = null;
+    let projectOpacityTween: gsap.core.Tween | null = null;
 
     horizontalBar.style.scale = "1 1";
     verticalBar.style.scale = "1 1";
@@ -73,6 +91,7 @@ function CoordinateCursorActive() {
     gsap.set(vertical, { xPercent: -50 });
     gsap.set(square, { xPercent: -50, yPercent: -50 });
     gsap.set(label, { xPercent: -100, yPercent: -100 });
+    gsap.set(projectLabel, { xPercent: -50, yPercent: -50, opacity: 0 });
 
     const follow = { duration: FOLLOW_DURATION, ease: FOLLOW_EASE };
     const horizontalY = gsap.quickTo(horizontal, "y", follow);
@@ -81,13 +100,16 @@ function CoordinateCursorActive() {
     const squareY = gsap.quickTo(square, "y", follow);
     const labelX = gsap.quickTo(label, "x", follow);
     const labelY = gsap.quickTo(label, "y", follow);
+    const projectLabelX = gsap.quickTo(projectLabel, "x", follow);
+    const projectLabelY = gsap.quickTo(projectLabel, "y", follow);
 
     const paintVisibility = () => {
       const lineVisibility = shown && !lineCollapsed ? "visible" : "hidden";
       horizontal.style.visibility = lineVisibility;
       vertical.style.visibility = lineVisibility;
       square.style.visibility = shown ? "visible" : "hidden";
-      label.style.visibility = shown && !trailActive && !overMark ? "visible" : "hidden";
+      label.style.visibility = shown && !trailActive && mode === "idle" ? "visible" : "hidden";
+      projectLabel.style.visibility = shown ? "visible" : "hidden";
       document.documentElement.classList.toggle(CURSOR_CLASS, shown);
     };
 
@@ -141,42 +163,76 @@ function CoordinateCursorActive() {
       paintVisibility();
     };
 
-    const setOverMark = (next: boolean) => {
-      if (next === overMark) {
-        return;
-      }
-      overMark = next;
-      square.style.mixBlendMode = next ? "difference" : "";
-      const scale = next ? MARK_SQUARE_SCALE : 1;
+    const setSquareScale = (scale: number) => {
       squareTween?.kill();
       if (motion.matches) {
         squareScale = scale;
         squareFace.style.scale = String(scale);
-      } else {
-        const state = { value: squareScale };
-        squareTween = gsap.to(state, {
-          value: scale,
-          duration: MARK_SQUARE_DURATION,
-          ease: "power3.out",
-          onUpdate: () => {
-            squareScale = state.value;
-            squareFace.style.scale = String(state.value);
-          },
-        });
+        return;
       }
-      setLineScale(next);
+      const state = { value: squareScale };
+      squareTween = gsap.to(state, {
+        value: scale,
+        duration: MARK_SQUARE_DURATION,
+        ease: "power3.out",
+        onUpdate: () => {
+          squareScale = state.value;
+          squareFace.style.scale = String(state.value);
+        },
+      });
+    };
+
+    const setProjectLabel = (active: boolean) => {
+      const target = active ? 1 : 0;
+      projectOpacityTween?.kill();
+      if (motion.matches) {
+        projectOpacity = target;
+        projectLabel.style.opacity = String(target);
+        return;
+      }
+      const state = { value: projectOpacity };
+      projectOpacityTween = gsap.to(state, {
+        value: target,
+        duration: MARK_SQUARE_DURATION,
+        ease: "power3.out",
+        onUpdate: () => {
+          projectOpacity = state.value;
+          projectLabel.style.opacity = String(state.value);
+        },
+      });
+    };
+
+    const setMode = (next: CursorMode) => {
+      if (next === mode) {
+        return;
+      }
+      const wasCollapsed = mode !== "idle";
+      const wasProject = mode === "project";
+      mode = next;
+      square.style.mixBlendMode = next === "mark" ? "difference" : "";
+      const scale = next === "mark" ? MARK_SQUARE_SCALE : next === "project" ? projectSquareScale() : 1;
+      setSquareScale(scale);
+      if ((next !== "idle") !== wasCollapsed) {
+        setLineScale(next !== "idle");
+      }
+      if ((next === "project") !== wasProject) {
+        setProjectLabel(next === "project");
+      }
       paintVisibility();
     };
 
     const resetCursor = () => {
       shown = false;
-      overMark = false;
+      mode = "idle";
       lineCollapsed = false;
       square.style.mixBlendMode = "";
       squareTween?.kill();
       lineTween?.kill();
+      projectOpacityTween?.kill();
       squareScale = 1;
       squareFace.style.scale = "1";
+      projectOpacity = 0;
+      projectLabel.style.opacity = "0";
       applyLineProgress(1);
       paintVisibility();
     };
@@ -205,6 +261,7 @@ function CoordinateCursorActive() {
         gsap.set(vertical, { x });
         gsap.set(square, { x, y });
         gsap.set(label, { x: labelLeft, y: labelTop });
+        gsap.set(projectLabel, { x, y });
         primed = true;
         trail.sync(x, y, x, y, true);
         return;
@@ -215,6 +272,8 @@ function CoordinateCursorActive() {
       squareY(y);
       labelX(labelLeft);
       labelY(labelTop);
+      projectLabelX(x);
+      projectLabelY(y);
       const squareXNow = gsap.getProperty(square, "x");
       const squareYNow = gsap.getProperty(square, "y");
       trail.sync(
@@ -262,7 +321,9 @@ function CoordinateCursorActive() {
         return;
       }
       syncLineOrigin(event.clientX, event.clientY);
-      setOverMark(isMarkTarget(event.target));
+      const project = isProjectTarget(event.target);
+      const mark = isMarkTarget(event.target);
+      setMode(project ? "project" : mark ? "mark" : "idle");
       place(event.clientX, event.clientY);
       setShown(true);
     };
@@ -288,6 +349,9 @@ function CoordinateCursorActive() {
       media.removeEventListener("change", hide);
       document.documentElement.classList.remove(CURSOR_CLASS);
       trail.destroy();
+      squareTween?.kill();
+      lineTween?.kill();
+      projectOpacityTween?.kill();
       gsap.killTweensOf(parts);
     };
   }, []);
@@ -316,7 +380,14 @@ function CoordinateCursorActive() {
         aria-hidden="true"
         className={`${layer} top-0 left-0 z-[80] size-[7px]`}
       >
-        <div ref={squareFaceRef} className="size-full bg-[#faab2a]" />
+        <div ref={squareFaceRef} className="size-full bg-[var(--trail-amber)]" />
+      </div>
+      <div
+        ref={projectLabelRef}
+        aria-hidden="true"
+        className={`${layer} top-0 left-0 z-[81] flex size-[9rem] items-center justify-center px-3 text-center text-2xl font-light leading-tight tracking-[-0.03em] text-[var(--background)] opacity-0`}
+      >
+        view
       </div>
       <div
         ref={labelRef}
