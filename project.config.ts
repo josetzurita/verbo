@@ -16,7 +16,7 @@ const input = {
   motion: {
     profile: "house",
     smoothScroll: true,
-    pageTransition: "none",
+    pageTransition: "overlay",
   },
   features: {
     analytics: false,

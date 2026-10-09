@@ -36,6 +36,9 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: ButtonSize;
   loading?: boolean;
   specimenState?: ButtonSpecimenState;
+  href?: string;
+  target?: string;
+  rel?: string;
 };
 
 export function Button({
@@ -47,6 +50,9 @@ export function Button({
   disabled,
   children,
   type = "button",
+  href,
+  target,
+  rel,
   ...props
 }: ButtonProps) {
   const isDisabled = disabled || loading || specimenState === "disabled";
@@ -55,15 +61,41 @@ export function Button({
     specimenState && specimenState !== "default" && specimenState !== "disabled" && specimenState !== "loading"
       ? specimenState
       : undefined;
+  const classNames = cn(
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-md)] border font-medium tracking-tight outline-none transition-[transform,background-color,color,border-color,filter] duration-[var(--duration-fast)] ease-[var(--ease-out-expo)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 data-[specimen=pressed]:scale-[0.98] data-[specimen=focus]:ring-2 data-[specimen=focus]:ring-ring data-[specimen=focus]:ring-offset-2 data-[specimen=focus]:ring-offset-background",
+    variantClass[variant],
+    sizeClass[size],
+    className,
+  );
+  const content = (
+    <>
+      {isLoading ? (
+        <CircleNotch aria-hidden className="size-4 animate-spin" weight="bold" />
+      ) : null}
+      {children}
+    </>
+  );
+
+  if (href) {
+    return (
+      <a
+        href={isDisabled ? undefined : href}
+        className={classNames}
+        data-slot="button"
+        data-specimen={forced}
+        aria-disabled={isDisabled || undefined}
+        aria-busy={isLoading || undefined}
+        target={target}
+        rel={rel}
+      >
+        {content}
+      </a>
+    );
+  }
 
   return (
     <button
-      className={cn(
-        "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-md)] border font-medium tracking-tight outline-none transition-[transform,background-color,color,border-color,filter] duration-[var(--duration-fast)] ease-[var(--ease-out-expo)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 data-[specimen=pressed]:scale-[0.98] data-[specimen=focus]:ring-2 data-[specimen=focus]:ring-ring data-[specimen=focus]:ring-offset-2 data-[specimen=focus]:ring-offset-background",
-        variantClass[variant],
-        sizeClass[size],
-        className,
-      )}
+      className={classNames}
       data-slot="button"
       data-specimen={forced}
       disabled={isDisabled}
@@ -71,10 +103,7 @@ export function Button({
       type={type}
       {...props}
     >
-      {isLoading ? (
-        <CircleNotch aria-hidden className="size-4 animate-spin" weight="bold" />
-      ) : null}
-      {children}
+      {content}
     </button>
   );
 }

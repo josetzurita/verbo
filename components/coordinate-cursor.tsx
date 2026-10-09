@@ -2,7 +2,7 @@
 
 import { Source_Serif_4 } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
-import { cursorTrailAim, cursorTrailCount, cursorTrailSpacing, cursorTrailStacksUnder, isCursorTrailTarget, mountCursorTrail } from "./cursor-trail";
+import { cursorTrailAim, cursorTrailControl, cursorTrailCount, cursorTrailSet, cursorTrailSpacing, isCursorTrailTarget, mountCursorTrail } from "./cursor-trail";
 import { gsap, registerGsap } from "./gsap";
 import { FINE_POINTER_QUERY } from "./motion-policy";
 import { reducedMotionQuery } from "./reduced-motion";
@@ -17,7 +17,7 @@ const CURSOR_CLASS = "coordinate-cursor";
 const FOLLOW_DURATION = 0.1;
 const FOLLOW_EASE = "power2.out";
 const MARK_SELECTOR = "[data-coordinate-mark]";
-const PROJECT_SELECTOR = "[data-coordinate-project]";
+const PROJECT_SELECTOR = "[data-coordinate-project], [data-coordinate-label]";
 const SQUARE_SIZE_PX = 7;
 const MARK_SQUARE_SCALE = 2.5;
 const MARK_SQUARE_DURATION = 0.35;
@@ -30,13 +30,17 @@ function isMarkTarget(target: EventTarget | null) {
   return target instanceof Element && Boolean(target.closest(MARK_SELECTOR));
 }
 
-function isProjectTarget(target: EventTarget | null) {
-  return target instanceof Element && Boolean(target.closest(PROJECT_SELECTOR));
+function projectCursorTarget(target: EventTarget | null) {
+  return target instanceof Element ? target.closest(PROJECT_SELECTOR) : null;
+}
+
+function projectCursorLabel(target: Element) {
+  return target.getAttribute("data-coordinate-label") || "view";
 }
 
 function projectSquareScale() {
   const root = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
-  const target = (Number.isFinite(root) ? root : 16) * 9;
+  const target = (Number.isFinite(root) ? root : 16) * 8;
   return target / SQUARE_SIZE_PX;
 }
 
@@ -49,7 +53,8 @@ function CoordinateCursorActive() {
   const squareFaceRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
   const projectLabelRef = useRef<HTMLDivElement>(null);
-  const trailRef = useRef<HTMLDivElement>(null);
+  const projectTextRef = useRef<HTMLSpanElement>(null);
+  const projectIconRef = useRef<HTMLSpanElement>(null);
   const xRef = useRef<HTMLSpanElement>(null);
   const yRef = useRef<HTMLSpanElement>(null);
 
@@ -62,8 +67,9 @@ function CoordinateCursorActive() {
     const squareFace = squareFaceRef.current;
     const label = labelRef.current;
     const projectLabel = projectLabelRef.current;
-    const trailHost = trailRef.current;
-    if (!horizontal || !horizontalBar || !vertical || !verticalBar || !square || !squareFace || !label || !projectLabel || !trailHost) {
+    const projectText = projectTextRef.current;
+    const projectIcon = projectIconRef.current;
+    if (!horizontal || !horizontalBar || !vertical || !verticalBar || !square || !squareFace || !label || !projectLabel || !projectText || !projectIcon) {
       return;
     }
 
@@ -202,7 +208,28 @@ function CoordinateCursorActive() {
       });
     };
 
-    const setMode = (next: CursorMode) => {
+    const paintCursorFace = (project: Element | null) => {
+      const variant = project?.getAttribute("data-coordinate-variant") ?? null;
+      const whatsapp = variant === "whatsapp";
+      projectText.style.display = whatsapp ? "none" : "";
+      projectIcon.style.display = whatsapp ? "block" : "none";
+      if (!whatsapp || !project) {
+        squareFace.style.backgroundColor = "";
+        projectIcon.style.backgroundColor = "";
+        projectLabel.style.color = "";
+        return;
+      }
+      squareFace.style.backgroundColor = project.getAttribute("data-coordinate-face") || "";
+      projectIcon.style.backgroundColor = project.getAttribute("data-coordinate-ink") || "";
+      projectLabel.style.color = "";
+    };
+
+    const setMode = (next: CursorMode, labelText: string | null, project: Element | null) => {
+      const variant = project?.getAttribute("data-coordinate-variant") ?? null;
+      if (next === "project" && labelText && variant !== "whatsapp") {
+        projectText.textContent = labelText;
+      }
+      paintCursorFace(next === "project" ? project : null);
       if (next === mode) {
         return;
       }
@@ -231,13 +258,18 @@ function CoordinateCursorActive() {
       projectOpacityTween?.kill();
       squareScale = 1;
       squareFace.style.scale = "1";
+      squareFace.style.backgroundColor = "";
+      projectText.style.display = "";
+      projectIcon.style.display = "none";
+      projectIcon.style.backgroundColor = "";
       projectOpacity = 0;
       projectLabel.style.opacity = "0";
+      projectLabel.style.color = "";
       applyLineProgress(1);
       paintVisibility();
     };
 
-    const trail = mountCursorTrail(trailHost, {
+    const trail = mountCursorTrail({
       follow,
       onActiveChange: (next) => {
         trailActive = next;
@@ -292,15 +324,20 @@ function CoordinateCursorActive() {
       if (!isCursorTrailTarget(event.target)) {
         return;
       }
+      const control = cursorTrailControl(event.target);
+      if (!control) {
+        return;
+      }
       place(event.clientX, event.clientY);
       setShown(true);
       trail.enter(
         event.clientX,
         event.clientY,
-        cursorTrailStacksUnder(event.target),
+        control,
         cursorTrailAim(event.target),
         cursorTrailSpacing(event.target),
         cursorTrailCount(event.target),
+        cursorTrailSet(event.target),
       );
     };
 
@@ -321,9 +358,13 @@ function CoordinateCursorActive() {
         return;
       }
       syncLineOrigin(event.clientX, event.clientY);
-      const project = isProjectTarget(event.target);
+      const project = projectCursorTarget(event.target);
       const mark = isMarkTarget(event.target);
-      setMode(project ? "project" : mark ? "mark" : "idle");
+      setMode(
+        project ? "project" : mark ? "mark" : "idle",
+        project ? projectCursorLabel(project) : null,
+        project,
+      );
       place(event.clientX, event.clientY);
       setShown(true);
     };
@@ -374,7 +415,6 @@ function CoordinateCursorActive() {
       >
         <div ref={verticalBarRef} className="h-full w-full bg-[#60433a]" />
       </div>
-      <div ref={trailRef} aria-hidden="true" className="pointer-events-none fixed inset-0 z-[60]" />
       <div
         ref={squareRef}
         aria-hidden="true"
@@ -385,9 +425,10 @@ function CoordinateCursorActive() {
       <div
         ref={projectLabelRef}
         aria-hidden="true"
-        className={`${layer} top-0 left-0 z-[81] flex size-[9rem] items-center justify-center px-3 text-center text-2xl font-light leading-tight tracking-[-0.03em] text-[var(--background)] opacity-0`}
+        className={`${layer} top-0 left-0 z-[81] flex size-[8rem] items-center justify-center px-3 text-center text-2xl font-light leading-tight tracking-[-0.03em] text-[var(--background)] opacity-0`}
       >
-        view
+        <span ref={projectTextRef}>view</span>
+        <span ref={projectIconRef} className="cursor-whatsapp" style={{ display: "none" }} />
       </div>
       <div
         ref={labelRef}

@@ -1,0 +1,336 @@
+"use client";
+
+import { useRef, type CSSProperties } from "react";
+import { close } from "@/lib/home-content";
+import { verboWordLetters } from "@/lib/brand-paths";
+import { gsap, registerGsap, useGSAP } from "./gsap";
+import { ResponsiveImage } from "./responsive-image";
+
+const FRAMES = [
+  { src: "/close/frames/01-apollo-square.png", aspect: "square", face: "var(--background)", ink: "var(--foreground)", edge: "var(--trail-amber)" },
+  { src: "/close/frames/02-stoneware-vase-square.png", aspect: "square", face: "var(--surface)", ink: "var(--foreground)", edge: "var(--trail-blue)" },
+  { src: "/close/frames/03-soft-portrait-square.png", aspect: "square", face: "var(--destructive)", ink: "var(--foreground)", edge: "var(--trail-amber)" },
+  { src: "/close/frames/04-classical-facade-square.png", aspect: "square", face: "var(--trail-amber)", ink: "var(--background)", edge: "var(--destructive)" },
+  { src: "/close/frames/05-ceramic-lamp-square.png", aspect: "square", face: "var(--trail-blue)", ink: "var(--foreground)", edge: "var(--foreground)" },
+  { src: "/close/frames/06-aphrodite-3x4.png", aspect: "portrait", face: "var(--trail-yellow)", ink: "var(--background)", edge: "var(--trail-amber)" },
+  { src: "/close/frames/07-cobalt-pitcher-3x4.png", aspect: "portrait", face: "var(--foreground)", ink: "var(--background)", edge: "var(--trail-blue)" },
+  { src: "/close/frames/08-motion-portrait-3x4.png", aspect: "portrait", face: "var(--trail-amber)", ink: "var(--surface)", edge: "var(--trail-yellow)" },
+  { src: "/close/frames/09-spiral-stairwell-3x4.png", aspect: "portrait", face: "var(--trail-blue)", ink: "var(--background)", edge: "var(--foreground)" },
+  { src: "/close/frames/10-marble-hand-3x4.png", aspect: "portrait", face: "var(--trail-yellow)", ink: "var(--surface)", edge: "var(--trail-yellow)" },
+  { src: "/close/frames/11-ceramic-collection-4x3.png", aspect: "landscape", face: "var(--background)", ink: "var(--trail-yellow)", edge: "var(--trail-blue)" },
+  { src: "/close/frames/12-museum-sculptures-4x3.png", aspect: "landscape", face: "var(--surface)", ink: "var(--trail-yellow)", edge: "var(--trail-yellow)" },
+  { src: "/close/frames/13-intimate-portrait-4x3.png", aspect: "landscape", face: "var(--destructive)", ink: "var(--trail-yellow)", edge: "var(--destructive)" },
+  { src: "/close/frames/14-brutalist-detail-4x3.png", aspect: "landscape", face: "var(--foreground)", ink: "var(--trail-blue)", edge: "var(--trail-amber)" },
+  { src: "/close/frames/15-ceramic-chrome-4x3.png", aspect: "landscape", face: "var(--trail-amber)", ink: "var(--foreground)", edge: "var(--destructive)" },
+] as const;
+
+const ASPECT_CLASS = {
+  square: "aspect-square",
+  portrait: "aspect-[3/4]",
+  landscape: "aspect-[4/3]",
+} as const;
+
+const PLATES = [
+  { frame: 0, left: "2%", width: "8.5rem", duration: 24, progress: 0.05 },
+  { frame: 6, left: "7%", width: "7rem", duration: 28, progress: 0.42 },
+  { frame: 11, left: "12%", width: "11rem", duration: 22, progress: 0.78 },
+  { frame: 3, left: "17%", width: "8rem", duration: 30, progress: 0.18 },
+  { frame: 8, left: "22%", width: "7.25rem", duration: 26, progress: 0.55 },
+  { frame: 13, left: "27%", width: "12rem", duration: 21, progress: 0.33 },
+  { frame: 1, left: "32%", width: "7.5rem", duration: 32, progress: 0.88 },
+  { frame: 9, left: "37%", width: "6.75rem", duration: 23, progress: 0.12 },
+  { frame: 14, left: "42%", width: "11.5rem", duration: 25, progress: 0.64 },
+  { frame: 4, left: "47%", width: "8rem", duration: 29, progress: 0.27 },
+  { frame: 0, left: "52%", width: "6.5rem", duration: 33, progress: 0.68 },
+  { frame: 7, left: "57%", width: "7.5rem", duration: 24, progress: 0.48 },
+  { frame: 6, left: "62%", width: "6.25rem", duration: 31, progress: 0.92 },
+  { frame: 12, left: "67%", width: "12.5rem", duration: 20, progress: 0.82 },
+  { frame: 11, left: "72%", width: "9rem", duration: 27, progress: 0.22 },
+  { frame: 2, left: "77%", width: "8.25rem", duration: 23, progress: 0.16 },
+  { frame: 8, left: "82%", width: "6.5rem", duration: 34, progress: 0.09 },
+  { frame: 10, left: "87%", width: "13rem", duration: 22, progress: 0.51 },
+  { frame: 3, left: "92%", width: "7rem", duration: 28, progress: 0.61 },
+  { frame: 5, left: "96%", width: "7.75rem", duration: 25, progress: 0.73 },
+] as const;
+
+function frameSize(aspect: (typeof FRAMES)[number]["aspect"]) {
+  if (aspect === "portrait") {
+    return { width: 900, height: 1200 };
+  }
+  if (aspect === "landscape") {
+    return { width: 1200, height: 900 };
+  }
+  return { width: 1200, height: 1200 };
+}
+
+const SLOW_RATE = 0.32;
+
+export function CloseSection() {
+  const rootRef = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      registerGsap();
+      const root = rootRef.current;
+      if (!root) {
+        return;
+      }
+
+      const mm = gsap.matchMedia();
+
+      const mount = (reduced: boolean, wide: boolean) => {
+        const all = gsap.utils.toArray<HTMLElement>("[data-close-float]", root);
+        const nodes = wide ? all : all.filter((node) => node.dataset.wide !== "true");
+        const hidden = all.filter((node) => !nodes.includes(node));
+        const tweens: gsap.core.Tween[] = [];
+        const rate = { value: 1 };
+        let rateTween: gsap.core.Tween | null = null;
+        let active: HTMLElement | null = null;
+
+        gsap.set(hidden, { autoAlpha: 0 });
+        gsap.set(nodes, { autoAlpha: 1, filter: "blur(0px)" });
+
+        const applyRate = () => {
+          for (const tween of tweens) {
+            tween.timeScale(rate.value);
+          }
+        };
+
+        const setRate = (value: number) => {
+          rateTween?.kill();
+          if (reduced) {
+            rate.value = value;
+            applyRate();
+            return;
+          }
+          rateTween = gsap.to(rate, {
+            value,
+            duration: 0.7,
+            ease: "power2.out",
+            onUpdate: applyRate,
+          });
+        };
+
+        const photosOf = (plate: HTMLElement) => plate.querySelector<HTMLElement>(".close-float-photo");
+
+        const focusPlate = (plate: HTMLElement) => {
+          active = plate;
+          setRate(SLOW_RATE);
+          gsap.set(plate, { zIndex: 2 });
+          const others = nodes.filter((node) => node !== plate);
+          for (const node of others) {
+            gsap.set(node, { zIndex: 1 });
+          }
+          if (reduced) {
+            return;
+          }
+          gsap.to(others, {
+            filter: "blur(3px)",
+            duration: 0.45,
+            ease: "power2.out",
+            overwrite: "auto",
+          });
+          gsap.to(plate, {
+            filter: "blur(0px)",
+            duration: 0.3,
+            ease: "power2.out",
+            overwrite: "auto",
+          });
+          const photo = photosOf(plate);
+          if (photo) {
+            gsap.to(photo, {
+              scale: 1.06,
+              duration: 0.8,
+              ease: "power3.out",
+              overwrite: "auto",
+            });
+          }
+        };
+
+        const clearPlate = () => {
+          active = null;
+          setRate(1);
+          if (reduced) {
+            return;
+          }
+          gsap.to(nodes, {
+            filter: "blur(0px)",
+            duration: 0.55,
+            ease: "power2.out",
+            overwrite: "auto",
+          });
+          gsap.to(
+            nodes
+              .map((node) => photosOf(node))
+              .filter((photo): photo is HTMLElement => photo !== null),
+            {
+              scale: 1,
+              duration: 0.8,
+              ease: "power3.out",
+              overwrite: "auto",
+            },
+          );
+        };
+
+        const build = () => {
+          for (const tween of tweens) {
+            tween.kill();
+          }
+          tweens.length = 0;
+          const height = root.offsetHeight;
+          for (const node of nodes) {
+            const distance = height + node.offsetHeight;
+            const progress = Number(node.dataset.progress);
+            const start = Number.isFinite(progress) ? progress : 0;
+            if (reduced) {
+              gsap.set(node, { y: -distance * start });
+              continue;
+            }
+            const duration = Number(node.dataset.duration);
+            const tween = gsap.fromTo(
+              node,
+              { y: 0 },
+              {
+                y: -distance,
+                duration: Number.isFinite(duration) ? duration : 24,
+                ease: "none",
+                repeat: -1,
+              },
+            );
+            tween.progress(start);
+            tween.timeScale(rate.value);
+            tweens.push(tween);
+          }
+        };
+
+        build();
+
+        const cleanups: Array<() => void> = [];
+        for (const node of nodes) {
+          const enter = () => focusPlate(node);
+          const leave = (event: PointerEvent) => {
+            const next = event.relatedTarget;
+            if (next instanceof Element && next.closest("[data-close-float]") === node) {
+              return;
+            }
+            if (active === node) {
+              clearPlate();
+            }
+          };
+          node.addEventListener("pointerenter", enter);
+          node.addEventListener("pointerleave", leave);
+          cleanups.push(() => {
+            node.removeEventListener("pointerenter", enter);
+            node.removeEventListener("pointerleave", leave);
+          });
+        }
+
+        const onResize = () => build();
+        window.addEventListener("resize", onResize);
+
+        return () => {
+          window.removeEventListener("resize", onResize);
+          for (const cleanup of cleanups) {
+            cleanup();
+          }
+          rateTween?.kill();
+          for (const tween of tweens) {
+            tween.kill();
+          }
+        };
+      };
+
+      mm.add("(max-width: 767px) and (prefers-reduced-motion: reduce)", () => mount(true, false));
+      mm.add("(min-width: 768px) and (prefers-reduced-motion: reduce)", () => mount(true, true));
+      mm.add("(max-width: 767px) and (prefers-reduced-motion: no-preference)", () => mount(false, false));
+      mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => mount(false, true));
+    },
+    { scope: rootRef },
+  );
+
+  return (
+    <>
+      <div id="close-reveal" aria-hidden="true" className="pointer-events-none h-[100dvh]" />
+      <footer
+        ref={rootRef}
+        id="close"
+        className="theme-paper fixed inset-x-0 bottom-0 z-0 flex h-[100dvh] flex-col overflow-hidden bg-background pt-[8rem] text-foreground"
+      >
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          {PLATES.map((plate) => {
+            const frame = FRAMES[plate.frame];
+            const size = frameSize(frame.aspect);
+            return (
+              <div
+                key={`${plate.left}-${plate.frame}-${plate.progress}`}
+                data-close-float
+                data-coordinate-label="WhatsApp"
+                data-coordinate-variant="whatsapp"
+                data-coordinate-face={frame.face}
+                data-coordinate-ink={frame.ink}
+                data-duration={plate.duration}
+                data-progress={plate.progress}
+                className={`close-float pointer-events-auto absolute top-full z-[1] overflow-hidden border-2 will-change-transform ${ASPECT_CLASS[frame.aspect]}`}
+                style={{ left: plate.left, borderColor: frame.edge, "--close-float-w": plate.width } as CSSProperties}
+              >
+                <ResponsiveImage
+                  src={frame.src}
+                  alt=""
+                  width={size.width}
+                  height={size.height}
+                  sizes="220px"
+                  className="close-float-photo absolute inset-0 h-full w-full max-w-none object-cover will-change-transform"
+                  style={{
+                    height: "100%",
+                    width: "100%",
+                    objectFit: "cover",
+                    maxWidth: "none",
+                    transformOrigin: "50% 50%",
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
+        <div className="pointer-events-none relative flex min-h-0 flex-1 flex-col items-center justify-center gap-5 px-5 text-center md:gap-6 md:px-12">
+          <div className="relative z-10 flex flex-col items-center gap-5 text-[var(--blend-difference)] mix-blend-difference md:gap-6">
+            <p className="type-label">{close.label}</p>
+            <h2 className="w-full max-w-[40em] text-[clamp(2.6rem,6.4vw,5.75rem)] font-light leading-[1.05] tracking-[-0.045em]">
+              <span className="block">{close.titleLead}</span>
+              <span className="block">
+                {close.titleRest} {close.titleEmphasis}
+              </span>
+            </h2>
+            <p className="max-w-[34ch] text-[16px] font-light leading-[1.4] tracking-[-0.03em] md:text-[19px]">
+              {close.body}
+            </p>
+          </div>
+          <a
+            href={close.emailHref}
+            className="pointer-events-auto relative z-10 inline-flex whitespace-nowrap border border-foreground px-6 py-3 text-[0.6875rem] font-normal uppercase tracking-[0.12em] transition-[transform,background-color,color] duration-[var(--duration-fast)] ease-[var(--ease-out-expo)] hover:bg-foreground hover:text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground active:scale-[0.98]"
+          >
+            {close.email}
+          </a>
+        </div>
+        <div className="pointer-events-none relative px-5 pb-2 md:px-12">
+          <div role="img" aria-label="Verbo" className="close-mark relative mx-auto">
+            {verboWordLetters.map((letter, index) => (
+              <svg
+                key={index}
+                viewBox="0 0 1632 404.901"
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full"
+              >
+                <path d={letter} fill="currentColor" />
+              </svg>
+            ))}
+          </div>
+        </div>
+        <div className="pointer-events-none relative z-30 flex items-center justify-between gap-6 px-5 py-4 text-[12px] font-light leading-none tracking-[-0.03em] md:px-12">
+          <p className="whitespace-nowrap">{close.studio}</p>
+          <p className="whitespace-nowrap">{close.practice}</p>
+        </div>
+      </footer>
+    </>
+  );
+}

@@ -12,5 +12,5 @@ export type RouteTransitionState = {
 export type RouteTransitionRenderOverlay = (state: RouteTransitionState) => ReactNode;
 
 export const ROUTE_TRANSITION_TIMEOUT_MS = 8000;
-export const ROUTE_TRANSITION_COVER_MS = 280;
+export const ROUTE_TRANSITION_COVER_MS = 720;
 export const MAIN_CONTENT_ID = "main-content";

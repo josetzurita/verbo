@@ -4,9 +4,9 @@ import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import {
   cursorTrailAttribute,
-  cursorTrailUnderAttribute,
   type TrailAimX,
   type TrailAimY,
+  type TrailSet,
 } from "./cursor-trail";
 import { gsap, registerGsap, ScrollTrigger, useGSAP } from "./gsap";
 
@@ -18,13 +18,13 @@ type UnderlineLinkProps = {
   ruleClassName?: string;
   entrance?: "mount" | "view";
   delay?: number;
-  /** Paint the hover images under the surrounding copy. */
-  trailUnder?: boolean;
   trailX?: TrailAimX;
   trailY?: TrailAimY;
   trailSpread?: number;
   trailInset?: number;
   trailCount?: number;
+  trailSet?: TrailSet;
+  cursor?: "trail" | "mark";
 };
 
 export function UnderlineLink({
@@ -35,12 +35,13 @@ export function UnderlineLink({
   ruleClassName,
   entrance = "view",
   delay = 0,
-  trailUnder = false,
   trailX = "right",
   trailY = "top",
   trailSpread = 1,
   trailInset = 0,
   trailCount,
+  trailSet,
+  cursor = "trail",
 }: UnderlineLinkProps) {
   const rootRef = useRef<HTMLAnchorElement>(null);
   const ruleRef = useRef<SVGLineElement>(null);
@@ -119,34 +120,40 @@ export function UnderlineLink({
       ref={rootRef}
       id={id}
       href={href}
-      {...(trailUnder ? cursorTrailUnderAttribute : cursorTrailAttribute)}
-      data-cursor-trail-x={trailX}
-      data-cursor-trail-y={trailY}
-      data-cursor-trail-spread={trailSpread}
-      data-cursor-trail-inset={trailInset}
-      data-cursor-trail-count={trailCount}
+      {...(cursor === "trail" ? cursorTrailAttribute : { "data-coordinate-mark": "" })}
+      data-cursor-trail-x={cursor === "trail" ? trailX : undefined}
+      data-cursor-trail-y={cursor === "trail" ? trailY : undefined}
+      data-cursor-trail-spread={cursor === "trail" ? trailSpread : undefined}
+      data-cursor-trail-inset={cursor === "trail" ? trailInset : undefined}
+      data-cursor-trail-count={cursor === "trail" ? trailCount : undefined}
+      data-cursor-trail-set={cursor === "trail" ? trailSet : undefined}
       className={cn(
-        "relative inline-block py-5 text-[24px] font-light leading-none tracking-[-0.04em] whitespace-nowrap text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground active:translate-y-px",
+        "relative inline-block py-5 text-[24px] font-light leading-none tracking-[-0.04em] whitespace-nowrap text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground",
         className,
       )}
     >
-      <span className="inline-block overflow-visible align-bottom">
-        <span ref={labelRef} className="inline-block">
+      <span className="relative z-[9] inline-block overflow-visible align-bottom">
+        <span ref={labelRef} className="inline-block active:translate-y-px">
           {children}
-          <img
-            src="/brand/discovery-arrow.svg"
-            alt=""
+          <svg
+            viewBox="0 0 22.3005 14.7281"
             width={22.3005}
             height={14.7281}
+            aria-hidden="true"
             className="ml-4 inline-block align-middle"
-          />
+          >
+            <path
+              fill="currentColor"
+              d="M14.2295 0.292745C14.62 -0.0975588 15.2531 -0.0976046 15.6436 0.292745L22.0078 6.657C22.3981 7.04748 22.3981 7.68059 22.0078 8.07106L15.6436 14.4353C15.2531 14.8257 14.62 14.8256 14.2295 14.4353C13.839 14.0448 13.8391 13.4118 14.2295 13.0213L18.8857 8.36403H0V6.36403H18.8857L14.2295 1.70681C13.8391 1.31627 13.839 0.683231 14.2295 0.292745Z"
+            />
+          </svg>
         </span>
       </span>
       <svg
         viewBox="0 0 100 1"
         preserveAspectRatio="none"
         aria-hidden="true"
-        className={cn("absolute inset-x-0 bottom-0 h-px w-full overflow-visible", ruleClassName)}
+        className={cn("absolute inset-x-0 bottom-0 z-[9] h-px w-full overflow-visible", ruleClassName)}
       >
         <line
           ref={ruleRef}

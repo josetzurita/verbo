@@ -13,6 +13,7 @@ export type SmoothScrollToTarget = number | string | HTMLElement;
 
 export type SmoothScrollToOptions = {
   immediate?: boolean;
+  force?: boolean;
   offset?: number;
   lock?: boolean;
   duration?: number;

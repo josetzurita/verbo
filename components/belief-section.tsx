@@ -221,7 +221,6 @@ export function BeliefSection() {
             <UnderlineLink
               href={belief.ctaHref}
               delay={0.5}
-              trailUnder
               trailX="left"
               trailY="level"
               trailSpread={1.35}

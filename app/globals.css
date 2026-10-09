@@ -38,6 +38,27 @@ body {
   color: var(--foreground);
 }
 
+.about-team {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 640px) and (max-width: 1499px) {
+  .about-team {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1500px) {
+  .about-team {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .about-copy {
+    column-gap: 3.9375rem;
+  }
+}
+
 .services-card {
   border: 2px solid var(--trail-blue);
   background: var(--background);
@@ -229,6 +250,30 @@ body {
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+  }
+}
+
+.close-mark {
+  aspect-ratio: 1632 / 404.901;
+  width: min(100%, calc(26dvh * 1632 / 404.901));
+}
+
+.close-float {
+  width: var(--close-float-w);
+}
+
+.cursor-whatsapp {
+  display: block;
+  width: 3.5rem;
+  height: 3.5rem;
+  background-color: var(--foreground);
+  -webkit-mask: url("/close/whatsapp.png") center / contain no-repeat;
+  mask: url("/close/whatsapp.png") center / contain no-repeat;
+}
+
+@media (max-width: 767px) {
+  .close-float {
+    width: 5.5rem;
   }
 }
 

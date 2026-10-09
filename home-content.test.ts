@@ -1,12 +1,12 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { belief, cases, discoveryLabel, heroLead, heroSlogan, services } from "./lib/home-content";
+import { about, belief, cases, close, discoveryLabel, heroLead, heroSlogan, services } from "./lib/home-content";
 
 const banned = /\u2014|\u2013/;
 
 describe("visible home copy", () => {
   it("keeps em dashes and en dashes out of the home strings", () => {
-    const blob = JSON.stringify({ belief, cases, discoveryLabel, heroLead, heroSlogan, services });
+    const blob = JSON.stringify({ about, belief, cases, close, discoveryLabel, heroLead, heroSlogan, services });
     expect(blob).not.toMatch(banned);
   });
 

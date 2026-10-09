@@ -5,14 +5,7 @@ export const cursorTrailAttribute = {
   "data-cursor-trail": "",
 } as const;
 
-/** Same trail, painted under section copy instead of over it. */
-export const cursorTrailUnderAttribute = {
-  "data-cursor-trail": "under",
-} as const;
-
 const SELECTOR = "[data-cursor-trail]";
-const TRAIL_LAYER = "60";
-const TRAIL_UNDER_LAYER = "1";
 const FRAME_WIDTH = 195;
 const FRAME_HEIGHT = 210;
 const SPAWN_MS = 140;
@@ -61,7 +54,9 @@ type LiveFrame = {
   yTo: (value: number) => void;
 };
 
-const crops: readonly Crop[] = [
+export type TrailSet = "brand" | "people";
+
+const brandCrops: readonly Crop[] = [
   {
     src: "/cursor-trail/face.png",
     stroke: "var(--trail-amber)",
@@ -100,6 +95,27 @@ const crops: readonly Crop[] = [
   },
 ];
 
+const peopleFrame = {
+  src: "/about/portrait.png",
+  width: 280,
+  height: 420,
+  left: "50%",
+  top: "-72px",
+  transform: "translateX(-50%)",
+} as const;
+
+const peopleCrops: readonly Crop[] = [
+  { ...peopleFrame, stroke: "var(--trail-yellow)" },
+  { ...peopleFrame, stroke: "var(--foreground)" },
+  { ...peopleFrame, stroke: "var(--trail-blue)" },
+  { ...peopleFrame, stroke: "var(--about-card-plain)" },
+  { ...peopleFrame, stroke: "var(--trail-amber)" },
+];
+
+function cropsFor(set: TrailSet): readonly Crop[] {
+  return set === "people" ? peopleCrops : brandCrops;
+}
+
 /** Bottom-left of each frame, relative to the cursor. The first four match the Figma fan. */
 const offsets: readonly Offset[] = [
   { x: 0, y: 0 },
@@ -120,8 +136,12 @@ export function isCursorTrailTarget(target: EventTarget | null): boolean {
   return isElement(target) && Boolean(target.closest(SELECTOR));
 }
 
-export function cursorTrailStacksUnder(target: EventTarget | null): boolean {
-  return isElement(target) && target.closest(SELECTOR)?.getAttribute("data-cursor-trail") === "under";
+export function cursorTrailControl(target: EventTarget | null): HTMLElement | null {
+  if (!isElement(target)) {
+    return null;
+  }
+  const control = target.closest(SELECTOR);
+  return control instanceof HTMLElement ? control : null;
 }
 
 function isAimX(value: string | null | undefined): value is TrailAimX {
@@ -156,6 +176,13 @@ export function cursorTrailSpacing(target: EventTarget | null): TrailSpacing {
     spread: Number.isFinite(spread) && spread > 0 ? spread : DEFAULT_SPACING.spread,
     inset: Number.isFinite(inset) ? inset : DEFAULT_SPACING.inset,
   };
+}
+
+export function cursorTrailSet(target: EventTarget | null): TrailSet {
+  if (!isElement(target)) {
+    return "brand";
+  }
+  return target.closest(SELECTOR)?.getAttribute("data-cursor-trail-set") === "people" ? "people" : "brand";
 }
 
 export function cursorTrailCount(target: EventTarget | null): number {
@@ -200,15 +227,13 @@ function aimedOffset(
   return { offset: { x, y }, origin: `${originX} ${originY}` };
 }
 
-export function mountCursorTrail(
-  host: HTMLElement,
-  options: {
-    follow: { duration: number; ease: string };
-    onActiveChange: (active: boolean) => void;
-  },
-) {
+export function mountCursorTrail(options: {
+  follow: { duration: number; ease: string };
+  onActiveChange: (active: boolean) => void;
+}) {
   let frames: LiveFrame[] = [];
   let exiting: LiveFrame[] = [];
+  let control: HTMLElement | null = null;
   let active = false;
   let timer = 0;
   let targetX = 0;
@@ -218,6 +243,8 @@ export function mountCursorTrail(
   let aim: TrailAim = DEFAULT_AIM;
   let spacing: TrailSpacing = DEFAULT_SPACING;
   let limit = MAX_FRAMES;
+  let trailSet: TrailSet = "brand";
+  let activeCrops: readonly Crop[] = brandCrops;
 
   const placeFrame = (frame: LiveFrame, x: number, y: number, snap: boolean) => {
     const nextX = x + frame.offset.x;
@@ -239,20 +266,30 @@ export function mountCursorTrail(
     }
   };
 
+  const bind = (next: HTMLElement) => {
+    control = next;
+    for (const frame of frames) {
+      next.appendChild(frame.el);
+    }
+    for (const frame of exiting) {
+      next.appendChild(frame.el);
+    }
+  };
+
   const spawn = () => {
-    if (!active || frames.length >= limit) {
+    if (!active || !control || frames.length >= limit) {
       return;
     }
     const index = frames.length;
     const offset = offsets[index];
-    const crop = crops[index % crops.length];
+    const crop = activeCrops[index % activeCrops.length];
     if (!offset || !crop) {
       return;
     }
 
     const el = document.createElement("div");
     el.className =
-      "pointer-events-none absolute top-0 left-0 box-border h-[210px] w-[195px] overflow-hidden border border-solid";
+      "pointer-events-none fixed top-0 left-0 box-border h-[210px] w-[195px] overflow-hidden border border-solid";
     el.style.borderColor = crop.stroke;
     el.style.zIndex = String(MAX_FRAMES - index);
 
@@ -267,7 +304,7 @@ export function mountCursorTrail(
     image.style.top = crop.top;
     image.style.transform = crop.transform;
     el.appendChild(image);
-    host.appendChild(el);
+    control.appendChild(el);
 
     const settled = aimedOffset(offset, aim, spacing);
     const lag = {
@@ -301,10 +338,6 @@ export function mountCursorTrail(
     timer = window.setInterval(spawn, SPAWN_MS);
   };
 
-  const setLayer = (under: boolean) => {
-    host.style.zIndex = under ? TRAIL_UNDER_LAYER : TRAIL_LAYER;
-  };
-
   return {
     sync(nextTargetX: number, nextTargetY: number, nextRenderedX: number, nextRenderedY: number, snap: boolean) {
       targetX = nextTargetX;
@@ -316,15 +349,30 @@ export function mountCursorTrail(
     enter(
       x: number,
       y: number,
-      under = false,
+      nextControl: HTMLElement,
       nextAim: TrailAim = DEFAULT_AIM,
       nextSpacing: TrailSpacing = DEFAULT_SPACING,
       nextLimit = MAX_FRAMES,
+      nextSet: TrailSet = "brand",
     ) {
+      const setChanged = nextSet !== trailSet;
       aim = nextAim;
       spacing = nextSpacing;
       limit = nextLimit;
-      setLayer(under);
+      trailSet = nextSet;
+      activeCrops = cropsFor(nextSet);
+      if (setChanged) {
+        for (const frame of [...frames, ...exiting]) {
+          gsap.killTweensOf(frame.el);
+          frame.el.remove();
+        }
+        frames = [];
+        exiting = [];
+        active = false;
+        window.clearInterval(timer);
+        timer = 0;
+      }
+      bind(nextControl);
       targetX = x;
       targetY = y;
       if (renderedX === 0 && renderedY === 0) {
@@ -366,7 +414,6 @@ export function mountCursorTrail(
     },
     leave() {
       if (!active) {
-        setLayer(false);
         return;
       }
       active = false;
@@ -377,7 +424,6 @@ export function mountCursorTrail(
       frames = [];
       exiting = snapshot;
       if (snapshot.length === 0) {
-        setLayer(false);
         return;
       }
       snapshot
@@ -397,15 +443,11 @@ export function mountCursorTrail(
                 exiting.splice(at, 1);
               }
               frame.el.remove();
-              if (!active && exiting.length === 0) {
-                setLayer(false);
-              }
             },
           });
         });
     },
     destroy() {
-      setLayer(false);
       active = false;
       window.clearInterval(timer);
       timer = 0;

@@ -1,7 +1,7 @@
 "use client";
 
 import { ScrollTrigger } from "./gsap";
-import { useSmoothScroll } from "./use-smooth-scroll";
+import { useSmoothScroll, type SmoothScrollApi } from "./use-smooth-scroll";
 import { useReducedMotion } from "motion/react";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -12,6 +12,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { cancelHomeHero, homeHeroRequested, isHomeHeroHref } from "./home-scroll";
 import { MAIN_CONTENT_ID, ROUTE_TRANSITION_COVER_MS, ROUTE_TRANSITION_TIMEOUT_MS } from "./route-transition-types";
 import type {
   RouteTransitionPhase,
@@ -28,6 +29,14 @@ function focusMain() {
 
 function refreshScrollScene() {
   ScrollTrigger.refresh();
+}
+
+function snapHomeHero(scrollTo: SmoothScrollApi["scrollTo"]) {
+  if (!homeHeroRequested()) {
+    return;
+  }
+  scrollTo(0, { immediate: true, force: true });
+  window.scrollTo(0, 0);
 }
 
 export function RouteTransitionProvider({
@@ -63,7 +72,9 @@ export function RouteTransitionProvider({
     setPhase("idle");
     smooth.start();
     smooth.resize();
+    snapHomeHero(smooth.scrollTo);
     refreshScrollScene();
+    snapHomeHero(smooth.scrollTo);
     focusMain();
   }, [clearTimers, smooth]);
 
@@ -72,11 +83,15 @@ export function RouteTransitionProvider({
     pendingRef.current = null;
     setHref(null);
     setPhase("idle");
+    if (pathname !== "/") {
+      cancelHomeHero();
+    }
     smooth.start();
-  }, [clearTimers, smooth]);
+  }, [clearTimers, pathname, smooth]);
 
   const navigate = useCallback(
     (nextHref: string) => {
+      const hero = isHomeHeroHref(nextHref, window.location.origin);
       if (!enabled || reduce) {
         smooth.stop();
         router.push(nextHref);
@@ -91,6 +106,9 @@ export function RouteTransitionProvider({
         fail();
       }, timeoutMs);
       coverRef.current = window.setTimeout(() => {
+        if (hero) {
+          snapHomeHero(smooth.scrollTo);
+        }
         setPhase("waiting");
         try {
           router.push(nextHref);
@@ -109,6 +127,9 @@ export function RouteTransitionProvider({
       return;
     }
     previousPathname.current = pathname;
+    if (pathname === "/") {
+      snapHomeHero(smooth.scrollTo);
+    }
     if (phase === "waiting") {
       setPhase("revealing");
       coverRef.current = window.setTimeout(() => {

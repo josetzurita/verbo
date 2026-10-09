@@ -12,6 +12,7 @@
   --trail-amber: #faab2a;
   --trail-blue: #2d83ea;
   --trail-yellow: #fefd04;
+  --about-card-plain: white;
 
   --font-sans: var(--font-figtree), "Figtree", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", monospace;
@@ -203,6 +204,7 @@ header[data-surface="paper"] {
   --ring: #39170d;
   --accent: #39170d;
   --accent-foreground: #faf5ee;
+  --blend-difference: #c1dee1;
 }
 
 .theme-paper {

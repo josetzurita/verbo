@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Figtree } from "next/font/google";
+import { CoordinateCursor } from "../components/coordinate-cursor";
 import { HomeNav } from "../components/home-nav";
 import { MainContent } from "../components/main-content";
 import { SkipLink } from "../components/skip-link";
@@ -12,6 +13,7 @@ import "./globals.css";
 const figtree = Figtree({
   subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
   display: "swap",
   variable: "--font-figtree",
 });
@@ -35,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <Providers config={projectConfig}>
           <SkipLink />
+          <CoordinateCursor />
           <HomeNav />
           <MainContent>{children}</MainContent>
         </Providers>

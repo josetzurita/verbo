@@ -68,6 +68,43 @@ export const services = [
   },
 ] as const;
 
+export const about = {
+  title: ["A verb does", "not describe.", "It acts."] as const,
+  lead: [
+    "Verbo Brands grew out of years of building brands for others. Of understanding business from the inside, learning what works and what doesn't, and growing as a strategist and as a person.",
+    "We are a boutique consultancy based in Bogotá - small by choice, deep in our approach by conviction. We work with only a few brands at a time because we believe full dedication cannot be divided.",
+  ] as const,
+  aside:
+    "What sets us apart isn't the tools we use, but how we think: we start with a genuine understanding of people and businesses, connect strategy with creativity, and measure success in growth, not likes.",
+  cta: "Meet the team",
+  ctaHref: "#team",
+  quote:
+    "In a world where design lives in the visual and strategy lives in spreadsheets, Verbo proposes that the most powerful brand is not imagined, in a world where design lives in the visual and strategy lives in",
+  name: "Juliana Cabrera",
+  portrait: "/about/portrait.png",
+  tones: [
+    "var(--trail-yellow)",
+    "var(--foreground)",
+    "var(--trail-blue)",
+    "var(--about-card-plain)",
+    "var(--trail-amber)",
+  ] as const,
+};
+
+export const close = {
+  label: "Let's talk",
+  titleLead: "A trajectory like yours",
+  titleRest: "deserves a brand",
+  titleEmphasis: "equal to it.",
+  body: "If you believe your brand can do more for your business, we want to hear from you.",
+  email: "hola@verbobrands.co",
+  emailHref: "mailto:hola@verbobrands.co",
+  studio: "Verbo Brands",
+  practice: "Strategy, brand and growth",
+  plate: "/close/plate.jpg",
+  plateAlt: "Hellenistic marble bust in warm side light",
+} as const;
+
 export const cases = [
   {
     index: "01",
@@ -81,6 +118,7 @@ export const cases = [
     height: 864,
     alt: "Still life of linen, a closed notebook, and a cup in warm side light",
     frame: "md:col-span-5 md:col-start-8",
+    href: "/work/lienzo",
   },
   {
     index: "02",
@@ -94,6 +132,7 @@ export const cases = [
     height: 864,
     alt: "Guayacan trees and an estuary at dusk",
     frame: "md:col-span-4 md:col-start-9",
+    href: null,
   },
   {
     index: "03",
@@ -107,6 +146,7 @@ export const cases = [
     height: 1152,
     alt: "Brick houses and a jacaranda on a quiet residential street",
     frame: "md:col-span-3 md:col-start-9",
+    href: null,
   },
   {
     index: "04",
@@ -120,6 +160,7 @@ export const cases = [
     height: 864,
     alt: "Dark wood listening room beside library shelves",
     frame: "md:col-span-5 md:col-start-8",
+    href: null,
   },
   {
     index: "05",
@@ -133,6 +174,7 @@ export const cases = [
     height: 720,
     alt: "A glass table and blank paper in a night office",
     frame: "md:col-span-5 md:col-start-8",
+    href: null,
   },
   {
     index: "06",
@@ -146,5 +188,6 @@ export const cases = [
     height: 720,
     alt: "Sugarcane rows and a dirt path in morning mist",
     frame: "md:col-span-4 md:col-start-9",
+    href: null,
   },
 ] as const;

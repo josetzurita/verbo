@@ -1,10 +1,13 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { cases } from "@/lib/home-content";
+import { finishHomeHero, homeHeroRequested, HOME_SCROLL_KEY } from "./home-scroll";
 import { CustomEase, gsap, registerGsap, ScrollTrigger, useGSAP } from "./gsap";
 import { ResponsiveImage } from "./responsive-image";
 import { HANDOFF_VIEWPORTS, ServicesHandoff } from "./services-handoff";
+import { TransitionLink } from "./transition-link";
+import { useRouteTransition } from "./use-route-transition";
 import { useSmoothScroll, type SmoothScrollToOptions } from "./use-smooth-scroll";
 
 const imageBorders = [
@@ -72,11 +75,52 @@ function titleOpacity(distance: number) {
   return 0;
 }
 
+function snapHero() {
+  window.scrollTo(0, 0);
+  return window.scrollY <= 2;
+}
+
 export function WorkStage() {
   const rootRef = useRef<HTMLElement>(null);
   const { scrollTo } = useSmoothScroll();
   const scrollToRef = useRef(scrollTo);
   scrollToRef.current = scrollTo;
+  const transition = useRouteTransition();
+  const phaseRef = useRef(transition.phase);
+  phaseRef.current = transition.phase;
+
+  useEffect(() => {
+    if (transition.phase !== "idle" || !homeHeroRequested()) {
+      return;
+    }
+    let alive = true;
+    const pin = () => {
+      if (!alive || !homeHeroRequested()) {
+        return;
+      }
+      scrollTo(0, { immediate: true, force: true });
+      snapHero();
+    };
+    pin();
+    let inner = 0;
+    const frame = window.requestAnimationFrame(() => {
+      pin();
+      inner = window.requestAnimationFrame(() => {
+        if (!alive) {
+          return;
+        }
+        pin();
+        if (homeHeroRequested()) {
+          finishHomeHero();
+        }
+      });
+    });
+    return () => {
+      alive = false;
+      window.cancelAnimationFrame(frame);
+      window.cancelAnimationFrame(inner);
+    };
+  }, [scrollTo, transition.phase]);
 
   useGSAP(
     () => {
@@ -115,8 +159,43 @@ export function WorkStage() {
         let armed = true;
         let armTimer = 0;
         let alive = true;
+        let userEngaged = false;
         const progress = { value: 0 };
         let moveTween: gsap.core.Tween | null = null;
+        const engage = () => {
+          userEngaged = true;
+        };
+        window.addEventListener("wheel", engage, { passive: true });
+        window.addEventListener("touchmove", engage, { passive: true });
+        window.addEventListener("keydown", engage);
+
+        if (homeHeroRequested()) {
+          scrollToRef.current(0, { immediate: true, force: true });
+          snapHero();
+        }
+        const savedScroll = Number(sessionStorage.getItem(HOME_SCROLL_KEY));
+        const hasSavedScroll = !homeHeroRequested() && Number.isFinite(savedScroll) && savedScroll > 0;
+        let restoring = hasSavedScroll;
+        const previousRestoration = history.scrollRestoration;
+        history.scrollRestoration = "manual";
+        const persistScroll = () => {
+          if (restoring || homeHeroRequested()) {
+            return;
+          }
+          sessionStorage.setItem(HOME_SCROLL_KEY, String(Math.round(window.scrollY)));
+        };
+        const onScroll = () => {
+          if (homeHeroRequested()) {
+            if (window.scrollY > 2) {
+              scrollToRef.current(0, { immediate: true, force: true });
+              snapHero();
+            }
+            return;
+          }
+          persistScroll();
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("pagehide", persistScroll);
 
         const syncCopyPointer = (line: HTMLElement) => {
           const current = Number(gsap.getProperty(line, "opacity"));
@@ -305,6 +384,14 @@ export function WorkStage() {
           armed = true;
         };
 
+        const adopt = (index: number) => {
+          moveTween?.kill();
+          settled = index;
+          progress.value = index;
+          aligned = -1;
+          render(index, index);
+        };
+
         const playTo = (index: number) => {
           render(progress.value, index);
           moveTween = gsap.to(progress, {
@@ -318,6 +405,45 @@ export function WorkStage() {
 
         render(0, 0);
         renderHandoff(0, false, true);
+
+        let restoreLock = false;
+        const pinHeroBeforeRefresh = () => {
+          if (!homeHeroRequested()) {
+            return;
+          }
+          snapHero();
+        };
+        const restoreScroll = () => {
+          if (homeHeroRequested()) {
+            if (window.scrollY > 2) {
+              scrollToRef.current(0, { immediate: true, force: true });
+              snapHero();
+            }
+            if (phaseRef.current === "idle" && window.scrollY <= 2) {
+              finishHomeHero();
+            }
+            return;
+          }
+          if (!restoring || !alive || restoreLock) {
+            return;
+          }
+          const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+          if (savedScroll > maxScroll + 1) {
+            return;
+          }
+          if (Math.abs(window.scrollY - savedScroll) <= 2) {
+            restoring = false;
+            persistScroll();
+            return;
+          }
+          restoreLock = true;
+          scrollToRef.current(savedScroll, { immediate: true });
+          restoreLock = false;
+          if (Math.abs(window.scrollY - savedScroll) <= 2) {
+            restoring = false;
+            persistScroll();
+          }
+        };
 
         const trigger = ScrollTrigger.create({
           trigger: root,
@@ -353,10 +479,19 @@ export function WorkStage() {
               gsap.utils.clamp(0, 1, (distance - lastOffset) / Math.max(handoff, 1)),
               self.isActive,
             );
-            if (settled === count - 1 && distance > lastOffset) {
+            if (distance > lastOffset) {
+              if (settled !== count - 1) {
+                adopt(count - 1);
+              }
               return;
             }
             const next = indexAtDistance(distance, spans);
+            if (!userEngaged) {
+              if (next !== settled) {
+                adopt(next);
+              }
+              return;
+            }
             if (!armed) {
               if (next === settled) {
                 arm();
@@ -380,6 +515,13 @@ export function WorkStage() {
           },
         });
 
+        ScrollTrigger.addEventListener("refreshInit", pinHeroBeforeRefresh);
+        ScrollTrigger.addEventListener("refresh", restoreScroll);
+        restoreScroll();
+        if (!homeHeroRequested()) {
+          persistScroll();
+        }
+
         document.fonts.ready
           .then(() => {
             if (!alive) {
@@ -402,6 +544,14 @@ export function WorkStage() {
         return () => {
           alive = false;
           window.clearTimeout(armTimer);
+          window.removeEventListener("wheel", engage);
+          window.removeEventListener("touchmove", engage);
+          window.removeEventListener("keydown", engage);
+          window.removeEventListener("scroll", onScroll);
+          window.removeEventListener("pagehide", persistScroll);
+          ScrollTrigger.removeEventListener("refreshInit", pinHeroBeforeRefresh);
+          ScrollTrigger.removeEventListener("refresh", restoreScroll);
+          history.scrollRestoration = previousRestoration;
           moveTween?.kill();
           trigger.kill();
           delete root.dataset.returning;
@@ -472,9 +622,19 @@ export function WorkStage() {
               </ol>
             </div>
             <div className="work-card-hits pointer-events-none absolute inset-0 z-[2]">
-              {cases.map((item) => (
-                <div key={item.name} data-coordinate-project="" className="work-card-hit pointer-events-auto absolute top-0 left-0" />
-              ))}
+              {cases.map((item) =>
+                item.href ? (
+                  <TransitionLink
+                    key={item.name}
+                    href={item.href}
+                    aria-label={`View ${item.name}`}
+                    data-coordinate-project=""
+                    className="work-card-hit pointer-events-auto absolute top-0 left-0 block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+                  />
+                ) : (
+                  <div key={item.name} data-coordinate-project="" className="work-card-hit pointer-events-auto absolute top-0 left-0" />
+                ),
+              )}
             </div>
           </div>
 
@@ -504,10 +664,18 @@ export function WorkStage() {
       </h2>
       <ol className="work-reading grid">
         {cases.map((item, index) => (
-          <li key={item.name} data-coordinate-project="" className="grid gap-6 px-5 py-16">
+          <li key={item.name} data-coordinate-project="" className="relative grid gap-6 px-5 py-16">
             <p className="text-sm font-normal tabular-nums">{item.index}</p>
             <p className="text-sm font-normal leading-relaxed">{item.tag}</p>
-            <h3 className="text-[clamp(2.25rem,8vw,3rem)] font-medium leading-[1.05] tracking-[-0.04em]">{item.name}</h3>
+            <h3 className="text-[clamp(2.25rem,8vw,3rem)] font-medium leading-[1.05] tracking-[-0.04em]">
+              {item.href ? (
+                <TransitionLink href={item.href} className="after:absolute after:inset-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">
+                  {item.name}
+                </TransitionLink>
+              ) : (
+                item.name
+              )}
+            </h3>
             <div
               className="border-2 bg-surface"
               style={{ borderColor: imageBorders[index] ?? "var(--foreground)" }}
