@@ -307,15 +307,20 @@ export function WorkStage() {
           if (!immediate && nextActive === cardActive) {
             return;
           }
-          const stop = window.innerHeight * 0.36;
-          const below = window.innerHeight + 80;
+          const view = window.innerHeight;
+          const shortDesktop = window.matchMedia("(min-width: 768px) and (max-height: 1100px)").matches;
+          const below = view + 80;
           serviceCards.forEach((card) => {
             card.style.height = "auto";
+            card.style.maxHeight = "";
           });
           const tallest = Math.max(...serviceCards.map((card) => card.offsetHeight));
           serviceCards.forEach((card) => {
             card.style.height = `${tallest}px`;
           });
+          const preferred = view * 0.32;
+          const fitted = view - tallest - view * 0.1;
+          const stop = shortDesktop ? Math.max(view * 0.16, Math.min(preferred, fitted)) : view * 0.36;
           if (titleRow?.parentElement) {
             titleRow.parentElement.style.clipPath = "";
           }
@@ -601,7 +606,7 @@ export function WorkStage() {
                 {cases.map((item, index) => (
                   <li key={item.name} className="work-card pointer-events-none absolute top-1/2 left-1/2 w-[min(92%,32rem)] will-change-transform">
                     <div
-                      className="h-[34dvh] overflow-hidden border-2 bg-surface"
+                      className="work-card-frame h-[34dvh] overflow-hidden border-2 bg-surface"
                       style={{ borderColor: imageBorders[index] ?? "var(--foreground)" }}
                     >
                       <ResponsiveImage

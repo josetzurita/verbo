@@ -69,7 +69,7 @@ export function HeroIntro() {
 
   return (
     <div ref={rootRef} className="flex min-h-0 flex-1 flex-col">
-      <div className="flex min-h-0 w-full flex-1 items-center overflow-x-auto px-5 pt-[8rem] md:px-12">
+      <div className="hero-copy flex min-h-0 w-full flex-1 items-center overflow-x-auto px-5 pt-[8rem] md:px-12">
         <div className="flex w-max flex-col">
           <h1
             aria-label="Creating to shape the world."
@@ -106,7 +106,7 @@ export function HeroIntro() {
         </div>
       </div>
       <div className="px-5 pb-[3vh] md:px-12">
-        <div className="@container relative w-full" style={{ aspectRatio: "1632 / 404.901" }}>
+        <div className="hero-mark @container relative w-full" style={{ aspectRatio: "1632 / 404.901" }}>
           <div role="img" aria-label="Verbo" className="absolute inset-0">
             {verboWordLetters.map((letter, index) => (
               <span key={index} className="absolute inset-0 overflow-hidden">

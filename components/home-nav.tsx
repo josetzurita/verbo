@@ -272,7 +272,7 @@ export function HomeNav() {
       style={{ zIndex: "var(--z-sticky)" }}
     >
       <div
-        className={`grid grid-cols-[1fr_auto_1fr] items-center px-5 md:px-12 ${compactNav ? "h-20" : "h-[8rem]"}`}
+        className={`home-nav-bar grid grid-cols-[1fr_auto_1fr] items-center px-5 md:px-12 ${compactNav ? "h-20" : "h-[8rem]"}`}
       >
         <div className="justify-self-start">
           <span className="inline-block overflow-hidden">

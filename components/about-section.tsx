@@ -239,7 +239,7 @@ export function AboutSection() {
       ref={rootRef}
       id="about"
       data-theme="dark"
-      className="relative z-[var(--z-raised)] bg-background px-5 pt-[9.25rem] text-foreground md:px-12"
+      className="about-section relative z-[var(--z-raised)] bg-background px-5 pt-[9.25rem] text-foreground md:px-12"
     >
       <div className="about-intro flex flex-col gap-12 min-[1500px]:flex-row min-[1500px]:items-end">
         <h2 className="about-headline max-w-[29.25rem] shrink-0 text-[clamp(3.25rem,5.09vw,5.5rem)] font-light leading-[0.9] tracking-[-0.04em]">
