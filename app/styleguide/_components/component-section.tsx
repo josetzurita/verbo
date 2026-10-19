@@ -58,7 +58,7 @@ export function ComponentSection() {
             <TransitionLink className="underline underline-offset-4" href="/">
               Home
             </TransitionLink>
-            <TransitionLink className="underline underline-offset-4" href="/work">
+            <TransitionLink className="underline underline-offset-4" href="/#work">
               Work
             </TransitionLink>
           </div>

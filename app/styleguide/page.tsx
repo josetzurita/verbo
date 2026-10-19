@@ -15,8 +15,6 @@ import { createMetadata } from "@/lib/seo";
 import { isStyleguideEnabled } from "@/lib/styleguide-access";
 import { projectConfig } from "@/project.config";
 
-export const dynamic = "force-dynamic";
-
 export const metadata = createMetadata(projectConfig, {
   title: "Styleguide",
   path: "/styleguide",
