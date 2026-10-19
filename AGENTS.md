@@ -2,6 +2,10 @@
 
 Verbo, a branding-agency portfolio. One theme for the whole page: field `#39170d`, type `#faf5ee`, Figtree Light. Scaffolded from the CDS client-site starter. Keep the production shell constraints.
 
+Read this file first. It is meant to replace a full codebase read. Open a file only when the task touches it. `HANDOFF.md` has the longer history.
+
+## Rules
+
 - TypeScript strict mode. `noUncheckedIndexedAccess` is on.
 - Server Components by default. `ProjectProviders` is the only client root boundary.
 - Animate only transform and opacity.
@@ -12,3 +16,72 @@ Verbo, a branding-agency portfolio. One theme for the whole page: field `#39170d
 - Production identity comes from `project.config.ts`. Do not invent missing values.
 - `/styleguide` is a development specimen. Keep it out of public navigation. It is noindexed. Production returns 404 unless `ENABLE_STYLEGUIDE=true`.
 - Customize the styleguide by editing `app/tokens.css`, `project.config.ts`, and `app/styleguide/_data/styleguide-data.ts`. Do not duplicate color hex values in specimen files.
+
+## Working style
+
+- The design is set in Figma ([VERBO-WEBSITE](https://www.figma.com/design/5v0NhMTyNLxEgmaWn1Y3Em/VERBO-WEBSITE)). Adjust and fix. Do not redesign or restyle unless asked.
+- The owner designs on a 32" screen. Every layout or motion change must also work on a MacBook 14" (1512x982). Check both.
+- Prefer free scroll. No gesture locks, no forced scroll jumps, no long pins. Soft settles are fine if any input cancels them.
+- Content in `lib/` is placeholder. A database replaces it later, so keep components reading from those exports, not from hardcoded copy.
+
+## Commands
+
+pnpm is not installed on the owner's machine. Use npm (the `pnpm-lock.yaml` is still the lockfile of record).
+
+```bash
+npm run dev        # http://localhost:4317 (EADDRINUSE = a dev server is already running)
+npm run typecheck
+npm test           # vitest, *.test.ts at the repo root
+npm run lint
+npm run build
+```
+
+## Map
+
+Stack: Next.js 15 App Router, React 19, Tailwind v4, GSAP + ScrollTrigger (+ CustomEase), Lenis, Motion (reduced-motion hook only).
+
+`app/layout.tsx` mounts `Providers` -> `SkipLink`, `CoordinateCursor`, `HomeNav`, `MainContent`.
+
+### Home (`app/page.tsx`), top to bottom
+
+| Section | Component | Motion |
+| --- | --- | --- |
+| `#top` hero | `components/hero-intro.tsx` | Load timeline: word masks, wordmark letters, slogan chars |
+| `#belief` | `components/belief-section.tsx` | `sticky top-0`, one screen, then a `40dvh` spacer so Work covers it. The word fade scrubs `top 90%` -> `bottom 95%`. It only scrubs while the section moves, so do not end it later than where the section sticks. |
+| `#work` projects + services | `components/work-stage.tsx`, `components/services-handoff.tsx` | One ScrollTrigger pins `.work-track`. Cards: `STEP` (0.6 viewport) per card, progress follows scroll through `gsap.quickTo`, and the scroll settles on the nearest card after 140ms of quiet. Then `HANDOFF_VIEWPORTS` (4) of "Our expertise": veil, title words, pan, and service cards that stack at progress `0.28 + i * gap`. Below 768px or with reduced motion, `.work-reading` and `.services-handoff-reading` render instead. |
+| `#about` + `#team` | `components/about-section.tsx` | Lines are measured into rows, then rise once. Cards rise once. Portrait scales on hover. |
+| `#close` footer | `components/close-section.tsx` | A fixed footer is revealed by a `100dvh` spacer. Floating plates loop, slow down on hover, and blur the others. |
+
+### Case study (`/work/[slug]`)
+
+- `app/work/[slug]/page.tsx` -> `components/case-study-view.tsx`, wrapped in `components/case-motion.tsx` (reveals, parallax, scrubbed rows).
+- `components/case-more.tsx` is a pinned horizontal "More work" strip.
+- Data is in `lib/case-study.ts` (`caseStudies`, currently only `lienzo`). The content rules are in `case-study-template.md`.
+- `/work` redirects to `/#work`.
+
+### Shared pieces
+
+| Concern | File |
+| --- | --- |
+| Copy, cases, services, about, close | `lib/home-content.ts` |
+| Logo and mark paths | `lib/brand-paths.ts` |
+| Nav, menu dialog, paper surface flip, hide on scroll | `components/home-nav.tsx`, `components/nav-mark.tsx` |
+| Crosshair cursor and image trail | `components/coordinate-cursor.tsx`, `components/cursor-trail.ts`, `components/underline-link.tsx` |
+| Lenis setup and GSAP sync | `components/smooth-scroll-provider.tsx`, `smooth-scroll-options.ts` (`lerp 0.25`), `smooth-scroll-sync.ts` |
+| Scroll API (`scrollTo`, `duration`, `immediate`) | `components/use-smooth-scroll.ts` |
+| Home scroll restore and "back to hero" reset | `components/home-scroll.ts`, used inside `work-stage.tsx` |
+| Route overlay | `components/route-transition-provider.tsx`, `app/route-overlay.tsx` |
+| GSAP registration | `components/gsap.ts` (always call `registerGsap()`) |
+| Tokens | `app/tokens.css` |
+| Global and section CSS | `app/globals.css` |
+
+### Short-screen rule
+
+`app/globals.css` has a `@media (min-width: 768px) and (max-height: 1100px)` block. It scales the 32" composition down for laptops. Put laptop fixes there, so tall screens are untouched. `work-stage.tsx` reads the same query (`shortDesktop`) for the service-card stop.
+
+## Patterns
+
+- Every motion block uses `gsap.matchMedia()` with a `(prefers-reduced-motion: no-preference)` branch, plus a reduce branch that sets the end state.
+- Use `useGSAP` with `{ scope: rootRef }`, and return `mm.revert()`.
+- Pointer-only effects are gated on `(pointer: fine) and (hover: hover)`.
+- Index access needs `?? fallback` (because of `noUncheckedIndexedAccess`).

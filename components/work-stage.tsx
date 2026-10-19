@@ -21,10 +21,13 @@ const imageBorders = [
 
 const STEP_EASE = "power3.out";
 const CARD_EASE = "service-card-out";
-const CARD_DURATION = 1.2;
+const CARD_DURATION = 0.9;
 const CARD_PEEK = 32;
 const CARD_SCALE = 0.97;
-const MOVE_DURATION = 1;
+const FOLLOW_DURATION = 0.4;
+const SETTLE_DELAY_MS = 140;
+const SETTLE_DURATION = 0.45;
+const FOCUS_DURATION = 0.6;
 
 function cardSettleEase() {
   registerGsap();
@@ -34,8 +37,7 @@ function cardSettleEase() {
   return CARD_EASE;
 }
 const FADE_DURATION = 0.8;
-const STEP = 0.9;
-const GATE = 0.55;
+const STEP = 0.6;
 
 function stepSpans(count: number, viewHeight: number) {
   const span = Math.round(viewHeight * STEP);
@@ -50,12 +52,12 @@ function offsetForIndex(index: number, spans: readonly number[]) {
   return sum;
 }
 
-function indexAtDistance(distance: number, spans: readonly number[]) {
+function progressAtDistance(distance: number, spans: readonly number[]) {
   let cursor = 0;
   for (let index = 0; index < spans.length; index += 1) {
     const span = spans[index] ?? 0;
-    if (distance < cursor + span * GATE) {
-      return index;
+    if (distance < cursor + span) {
+      return index + Math.max(0, distance - cursor) / Math.max(span, 1);
     }
     cursor += span;
   }
@@ -154,20 +156,10 @@ export function WorkStage() {
           return;
         }
 
-        let settled = 0;
         let aligned = -1;
-        let armed = true;
-        let armTimer = 0;
+        let settleTimer = 0;
         let alive = true;
-        let userEngaged = false;
         const progress = { value: 0 };
-        let moveTween: gsap.core.Tween | null = null;
-        const engage = () => {
-          userEngaged = true;
-        };
-        window.addEventListener("wheel", engage, { passive: true });
-        window.addEventListener("touchmove", engage, { passive: true });
-        window.addEventListener("keydown", engage);
 
         if (homeHeroRequested()) {
           scrollToRef.current(0, { immediate: true, force: true });
@@ -351,8 +343,8 @@ export function WorkStage() {
 
         const renderHandoff = (progress: number, active: boolean, immediate = false) => {
           const view = window.innerHeight;
-          const lift = gsap.utils.clamp(0, 1, progress / 0.6);
-          const fade = gsap.utils.clamp(0, 1, (progress - 0.08) / 0.2);
+          const lift = gsap.utils.clamp(0, 1, progress / 0.35);
+          const fade = gsap.utils.clamp(0, 1, (progress - 0.05) / 0.15);
           gsap.set(projectLayers, {
             y: -view * 1.05 * lift,
             opacity: 1 - fade,
@@ -364,19 +356,20 @@ export function WorkStage() {
             });
           }
           titleWords.forEach((word, index) => {
-            const start = 0.08 + index * 0.1;
-            const local = gsap.utils.clamp(0, 1, (progress - start) / 0.14);
+            const start = 0.06 + index * 0.08;
+            const local = gsap.utils.clamp(0, 1, (progress - start) / 0.12);
             const eased = local * local * (3 - 2 * local);
             word.style.transform = `translateY(${(1 - eased) * 110}%)`;
           });
           if (titleRow) {
-            const pan = gsap.utils.clamp(0, 1, (progress - 0.42) / 0.4);
+            const pan = gsap.utils.clamp(0, 1, (progress - 0.3) / 0.3);
             const overflow = Math.max(0, titleRow.scrollWidth - window.innerWidth);
             gsap.set(titleRow, { x: -overflow * pan });
           }
           let nextActive = -1;
+          const cardGap = 0.55 / Math.max(1, serviceCards.length - 1);
           serviceCards.forEach((_, index) => {
-            const start = 0.32 + index * 0.1;
+            const start = 0.28 + index * cardGap;
             if (progress >= start) {
               nextActive = index;
             }
@@ -385,27 +378,38 @@ export function WorkStage() {
           syncHeader(fade, active);
         };
 
-        const arm = () => {
-          armed = true;
+        const follow = gsap.quickTo(progress, "value", {
+          duration: FOLLOW_DURATION,
+          ease: STEP_EASE,
+          onUpdate: () => render(progress.value, Math.round(progress.value)),
+        });
+
+        const measure = () => {
+          const spans = stepSpans(count, window.innerHeight);
+          return {
+            spans,
+            lastOffset: offsetForIndex(count - 1, spans),
+            handoff: Math.round(window.innerHeight * HANDOFF_VIEWPORTS),
+          };
         };
 
-        const adopt = (index: number) => {
-          moveTween?.kill();
-          settled = index;
-          progress.value = index;
-          aligned = -1;
-          render(index, index);
-        };
-
-        const playTo = (index: number) => {
-          render(progress.value, index);
-          moveTween = gsap.to(progress, {
-            value: index,
-            duration: MOVE_DURATION,
-            ease: STEP_EASE,
-            overwrite: "auto",
-            onUpdate: () => render(progress.value, settled),
-          });
+        const sync = (self: ScrollTrigger, immediate: boolean) => {
+          const { spans, lastOffset, handoff } = measure();
+          const distance = self.scroll() - self.start;
+          const next = gsap.utils.clamp(0, count - 1, progressAtDistance(distance, spans));
+          if (immediate) {
+            progress.value = next;
+            follow(next, next);
+            aligned = -1;
+            render(next, Math.round(next));
+          } else {
+            follow(next);
+          }
+          renderHandoff(
+            gsap.utils.clamp(0, 1, (distance - lastOffset) / Math.max(handoff, 1)),
+            self.isActive,
+            immediate,
+          );
         };
 
         render(0, 0);
@@ -454,71 +458,62 @@ export function WorkStage() {
           trigger: root,
           start: "top top",
           end: () => {
-            const spans = stepSpans(count, window.innerHeight);
-            const handoff = Math.round(window.innerHeight * HANDOFF_VIEWPORTS);
-            return `+=${offsetForIndex(count - 1, spans) + handoff}`;
+            const { lastOffset, handoff } = measure();
+            return `+=${lastOffset + handoff}`;
           },
           pin: track,
           pinType: "fixed",
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          onRefresh: (self) => {
-            aligned = -1;
-            render(progress.value, settled);
-            const spans = stepSpans(count, window.innerHeight);
-            const lastOffset = offsetForIndex(count - 1, spans);
-            const handoff = Math.round(window.innerHeight * HANDOFF_VIEWPORTS);
-            const distance = self.scroll() - self.start;
-            renderHandoff(
-              gsap.utils.clamp(0, 1, (distance - lastOffset) / Math.max(handoff, 1)),
-              self.isActive,
-              true,
-            );
-          },
-          onUpdate: (self) => {
-            const spans = stepSpans(count, window.innerHeight);
-            const lastOffset = offsetForIndex(count - 1, spans);
-            const handoff = Math.round(window.innerHeight * HANDOFF_VIEWPORTS);
-            const distance = self.scroll() - self.start;
-            renderHandoff(
-              gsap.utils.clamp(0, 1, (distance - lastOffset) / Math.max(handoff, 1)),
-              self.isActive,
-            );
-            if (distance > lastOffset) {
-              if (settled !== count - 1) {
-                adopt(count - 1);
-              }
-              return;
-            }
-            const next = indexAtDistance(distance, spans);
-            if (!userEngaged) {
-              if (next !== settled) {
-                adopt(next);
-              }
-              return;
-            }
-            if (!armed) {
-              if (next === settled) {
-                arm();
-              }
-              return;
-            }
-            if (next === settled) {
-              return;
-            }
-            const step = gsap.utils.clamp(0, count - 1, settled + Math.sign(next - settled));
-            if (step === settled) {
-              return;
-            }
-            settled = step;
-            playTo(step);
-            armed = false;
-            window.clearTimeout(armTimer);
-            armTimer = window.setTimeout(arm, 700);
-            const options: SmoothScrollToOptions = { immediate: true };
-            scrollToRef.current(self.start + offsetForIndex(step, spans), options);
-          },
+          onRefresh: (self) => sync(self, true),
+          onUpdate: (self) => sync(self, false),
         });
+
+        // Once the wheel or trackpad goes quiet inside the card range, ease onto
+        // the nearest card. Any new input cancels the settle, so nothing is held.
+        const settle = () => {
+          if (!alive || restoring || homeHeroRequested() || !trigger.isActive) {
+            return;
+          }
+          const { spans, lastOffset } = measure();
+          const distance = trigger.scroll() - trigger.start;
+          if (distance <= 0 || distance >= lastOffset) {
+            return;
+          }
+          const nearest = Math.round(progressAtDistance(distance, spans));
+          const target = trigger.start + offsetForIndex(nearest, spans);
+          if (Math.abs(target - trigger.scroll()) <= 2) {
+            return;
+          }
+          const options: SmoothScrollToOptions = { duration: SETTLE_DURATION };
+          scrollToRef.current(target, options);
+        };
+        const scheduleSettle = () => {
+          window.clearTimeout(settleTimer);
+          settleTimer = window.setTimeout(settle, SETTLE_DELAY_MS);
+        };
+        window.addEventListener("scroll", scheduleSettle, { passive: true });
+
+        // Keyboard users land on a card link: bring that card to the front.
+        const focusCleanups = hits.map((hit, index) => {
+          const onFocus = () => {
+            if (!hit.matches(":focus-visible")) {
+              return;
+            }
+            const { spans } = measure();
+            const options: SmoothScrollToOptions = { duration: FOCUS_DURATION };
+            scrollToRef.current(trigger.start + offsetForIndex(index, spans), options);
+          };
+          hit.addEventListener("focus", onFocus);
+          return () => hit.removeEventListener("focus", onFocus);
+        });
+
+        // The reading list stays for screen readers but leaves the tab order,
+        // so keyboard users do not meet each project twice.
+        const readingLinks = gsap.utils.toArray<HTMLElement>(".work-reading a", root);
+        for (const link of readingLinks) {
+          link.tabIndex = -1;
+        }
 
         ScrollTrigger.addEventListener("refreshInit", pinHeroBeforeRefresh);
         ScrollTrigger.addEventListener("refresh", restoreScroll);
@@ -532,32 +527,26 @@ export function WorkStage() {
             if (!alive) {
               return;
             }
-            aligned = -1;
-            render(progress.value, settled);
-            const spans = stepSpans(count, window.innerHeight);
-            const lastOffset = offsetForIndex(count - 1, spans);
-            const handoff = Math.round(window.innerHeight * HANDOFF_VIEWPORTS);
-            const distance = trigger.scroll() - trigger.start;
-            renderHandoff(
-              gsap.utils.clamp(0, 1, (distance - lastOffset) / Math.max(handoff, 1)),
-              trigger.isActive,
-              true,
-            );
+            sync(trigger, true);
           })
           .catch(() => undefined);
 
         return () => {
           alive = false;
-          window.clearTimeout(armTimer);
-          window.removeEventListener("wheel", engage);
-          window.removeEventListener("touchmove", engage);
-          window.removeEventListener("keydown", engage);
+          window.clearTimeout(settleTimer);
+          window.removeEventListener("scroll", scheduleSettle);
+          for (const cleanup of focusCleanups) {
+            cleanup();
+          }
+          for (const link of readingLinks) {
+            link.removeAttribute("tabindex");
+          }
           window.removeEventListener("scroll", onScroll);
           window.removeEventListener("pagehide", persistScroll);
           ScrollTrigger.removeEventListener("refreshInit", pinHeroBeforeRefresh);
           ScrollTrigger.removeEventListener("refresh", restoreScroll);
           history.scrollRestoration = previousRestoration;
-          moveTween?.kill();
+          gsap.killTweensOf(progress);
           trigger.kill();
           delete root.dataset.returning;
         };

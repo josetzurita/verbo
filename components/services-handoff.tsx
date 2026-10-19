@@ -2,7 +2,7 @@
 
 import { services } from "@/lib/home-content";
 
-export const HANDOFF_VIEWPORTS = 8;
+export const HANDOFF_VIEWPORTS = 4;
 
 const serviceTitle = ["Our", "expertise"] as const;
 
