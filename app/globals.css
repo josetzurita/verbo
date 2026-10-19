@@ -16,6 +16,24 @@ body {
   font-weight: 300;
 }
 
+/* The intro loader is server rendered. The head script adds .intro-skip on deep links and other pages. */
+html.intro-skip .intro-loader {
+  display: none;
+}
+
+/* Hidden until the timeline starts, so no still frame sits there before hydration. */
+.intro-mark,
+.intro-count {
+  opacity: 0;
+}
+
+.intro-mark {
+  width: 3.5rem;
+  height: calc(3.5rem * 0.9505);
+  left: -1.75rem;
+  top: calc(3.5rem * -0.4752);
+}
+
 [data-cursor-trail] {
   position: relative;
   z-index: 78;

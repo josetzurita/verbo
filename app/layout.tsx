@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Figtree } from "next/font/google";
 import { CoordinateCursor } from "../components/coordinate-cursor";
 import { HomeNav } from "../components/home-nav";
+import { introSkipScript } from "../components/intro-gate";
 import { MainContent } from "../components/main-content";
 import { SkipLink } from "../components/skip-link";
 import { createMetadata, jsonLdWebSite } from "../lib/seo";
@@ -27,7 +28,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       data-theme={htmlThemeDataset(projectConfig)}
       data-radius={projectConfig.theme.radius}
       className={figtree.variable}
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: introSkipScript }} />
+        <noscript>
+          <style>{".intro-loader{display:none}"}</style>
+        </noscript>
+      </head>
       <body>
         <script
           type="application/ld+json"

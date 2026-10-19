@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { verboWordLetters } from "@/lib/brand-paths";
 import { discoveryLabel, heroLead, heroSlogan } from "@/lib/home-content";
 import { gsap, registerGsap, useGSAP } from "./gsap";
+import { onIntroReveal } from "./intro-gate";
 import { UnderlineLink } from "./underline-link";
 
 const firstLine = ["Creating", "to"] as const;
@@ -33,7 +34,7 @@ export function HeroIntro() {
     const mm = gsap.matchMedia();
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
-      const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+      const timeline = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
       timeline.from(".hero-word", {
         yPercent: 120,
         duration: 0.85,
@@ -60,6 +61,10 @@ export function HeroIntro() {
           1.05,
         );
       }
+
+      return onIntroReveal(() => {
+        timeline.play();
+      });
     });
 
     return () => {

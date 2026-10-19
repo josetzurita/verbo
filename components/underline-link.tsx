@@ -9,6 +9,7 @@ import {
   type TrailSet,
 } from "./cursor-trail";
 import { gsap, registerGsap, ScrollTrigger, useGSAP } from "./gsap";
+import { onIntroReveal } from "./intro-gate";
 
 type UnderlineLinkProps = {
   href: string;
@@ -81,9 +82,7 @@ export function UnderlineLink({
               })
             : undefined;
 
-        if (entrance === "mount") {
-          play();
-        }
+        const stopWaiting = entrance === "mount" ? onIntroReveal(play) : undefined;
 
         const onEnter = () => {
           if (playing) {
@@ -105,6 +104,7 @@ export function UnderlineLink({
         return () => {
           root.removeEventListener("pointerenter", onEnter);
           trigger?.kill();
+          stopWaiting?.();
         };
       });
 
