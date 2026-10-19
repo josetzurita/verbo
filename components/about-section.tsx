@@ -235,72 +235,78 @@ export function AboutSection() {
   );
 
   return (
-    <section
-      ref={rootRef}
-      id="about"
-      data-theme="dark"
-      className="about-section relative z-[var(--z-raised)] bg-background px-5 pt-[9.25rem] text-foreground md:px-12"
-    >
-      <div className="about-intro flex flex-col gap-12 min-[1500px]:flex-row min-[1500px]:items-end">
-        <h2 className="about-headline max-w-[29.25rem] shrink-0 text-[clamp(3.25rem,5.09vw,5.5rem)] font-light leading-[0.9] tracking-[-0.04em]">
-          {about.title.map((line) => (
-            <span key={line} className="block min-[1500px]:whitespace-nowrap">
-              <AboutWords text={line} />
-            </span>
-          ))}
-        </h2>
-
-        <div className="about-copy flex w-full min-w-0 flex-col gap-10 md:flex-row md:items-stretch md:gap-x-8 min-[1500px]:ml-auto min-[1500px]:w-auto min-[1500px]:gap-x-[3.9375rem]">
-          <div className="grid min-w-0 flex-1 gap-[1.2em] text-[18px] font-light leading-[1.2] tracking-[-0.04em] min-[1500px]:w-[31.25rem] min-[1500px]:flex-none">
-            {about.lead.map((paragraph) => (
-              <AboutParagraph key={paragraph} text={paragraph} onReady={markCopyReady} />
+    <>
+      <section
+        ref={rootRef}
+        id="about"
+        data-theme="dark"
+        className="about-section relative z-[var(--z-raised)] bg-background px-5 pt-[9.25rem] text-foreground md:px-12"
+      >
+        <div className="about-intro flex flex-col gap-12 min-[1500px]:flex-row min-[1500px]:items-end">
+          <h2 className="about-headline max-w-[29.25rem] shrink-0 text-[clamp(3.25rem,5.09vw,5.5rem)] font-light leading-[0.9] tracking-[-0.04em]">
+            {about.title.map((line) => (
+              <span key={line} className="block min-[1500px]:whitespace-nowrap">
+                <AboutWords text={line} />
+              </span>
             ))}
-          </div>
-          <div className="flex min-w-0 flex-1 flex-col min-[1500px]:w-[31.5rem] min-[1500px]:flex-none">
-            <AboutParagraph
-              text={about.aside}
-              className="text-[18px] font-light leading-[1.2] tracking-[-0.04em]"
-              onReady={markCopyReady}
-            />
-            <UnderlineLink
-              href={about.ctaHref}
-              trailX="right"
-              trailY="top"
-              trailCount={6}
-              trailSet="people"
-              className="mt-8 self-start min-[1500px]:mt-auto"
-            >
-              {about.cta}
-            </UnderlineLink>
+          </h2>
+
+          <div className="about-copy flex w-full min-w-0 flex-col gap-10 md:flex-row md:items-stretch md:gap-x-8 min-[1500px]:ml-auto min-[1500px]:w-auto min-[1500px]:gap-x-[3.9375rem]">
+            <div className="grid min-w-0 flex-1 gap-[1.2em] text-[18px] font-light leading-[1.2] tracking-[-0.04em] min-[1500px]:w-[31.25rem] min-[1500px]:flex-none">
+              {about.lead.map((paragraph) => (
+                <AboutParagraph key={paragraph} text={paragraph} onReady={markCopyReady} />
+              ))}
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col min-[1500px]:w-[31.5rem] min-[1500px]:flex-none">
+              <AboutParagraph
+                text={about.aside}
+                className="text-[18px] font-light leading-[1.2] tracking-[-0.04em]"
+                onReady={markCopyReady}
+              />
+              <UnderlineLink
+                href={about.ctaHref}
+                trailX="right"
+                trailY="top"
+                trailCount={6}
+                trailSet="people"
+                className="mt-8 self-start min-[1500px]:mt-auto"
+              >
+                {about.cta}
+              </UnderlineLink>
+            </div>
           </div>
         </div>
-      </div>
 
-      <ul id="team" className="about-team mt-16 gap-3 min-[1500px]:mt-20">
-        {about.tones.map((tone) => (
-          <li
-            key={tone}
-            data-coordinate-label="meet"
-            className="about-card flex min-h-[34rem] flex-col overflow-hidden px-3 pt-3 pb-6 text-background min-[1500px]:min-h-[52rem]"
-            style={{ backgroundColor: tone }}
-          >
-            <div className="relative aspect-[292/380] w-full overflow-hidden">
-              <ResponsiveImage
-                src={about.portrait}
-                alt=""
-                width={605}
-                height={908}
-                sizes="(min-width: 1500px) 18vw, (min-width: 640px) 46vw, 92vw"
-                className="about-portrait absolute inset-0 h-full w-full max-w-none object-cover"
-                style={{ objectFit: "cover", objectPosition: "center", width: "100%", height: "100%", maxWidth: "none" }}
-              />
-            </div>
-            <p className="mt-3 text-[18px] font-light leading-[1.2] tracking-[-0.04em]">{about.quote}</p>
-            <div aria-hidden="true" className="mt-[0.9375rem] h-px w-full bg-background" />
-            <p className="mt-auto pt-8 text-[14px] font-normal leading-[1.1] tracking-[-0.04em]">{about.name}</p>
-          </li>
-        ))}
-      </ul>
-    </section>
+        <ul id="team" className="about-team mt-16 gap-3 min-[1500px]:mt-20">
+          {about.team.map((member) => (
+            <li
+              key={member.role}
+              className="about-card flex min-h-[32rem] flex-col overflow-hidden px-3 pt-3 pb-6 text-background"
+              style={{ backgroundColor: member.tone }}
+            >
+              <div data-coordinate-label="meet" className="relative aspect-[292/380] w-full overflow-hidden">
+                <ResponsiveImage
+                  src={about.portrait}
+                  alt=""
+                  width={605}
+                  height={908}
+                  sizes="(min-width: 1500px) 18vw, (min-width: 640px) 46vw, 92vw"
+                  className="about-portrait absolute inset-0 h-full w-full max-w-none object-cover"
+                  style={{ objectFit: "cover", objectPosition: "center", width: "100%", height: "100%", maxWidth: "none" }}
+                />
+              </div>
+              <p className="mt-3 text-[18px] font-light leading-[1.2] tracking-[-0.04em]">{about.quote}</p>
+              <div className="mt-auto flex items-center justify-between gap-3 pt-8">
+                <p className="text-[14px] font-normal leading-[1.1] tracking-[-0.04em]">{member.name}</p>
+                <span className="border border-background px-2.5 py-1 text-[0.625rem] font-normal uppercase leading-none tracking-[0.12em]">
+                  {member.role}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+      <div aria-hidden="true" className="about-hold" />
+    </>
   );
 }

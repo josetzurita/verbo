@@ -78,17 +78,15 @@ export const about = {
     "What sets us apart isn't the tools we use, but how we think: we start with a genuine understanding of people and businesses, connect strategy with creativity, and measure success in growth, not likes.",
   cta: "Meet the team",
   ctaHref: "#team",
-  quote:
-    "In a world where design lives in the visual and strategy lives in spreadsheets, Verbo proposes that the most powerful brand is not imagined, in a world where design lives in the visual and strategy lives in",
-  name: "Juliana Cabrera",
   portrait: "/about/portrait.png",
-  tones: [
-    "var(--trail-yellow)",
-    "var(--foreground)",
-    "var(--trail-blue)",
-    "var(--about-card-plain)",
-    "var(--trail-amber)",
+  team: [
+    { name: "Juliana Cabrera", role: "Strategy", tone: "var(--trail-yellow)" },
+    { name: "Juliana Cabrera", role: "Design", tone: "var(--foreground)" },
+    { name: "Juliana Cabrera", role: "Research", tone: "var(--trail-blue)" },
+    { name: "Juliana Cabrera", role: "Copy", tone: "var(--about-card-plain)" },
+    { name: "Juliana Cabrera", role: "Direction", tone: "var(--trail-amber)" },
   ] as const,
+  quote: "The most powerful brand is not imagined. It is built, decision by decision.",
 };
 
 export const close = {
