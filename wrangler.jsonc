@@ -1,0 +1,12 @@
+// Cloudflare Workers static assets. `npm run build` writes the static export to out/.
+// There is no Worker script: every request is served from out/, and out/_redirects applies.
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "verbo",
+	"compatibility_date": "2026-10-19",
+	"assets": {
+		"directory": "./out",
+		"not_found_handling": "404-page",
+		"html_handling": "auto-trailing-slash"
+	}
+}
