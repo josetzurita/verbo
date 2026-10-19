@@ -284,7 +284,7 @@ export function AboutSection() {
               className="about-card flex min-h-[32rem] flex-col overflow-hidden px-3 pt-3 pb-6 text-background"
               style={{ backgroundColor: member.tone }}
             >
-              <div data-coordinate-label="meet" className="relative aspect-[292/380] w-full overflow-hidden">
+              <div data-coordinate-label="meet" className="about-portrait-frame relative aspect-[292/380] w-full overflow-hidden">
                 <ResponsiveImage
                   src={about.portrait}
                   alt=""
@@ -296,7 +296,7 @@ export function AboutSection() {
                 />
               </div>
               <p className="mt-3 text-[18px] font-light leading-[1.2] tracking-[-0.04em]">{about.quote}</p>
-              <div className="mt-auto flex items-center justify-between gap-3 pt-8">
+              <div className="about-card-meta mt-auto flex items-center justify-between gap-3 pt-8">
                 <p className="text-[14px] font-normal leading-[1.1] tracking-[-0.04em]">{member.name}</p>
                 <span className="border border-background px-2.5 py-1 text-[0.625rem] font-normal uppercase leading-none tracking-[0.12em]">
                   {member.role}
