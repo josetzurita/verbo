@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { verboMarkPupil, verboMarkRing } from "@/lib/brand-paths";
-import { cases } from "@/lib/home-content";
+import type { WorkCase } from "@/lib/home-content";
 import { CustomEase, gsap, registerGsap, useGSAP } from "./gsap";
 import { introPending, releaseIntro } from "./intro-gate";
 
@@ -43,8 +43,6 @@ const quadrants = [
   { x: 1, y: 1 },
 ] as const;
 
-const shots = cases.map((item) => ({ src: item.image, key: item.index }));
-
 const scrollKeys = new Set([" ", "ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End"]);
 
 function frameSize() {
@@ -55,7 +53,8 @@ function frameSize() {
   return { width, height: width * 0.75, mark };
 }
 
-export function IntroLoader() {
+export function IntroLoader({ cases }: { cases: readonly WorkCase[] }) {
+  const shots = cases.map((item) => ({ src: item.image, key: item.index }));
   const rootRef = useRef<HTMLDivElement>(null);
 
   useGSAP(

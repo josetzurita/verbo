@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CaseStudyView } from "@/components/case-study-view";
-import { getCaseStudy, caseStudies } from "@/lib/case-study";
+import { getCaseStudies, getCaseStudy } from "@/lib/projects";
 import { createMetadata } from "@/lib/seo";
 import { projectConfig } from "@/project.config";
 
@@ -9,13 +9,17 @@ type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return caseStudies.map((study) => ({ slug: study.slug }));
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const slugs = (await getCaseStudies()).map((study) => ({ slug: study.slug }));
+  // Static export fails on an empty list, so with no case studies emit one 404 page.
+  return slugs.length > 0 ? slugs : [{ slug: "_" }];
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const study = getCaseStudy(slug);
+  const study = await getCaseStudy(slug);
   if (!study) {
     return {};
   }
@@ -29,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CaseStudyPage({ params }: PageProps) {
   const { slug } = await params;
-  const study = getCaseStudy(slug);
+  const study = await getCaseStudy(slug);
   if (!study) {
     notFound();
   }

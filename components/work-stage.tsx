@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { cases } from "@/lib/home-content";
+import type { WorkCase } from "@/lib/home-content";
 import { finishHomeHero, homeHeroRequested, HOME_SCROLL_KEY } from "./home-scroll";
 import { CustomEase, gsap, registerGsap, ScrollTrigger, useGSAP } from "./gsap";
 import { ResponsiveImage } from "./responsive-image";
@@ -82,7 +82,7 @@ function snapHero() {
   return window.scrollY <= 2;
 }
 
-export function WorkStage() {
+export function WorkStage({ cases }: { cases: readonly WorkCase[] }) {
   const rootRef = useRef<HTMLElement>(null);
   const { scrollTo } = useSmoothScroll();
   const scrollToRef = useRef(scrollTo);

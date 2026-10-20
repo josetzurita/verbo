@@ -238,8 +238,5 @@ const lienzo: CaseStudy = {
   ],
 };
 
-export const caseStudies = [lienzo] as const;
-
-export function getCaseStudy(slug: string) {
-  return caseStudies.find((item) => item.slug === slug);
-}
+// Placeholder until Sanity has published projects. Read through lib/projects.ts.
+export const caseStudies: readonly CaseStudy[] = [lienzo];

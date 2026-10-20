@@ -103,7 +103,21 @@ export const close = {
   plateAlt: "Hellenistic marble bust in warm side light",
 } as const;
 
-export const cases = [
+export type WorkCase = {
+  index: string;
+  name: string;
+  tag: string;
+  description: string;
+  services: string;
+  image: string;
+  width: number;
+  height: number;
+  alt: string;
+  frame?: string;
+  href: string | null;
+};
+
+export const cases: readonly WorkCase[] = [
   {
     index: "01",
     name: "Lienzo, artesanos de viajes",
@@ -188,4 +202,4 @@ export const cases = [
     frame: "md:col-span-4 md:col-start-9",
     href: null,
   },
-] as const;
+];
