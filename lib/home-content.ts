@@ -25,6 +25,7 @@ export const belief = {
 
 export const services = [
   {
+    slug: "research-and-benchmark",
     name: "Research and benchmark",
     title: ["Research and", "benchmark"],
     deliverables: ["Positioning map", "Category review", "Reference study", "Opportunity brief"],
@@ -32,6 +33,7 @@ export const services = [
       "Before we start designing, we take the time to understand your market, your audience, and the world your brand lives in. We look closely at competitors, compare how they present themselves, and explore references within and beyond your category. From there, we map out where everyone stands, what feels overdone, and where there is room to do something different, so every creative decision starts with a clear sense of direction.",
   },
   {
+    slug: "strategic-north",
     name: "Strategic north",
     title: ["Strategic", "north"],
     deliverables: ["Purpose", "Belief", "Differentials", "Personality"],
@@ -39,6 +41,7 @@ export const services = [
       "The strategic north is the soul of the business, set down so everything that follows has a direction. We define the purpose, the belief, the differentials, and the personality, and we test them against how the company actually behaves. The point is a north that people inside the company can use, not a sentence that only looks good on a wall. When it is clear, naming and identity stop pulling in different directions.",
   },
   {
+    slug: "brand-architecture",
     name: "Brand architecture",
     title: ["Brand", "architecture"],
     deliverables: ["Portfolio map", "Hierarchy", "Roles", "Growth rules"],
@@ -46,6 +49,7 @@ export const services = [
       "Brand architecture is the organization of the portfolio: products, services, and initiatives, each with a role that does not eat the others. We map what exists, what is coming, and how the pieces should relate, so the system can grow with order. A clear architecture keeps the brand from splitting into versions that no longer sound like the same company.",
   },
   {
+    slug: "naming-and-identity",
     name: "Naming and identity",
     title: ["Naming and", "identity"],
     deliverables: ["Name", "Logo", "Typography", "Color and tone"],
@@ -53,6 +57,7 @@ export const services = [
       "Naming and identity begin with a name that carries the strategy, then an identity that makes that name visible. We shape the logo, the typography, the color, and the tone, and the systems that keep the brand recognizable when other people have to use it. The aim is not a single clever mark. It is a brand someone can recognize before they read the name.",
   },
   {
+    slug: "brand-book",
     name: "Brand book",
     title: ["Brand", "book"],
     deliverables: ["Brand book", "Applications", "Voice and tone", "Channel rules"],
@@ -60,6 +65,15 @@ export const services = [
       "The brand book is the system that keeps the brand looking and feeling the same everywhere, no matter who executes it or which channel it lands on. It holds the applications, the voice, and the rules for when the brand has to stretch. It is written for the people who will build the next page, the next post, and the next space, so they are not guessing once the identity leaves our hands.",
   },
   {
+    slug: "website-design",
+    name: "Website design",
+    title: ["Website", "design"],
+    deliverables: ["Sitemap", "Wireframes", "Interface design", "Build handoff"],
+    description:
+      "Website design takes the brand to the place where most people meet it first. We plan the structure around what visitors actually come looking for, shape the content with the brand's voice, and design every page so the identity holds from a phone to a large screen. The aim is not a showcase that ages in a year. It is a site the team can keep updating, that reads clearly, and that feels like the same brand everywhere else.",
+  },
+  {
+    slug: "strategic-accompaniment",
     name: "Strategic accompaniment",
     title: ["Strategic", "accompaniment"],
     deliverables: ["Retainer", "Counsel", "Review", "Partnership"],
@@ -114,7 +128,12 @@ export type WorkCase = {
   height: number;
   alt: string;
   frame?: string;
+  // CSS object-position from the Studio hotspot. Absent means centered.
+  focus?: string;
   href: string | null;
+  // Service and deliverable slugs, for the work filter.
+  serviceSlugs?: readonly string[];
+  deliverableSlugs?: readonly string[];
 };
 
 export const cases: readonly WorkCase[] = [

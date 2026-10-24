@@ -26,7 +26,17 @@ describe("projects from Sanity", () => {
 
   it("maps projects into cards, case studies, and the more strip", async () => {
     fetch.mockResolvedValue([
-      { name, slug, tag: "Tag", description: "D", services: ["A", "B"], image, hasCaseStudy: true, caseStudy: lienzoStudy },
+      {
+        name,
+        slug,
+        tag: "Tag",
+        description: "D",
+        services: [{ slug: "a", name: "A" }, { slug: "b", name: "B" }],
+        deliverables: [{ slug: "logo", name: "Logo" }],
+        image,
+        hasCaseStudy: true,
+        caseStudy: lienzoStudy,
+      },
       { name: "Other", slug: "other", tag: "Other tag", moreLine: "Short pitch", image, hasCaseStudy: false },
     ]);
     const projects = await load();
@@ -38,6 +48,27 @@ describe("projects from Sanity", () => {
     const study = await projects.getCaseStudy(slug);
     expect(study?.title).toEqual(lienzo.title);
     expect(study?.more).toEqual([{ name: "Other", line: "Short pitch", href: "/#work", image }]);
+  });
+
+  it("carries category slugs for the work filter", async () => {
+    fetch.mockResolvedValue([
+      { name, slug, services: [{ slug: "brand-book", name: "Brand book" }], deliverables: [{ slug: "logo", name: "Logo" }], image },
+      { name: "Legacy", slug: "legacy", services: ["Web"], image },
+    ]);
+    const projects = await load();
+    const work = await projects.getWorkCases();
+    expect(work.map((item) => [item.services, item.serviceSlugs, item.deliverableSlugs])).toEqual([
+      ["Brand book", ["brand-book"], ["logo"]],
+      ["Web", ["Web"], []],
+    ]);
+  });
+
+  it("lets a places row fall back to the places image", async () => {
+    const places = { ...lienzoStudy.places, items: [{ name: "Here", region: "There" }] };
+    fetch.mockResolvedValue([{ name, slug, image, hasCaseStudy: true, caseStudy: { ...lienzoStudy, places } }]);
+    const projects = await load();
+    const study = await projects.getCaseStudy(slug);
+    expect(study?.places.items[0]?.image).toEqual(lienzoStudy.places.image);
   });
 
   it("skips an incomplete case study instead of failing the build", async () => {

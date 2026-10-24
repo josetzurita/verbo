@@ -17,10 +17,6 @@ export default function imageLoader({ src, width, quality }: ImageLoaderParams):
     return url.toString();
   }
 
-  if (process.env.NODE_ENV === "development") {
-    return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=${q}`;
-  }
-
   if (process.env.NEXT_PUBLIC_CF_IMAGES === "true" && src.startsWith("/")) {
     return `/cdn-cgi/image/width=${width},quality=${q},format=auto${src}`;
   }

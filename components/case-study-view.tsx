@@ -39,6 +39,7 @@ function Frame({
         sizes={sizes}
         priority={priority}
         className="object-cover will-change-transform"
+        style={{ objectPosition: image.focus }}
       />
     </div>
   );
@@ -81,9 +82,11 @@ function HeroMeta({ study }: { study: CaseStudy }) {
     <div className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-5 gap-y-10 md:grid-cols-12">
       <div {...meta} className="col-span-2 md:col-span-5">
         <p className={cn(body, "max-w-[34ch]")}>{study.summary}</p>
-        <UnderlineLink href={study.siteHref} className="mt-3" entrance="mount" delay={0.9} cursor="mark">
-          {study.siteLabel}
-        </UnderlineLink>
+        {study.siteHref ? (
+          <UnderlineLink href={study.siteHref} className="mt-3" entrance="mount" delay={0.9} cursor="mark">
+            {study.siteLabel}
+          </UnderlineLink>
+        ) : null}
       </div>
       <Practices study={study} meta={meta} />
     </div>
@@ -137,6 +140,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
                 priority
                 sizes="100vw"
                 className="object-cover will-change-transform"
+                style={{ objectPosition: study.hero.focus }}
               />
               <div aria-hidden="true" className="absolute inset-0 bg-foreground/35" />
               <p
@@ -260,17 +264,19 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
               <Frame image={pairWide} sizes="(min-width: 768px) 66vw, 100vw" className="aspect-[4/3] md:aspect-auto md:h-full" />
             </section>
 
-            <section aria-labelledby="case-quote" className={cn(gutter, section, "text-center")}>
-              <figure data-case-reveal="" className="mx-auto max-w-[60rem]">
-                <h2 id="case-quote" className="text-[24px] font-light leading-none tracking-[-0.04em]">
-                  {study.quote.title}
-                </h2>
-                <blockquote className="mx-auto mt-10 max-w-[34ch] text-[clamp(1.75rem,3vw,3.5rem)] font-light leading-[1.05] tracking-[-0.045em]">
-                  <p>{study.quote.body}</p>
-                </blockquote>
-                <figcaption className={cn(label, "mt-8")}>Founder, {study.name}</figcaption>
-              </figure>
-            </section>
+            {study.quote.body ? (
+              <section aria-labelledby="case-quote" className={cn(gutter, section, "text-center")}>
+                <figure data-case-reveal="" className="mx-auto max-w-[60rem]">
+                  <h2 id="case-quote" className="text-[24px] font-light leading-none tracking-[-0.04em]">
+                    {study.quote.title}
+                  </h2>
+                  <blockquote className="mx-auto mt-10 max-w-[34ch] text-[clamp(1.75rem,3vw,3.5rem)] font-light leading-[1.05] tracking-[-0.045em]">
+                    <p>{study.quote.body}</p>
+                  </blockquote>
+                  <figcaption className={cn(label, "mt-8")}>Founder, {study.name}</figcaption>
+                </figure>
+              </section>
+            ) : null}
 
             <section aria-labelledby="case-visible" className={cn(gutter, section, "grid gap-y-16 md:grid-cols-12 md:gap-x-5 md:gap-y-24")}>
               <figure className="md:col-span-5">

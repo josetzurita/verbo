@@ -3,6 +3,8 @@ export type CaseImage = {
   alt: string;
   width: number;
   height: number;
+  // CSS object-position from the Studio hotspot. Absent means centered.
+  focus?: string;
 };
 
 export type CaseCard = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { services } from "@/lib/home-content";
+import type { Service } from "@/lib/services";
 
 export const HANDOFF_VIEWPORTS = 4;
 
@@ -13,9 +13,8 @@ const serviceBorders = [
   "var(--foreground)",
   "color-mix(in srgb, var(--trail-blue) 55%, var(--foreground))",
   "color-mix(in srgb, var(--trail-amber) 50%, var(--foreground))",
+  "color-mix(in srgb, var(--trail-yellow) 55%, var(--foreground))",
 ] as const;
-
-type Service = (typeof services)[number];
 
 function ServiceCard({
   title,
@@ -35,7 +34,7 @@ function ServiceCard({
         <div className="services-card-foot">
           <ul className="services-deliverables">
             {deliverables.map((item) => (
-              <li key={item}>{item}</li>
+              <li key={item.slug}>{item.name}</li>
             ))}
           </ul>
           <p className="services-card-copy">{description}</p>
@@ -45,7 +44,13 @@ function ServiceCard({
   );
 }
 
-export function ServicesHandoff({ variant }: { variant: "stage" | "reading" }) {
+export function ServicesHandoff({
+  services,
+  variant,
+}: {
+  services: readonly Service[];
+  variant: "stage" | "reading";
+}) {
   if (variant === "stage") {
     return (
       <div className="services-handoff-stage" data-theme="dark" aria-hidden="true">
@@ -61,7 +66,7 @@ export function ServicesHandoff({ variant }: { variant: "stage" | "reading" }) {
         </div>
         {services.map((service, index) => (
           <ServiceCard
-            key={service.name}
+            key={service.slug}
             title={service.title}
             deliverables={service.deliverables}
             description={service.description}
@@ -80,7 +85,7 @@ export function ServicesHandoff({ variant }: { variant: "stage" | "reading" }) {
         </h2>
         {services.map((service, index) => (
           <ServiceCard
-            key={service.name}
+            key={service.slug}
             title={service.title}
             deliverables={service.deliverables}
             description={service.description}

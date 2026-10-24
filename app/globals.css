@@ -134,6 +134,52 @@ html.intro-skip .intro-loader {
   letter-spacing: -0.04em;
 }
 
+/* /work filter chips share the deliverable pill shape. */
+.work-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+}
+
+.work-filter-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 44%, transparent);
+  padding: 0.825rem;
+  font-size: 0.96rem;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  transition: opacity 0.3s ease;
+}
+
+.work-filter-chip:hover {
+  opacity: 0.72;
+}
+
+.work-filter-chip.is-active {
+  border-color: var(--foreground);
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.work-filter-chip:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 3px;
+}
+
+.work-filter-count {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
+}
+
+.work-filter-row-sub .work-filter-chip {
+  padding: 0.6rem 0.7rem;
+  font-size: 0.8125rem;
+}
+
 .services-card-copy {
   margin: 0;
   font-size: 1.125rem;

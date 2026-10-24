@@ -6,6 +6,7 @@ import { introSkipScript } from "../components/intro-gate";
 import { MainContent } from "../components/main-content";
 import { SkipLink } from "../components/skip-link";
 import { createMetadata, jsonLdWebSite } from "../lib/seo";
+import { getServices } from "../lib/services";
 import { htmlLang, htmlThemeDataset } from "../lib/project-config";
 import { projectConfig } from "../project.config";
 import { Providers } from "./providers";
@@ -21,7 +22,9 @@ const figtree = Figtree({
 
 export const metadata: Metadata = createMetadata(projectConfig);
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const services = await getServices();
+
   return (
     <html
       lang={htmlLang(projectConfig)}
@@ -46,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers config={projectConfig}>
           <SkipLink />
           <CoordinateCursor />
-          <HomeNav />
+          <HomeNav services={services} />
           <MainContent>{children}</MainContent>
         </Providers>
       </body>

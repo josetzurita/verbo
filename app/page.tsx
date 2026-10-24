@@ -5,9 +5,10 @@ import { HeroIntro } from "@/components/hero-intro";
 import { IntroLoader } from "@/components/intro-loader";
 import { WorkStage } from "@/components/work-stage";
 import { getWorkCases } from "@/lib/projects";
+import { getServices } from "@/lib/services";
 
 export default async function HomePage() {
-  const cases = await getWorkCases();
+  const [cases, services] = await Promise.all([getWorkCases(), getServices()]);
 
   return (
     <>
@@ -19,7 +20,7 @@ export default async function HomePage() {
 
         <BeliefSection />
 
-        <WorkStage cases={cases} />
+        <WorkStage cases={cases} services={services} />
 
         <AboutSection />
       </div>

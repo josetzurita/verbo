@@ -56,14 +56,15 @@ Stack: Next.js 15 App Router, React 19, Tailwind v4, GSAP + ScrollTrigger (+ Cus
 
 - `app/work/[slug]/page.tsx` -> `components/case-study-view.tsx`, wrapped in `components/case-motion.tsx` (reveals, parallax, scrubbed rows).
 - `components/case-more.tsx` is a pinned horizontal "More work" strip.
-- Data is in `lib/case-study.ts` (`caseStudies`, currently only `lienzo`). The content rules are in `case-study-template.md`.
-- `/work` redirects to `/#work`.
+- Data comes from Sanity (`lib/projects.ts`). `lib/case-study.ts` is the fallback while the dataset is empty. The content rules are in `case-study-template.md`.
+- `/work` is a filterable index (`app/work/page.tsx` -> `components/work-index.tsx`). Service and deliverable chips filter client-side and mirror `?service=&deliverable=`.
 
 ### Shared pieces
 
 | Concern | File |
 | --- | --- |
-| Copy, cases, services, about, close | `lib/home-content.ts` |
+| Copy, cases, services, about, close (placeholders) | `lib/home-content.ts` |
+| Projects and services from Sanity | `lib/projects.ts`, `lib/services.ts` (services double as filter categories) |
 | Logo and mark paths | `lib/brand-paths.ts` |
 | Nav, menu dialog, paper surface flip, hide on scroll | `components/home-nav.tsx`, `components/nav-mark.tsx` |
 | Crosshair cursor and image trail | `components/coordinate-cursor.tsx`, `components/cursor-trail.ts`, `components/underline-link.tsx` |
@@ -85,3 +86,10 @@ Stack: Next.js 15 App Router, React 19, Tailwind v4, GSAP + ScrollTrigger (+ Cus
 - Use `useGSAP` with `{ scope: rootRef }`, and return `mm.revert()`.
 - Pointer-only effects are gated on `(pointer: fine) and (hover: hover)`.
 - Index access needs `?? fallback` (because of `noUncheckedIndexedAccess`).
+
+## Sanity
+
+- Studio: `../studio-verbo-brands` (deployed to verbo-brands.sanity.studio). Types: `project`, `service`, `deliverable`, `caseImage`.
+- Projects reference services and deliverables, and those references drive the `/work` filter. Services feed the "Our expertise" cards and the menu.
+- Document ids use dashes (`project-albora`). A dotted id is a private path, and the public site cannot read it.
+- Import from Drive: `node scripts/fetch-drive.mjs` (downloads and optimizes to `../verbo-drive/`), then `npx sanity exec scripts/import-drive.ts --with-user-token` (add `-- --dry` to validate). Content lives in `scripts/content/*.json`.

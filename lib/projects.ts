@@ -10,7 +10,7 @@ type Projects = {
   studies: readonly CaseStudy[];
 };
 
-type RawImage = Partial<CaseImage> | null;
+type RawImage = (Partial<Omit<CaseImage, "focus">> & { hotspot?: { x?: number; y?: number } | null }) | null;
 
 type RawStudy = {
   summary?: string;
@@ -38,26 +38,30 @@ type RawStudy = {
   places?: { title?: string; image?: RawImage; items?: { name?: string; region?: string; image?: RawImage }[] };
 };
 
+type RawCategory = { slug?: string; name?: string } | string | null;
+
 type RawProject = {
   name: string;
   slug: string;
   tag?: string;
   description?: string;
-  services?: string[];
+  services?: RawCategory[];
+  deliverables?: RawCategory[];
   moreLine?: string;
   image?: RawImage;
   hasCaseStudy?: boolean;
   caseStudy?: RawStudy | null;
 };
 
-const IMAGE = `{ "src": asset->url, "width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height, alt }`;
+const IMAGE = `{ "src": asset->url, "width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height, alt, hotspot }`;
 
 const PROJECTS_QUERY = `*[_type == "project" && defined(slug.current)] | order(order asc) {
   name,
   "slug": slug.current,
   tag,
   description,
-  services,
+  "services": services[]->{ "slug": slug.current, name },
+  "deliverables": deliverables[]->{ "slug": slug.current, name },
   moreLine,
   "image": image${IMAGE},
   hasCaseStudy,
@@ -81,12 +85,19 @@ function need<T>(value: T | null | undefined, field: string): T {
   return value;
 }
 
+// The Studio hotspot is a 0-1 point; object-position takes percentages.
+function focusOf(hotspot: { x?: number; y?: number } | null | undefined): string | undefined {
+  if (typeof hotspot?.x !== "number" || typeof hotspot.y !== "number") return undefined;
+  return `${(hotspot.x * 100).toFixed(1)}% ${(hotspot.y * 100).toFixed(1)}%`;
+}
+
 function toImage(raw: RawImage | undefined, field: string): CaseImage {
   return {
     src: need(raw?.src, `${field}.src`),
     alt: raw?.alt ?? "",
     width: need(raw?.width, `${field}.width`),
     height: need(raw?.height, `${field}.height`),
+    focus: focusOf(raw?.hotspot),
   };
 }
 
@@ -155,13 +166,22 @@ function toStudy(project: RawProject, raw: RawStudy): Omit<CaseStudy, "more"> {
     places: {
       title: raw.places?.title ?? "",
       image: toImage(raw.places?.image, "places.image"),
+      // A row without its own thumbnail reuses the places image.
       items: (raw.places?.items ?? []).map((item, i) => ({
         name: item.name ?? "",
         region: item.region ?? "",
-        image: toImage(item.image, `places.items[${i}].image`),
+        image: toImage(item.image?.src ? item.image : raw.places?.image, `places.items[${i}].image`),
       })),
     },
   };
+}
+
+// Older documents stored services as plain strings; references resolve to { slug, name }.
+function categories(raw: readonly RawCategory[] | undefined) {
+  return (raw ?? []).flatMap((item) => {
+    if (typeof item === "string") return [{ slug: item, name: item }];
+    return item?.name ? [{ slug: item.slug ?? item.name, name: item.name }] : [];
+  });
 }
 
 function fromSanity(raw: readonly RawProject[]): Projects {
@@ -182,16 +202,20 @@ function fromSanity(raw: readonly RawProject[]): Projects {
 
   const cases: WorkCase[] = withImages.map((project, i) => {
     const image = toImage(project.image, "image");
+    const services = categories(project.services);
     return {
       index: String(i + 1).padStart(2, "0"),
       name: project.name,
       tag: project.tag ?? "",
       description: project.description ?? "",
-      services: (project.services ?? []).join(" / "),
+      services: services.map((service) => service.name).join(" / "),
+      serviceSlugs: services.map((service) => service.slug),
+      deliverableSlugs: categories(project.deliverables).map((deliverable) => deliverable.slug),
       image: image.src,
       width: image.width,
       height: image.height,
       alt: image.alt,
+      focus: image.focus,
       href: hrefFor(project.slug),
     };
   });

@@ -3,8 +3,8 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
-import { services } from "@/lib/home-content";
 import { gsap, registerGsap, ScrollTrigger, useGSAP } from "./gsap";
+import type { Service } from "@/lib/services";
 import { NavMark } from "./nav-mark";
 import { useRouteTransition } from "./use-route-transition";
 import { isHomeHeroHref, requestHomeHero } from "./home-scroll";
@@ -65,7 +65,7 @@ function NavLoopLabel({ children }: { children: string }) {
   );
 }
 
-export function HomeNav() {
+export function HomeNav({ services }: { services: readonly Service[] }) {
   const headerRef = useRef<HTMLElement>(null);
   const openRef = useRef(false);
   const [open, setOpen] = useState(false);
@@ -388,7 +388,7 @@ export function HomeNav() {
                 </h2>
                 <ol className="mt-8 grid gap-8">
                   {services.map((service) => (
-                    <li key={service.name} className="max-w-[46ch]">
+                    <li key={service.slug} className="max-w-[46ch]">
                       <p className="text-xl font-light">{service.name}</p>
                       <p className="mt-2 text-base leading-relaxed text-foreground/75">
                         {service.description}

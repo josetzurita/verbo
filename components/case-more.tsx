@@ -90,6 +90,7 @@ export function CaseMore({ items }: { items: readonly CaseMoreItem[] }) {
                     fill
                     sizes="(min-width: 768px) 50vw, 100vw"
                     className="object-cover transition-transform duration-700 ease-[var(--ease-out-expo)] motion-safe:group-hover:scale-[1.04]"
+                    style={{ objectPosition: item.image.focus }}
                   />
                 </div>
                 <p className="mt-4 text-[clamp(1.75rem,2.4vw,2.75rem)] font-light leading-none tracking-[-0.04em]">{item.name}</p>

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { WorkCase } from "@/lib/home-content";
+import type { Service } from "@/lib/services";
 import { finishHomeHero, homeHeroRequested, HOME_SCROLL_KEY } from "./home-scroll";
 import { CustomEase, gsap, registerGsap, ScrollTrigger, useGSAP } from "./gsap";
 import { ResponsiveImage } from "./responsive-image";
@@ -82,7 +83,7 @@ function snapHero() {
   return window.scrollY <= 2;
 }
 
-export function WorkStage({ cases }: { cases: readonly WorkCase[] }) {
+export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; services: readonly Service[] }) {
   const rootRef = useRef<HTMLElement>(null);
   const { scrollTo } = useSmoothScroll();
   const scrollToRef = useRef(scrollTo);
@@ -605,7 +606,7 @@ export function WorkStage({ cases }: { cases: readonly WorkCase[] }) {
                         height={item.height}
                         sizes="(min-width: 768px) 40vw, 100vw"
                         className="max-w-none"
-                        style={{ height: "100%", width: "100%", objectFit: "cover" }}
+                        style={{ height: "100%", width: "100%", objectFit: "cover", objectPosition: item.focus }}
                         fallback={
                           <p className="flex h-full items-end px-4 py-6 text-sm text-foreground/70">{item.name}</p>
                         }
@@ -646,7 +647,7 @@ export function WorkStage({ cases }: { cases: readonly WorkCase[] }) {
             </ol>
           </div>
         </div>
-        <ServicesHandoff variant="stage" />
+        <ServicesHandoff services={services} variant="stage" />
       </div>
 
       <h2 className="work-reading-title px-5 pt-16 text-[clamp(2.75rem,10vw,4.25rem)] font-light leading-[0.95] tracking-[-0.04em]">
@@ -689,7 +690,7 @@ export function WorkStage({ cases }: { cases: readonly WorkCase[] }) {
           </li>
         ))}
       </ol>
-      <ServicesHandoff variant="reading" />
+      <ServicesHandoff services={services} variant="reading" />
     </section>
   );
 }
