@@ -32,7 +32,6 @@ Use npm; `package-lock.json` is the lockfile.
 ```bash
 npm run dev        # http://localhost:4317 (EADDRINUSE = a dev server is already running)
 npm run typecheck
-npm test           # vitest, *.test.ts at the repo root
 npm run lint
 npm run build
 ```
@@ -57,7 +56,7 @@ Stack: Next.js 15 App Router, React 19, Tailwind v4, GSAP + ScrollTrigger (+ Cus
 
 - `app/work/[slug]/page.tsx` -> `components/case-study-view.tsx`, wrapped in `components/case-motion.tsx` (reveals, parallax, scrubbed rows).
 - `components/case-more.tsx` is a pinned horizontal "More work" strip.
-- Data comes from Sanity (`lib/projects.ts`). `lib/case-study.ts` is the fallback while the dataset is empty. The content rules are in `case-study-template.md`.
+- Data comes from Sanity (`lib/projects.ts`). `lib/case-study.ts` is the fallback while the dataset is empty. The content rules are in `docs/case-study-template.md`.
 - `/work` is a filterable index (`app/work/page.tsx` -> `components/work-index.tsx`). Service and deliverable chips filter client-side and mirror `?service=&deliverable=`.
 
 ### Shared pieces

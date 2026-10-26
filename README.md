@@ -17,7 +17,6 @@ The dev server binds `0.0.0.0:4317`. Open [http://127.0.0.1:4317](http://127.0.0
 
 ```bash
 npm run typecheck
-npm test
 npm run build
 ```
 
