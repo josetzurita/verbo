@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 // With viewport-fit=cover the page runs under Safari's bars; where it runs out (the end of the page, an
@@ -23,6 +24,9 @@ function colorAt(y: number) {
 }
 
 export function EdgeTint() {
+  // The layout keeps this mounted across routes, so re-measure on every navigation.
+  const pathname = usePathname();
+
   useEffect(() => {
     const phone = window.matchMedia("(max-width: 767px)");
     const { documentElement: html, body } = document;
@@ -41,7 +45,12 @@ export function EdgeTint() {
         return;
       }
       const edge = colorAt(window.innerHeight - 4);
-      if (edge && edge !== last) {
+      // Pages with no tinted section at the edge (the legal pages) fall back to the stylesheet color.
+      if (!edge) {
+        clear();
+        return;
+      }
+      if (edge !== last) {
         last = edge;
         html.style.backgroundColor = edge;
         body.style.backgroundColor = edge;
@@ -66,7 +75,7 @@ export function EdgeTint() {
       phone.removeEventListener("change", schedule);
       clear();
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

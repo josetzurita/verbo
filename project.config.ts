@@ -7,7 +7,8 @@ const input = {
     description:
       "Verbo is a boutique strategic branding consultancy in Bogotá. We build brands from a deep understanding of the business and the people, with rigor, judgment and soul.",
     locale: "en",
-    canonicalUrl: "https://verbobrands.com",
+    // Set NEXT_PUBLIC_SITE_URL at build time to serve from another address (the workers.dev preview).
+    canonicalUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://verbobrands.com",
   },
   theme: {
     mode: "dark",
