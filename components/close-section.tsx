@@ -7,21 +7,21 @@ import { gsap, registerGsap, useGSAP } from "./gsap";
 import { ResponsiveImage } from "./responsive-image";
 
 const FRAMES = [
-  { src: "/close/frames/01-apollo-square.png", aspect: "square", face: "var(--background)", ink: "var(--foreground)", edge: "var(--trail-amber)" },
-  { src: "/close/frames/02-stoneware-vase-square.png", aspect: "square", face: "var(--surface)", ink: "var(--foreground)", edge: "var(--trail-blue)" },
-  { src: "/close/frames/03-soft-portrait-square.png", aspect: "square", face: "var(--destructive)", ink: "var(--foreground)", edge: "var(--trail-amber)" },
-  { src: "/close/frames/04-classical-facade-square.png", aspect: "square", face: "var(--trail-amber)", ink: "var(--background)", edge: "var(--destructive)" },
-  { src: "/close/frames/05-ceramic-lamp-square.png", aspect: "square", face: "var(--trail-blue)", ink: "var(--foreground)", edge: "var(--foreground)" },
-  { src: "/close/frames/06-aphrodite-3x4.png", aspect: "portrait", face: "var(--trail-yellow)", ink: "var(--background)", edge: "var(--trail-amber)" },
-  { src: "/close/frames/07-cobalt-pitcher-3x4.png", aspect: "portrait", face: "var(--foreground)", ink: "var(--background)", edge: "var(--trail-blue)" },
-  { src: "/close/frames/08-motion-portrait-3x4.png", aspect: "portrait", face: "var(--trail-amber)", ink: "var(--surface)", edge: "var(--trail-yellow)" },
-  { src: "/close/frames/09-spiral-stairwell-3x4.png", aspect: "portrait", face: "var(--trail-blue)", ink: "var(--background)", edge: "var(--foreground)" },
-  { src: "/close/frames/10-marble-hand-3x4.png", aspect: "portrait", face: "var(--trail-yellow)", ink: "var(--surface)", edge: "var(--trail-yellow)" },
-  { src: "/close/frames/11-ceramic-collection-4x3.png", aspect: "landscape", face: "var(--background)", ink: "var(--trail-yellow)", edge: "var(--trail-blue)" },
-  { src: "/close/frames/12-museum-sculptures-4x3.png", aspect: "landscape", face: "var(--surface)", ink: "var(--trail-yellow)", edge: "var(--trail-yellow)" },
-  { src: "/close/frames/13-intimate-portrait-4x3.png", aspect: "landscape", face: "var(--destructive)", ink: "var(--trail-yellow)", edge: "var(--destructive)" },
-  { src: "/close/frames/14-brutalist-detail-4x3.png", aspect: "landscape", face: "var(--foreground)", ink: "var(--trail-blue)", edge: "var(--trail-amber)" },
-  { src: "/close/frames/15-ceramic-chrome-4x3.png", aspect: "landscape", face: "var(--trail-amber)", ink: "var(--foreground)", edge: "var(--destructive)" },
+  { src: "/close/frames/01-apollo-square.webp", aspect: "square", face: "var(--background)", ink: "var(--foreground)", edge: "var(--trail-amber)" },
+  { src: "/close/frames/02-stoneware-vase-square.webp", aspect: "square", face: "var(--surface)", ink: "var(--foreground)", edge: "var(--trail-blue)" },
+  { src: "/close/frames/03-soft-portrait-square.webp", aspect: "square", face: "var(--destructive)", ink: "var(--foreground)", edge: "var(--trail-amber)" },
+  { src: "/close/frames/04-classical-facade-square.webp", aspect: "square", face: "var(--trail-amber)", ink: "var(--background)", edge: "var(--destructive)" },
+  { src: "/close/frames/05-ceramic-lamp-square.webp", aspect: "square", face: "var(--trail-blue)", ink: "var(--foreground)", edge: "var(--foreground)" },
+  { src: "/close/frames/06-aphrodite-3x4.webp", aspect: "portrait", face: "var(--trail-yellow)", ink: "var(--background)", edge: "var(--trail-amber)" },
+  { src: "/close/frames/07-cobalt-pitcher-3x4.webp", aspect: "portrait", face: "var(--foreground)", ink: "var(--background)", edge: "var(--trail-blue)" },
+  { src: "/close/frames/08-motion-portrait-3x4.webp", aspect: "portrait", face: "var(--trail-amber)", ink: "var(--surface)", edge: "var(--trail-yellow)" },
+  { src: "/close/frames/09-spiral-stairwell-3x4.webp", aspect: "portrait", face: "var(--trail-blue)", ink: "var(--background)", edge: "var(--foreground)" },
+  { src: "/close/frames/10-marble-hand-3x4.webp", aspect: "portrait", face: "var(--trail-yellow)", ink: "var(--surface)", edge: "var(--trail-yellow)" },
+  { src: "/close/frames/11-ceramic-collection-4x3.webp", aspect: "landscape", face: "var(--background)", ink: "var(--trail-yellow)", edge: "var(--trail-blue)" },
+  { src: "/close/frames/12-museum-sculptures-4x3.webp", aspect: "landscape", face: "var(--surface)", ink: "var(--trail-yellow)", edge: "var(--trail-yellow)" },
+  { src: "/close/frames/13-intimate-portrait-4x3.webp", aspect: "landscape", face: "var(--destructive)", ink: "var(--trail-yellow)", edge: "var(--destructive)" },
+  { src: "/close/frames/14-brutalist-detail-4x3.webp", aspect: "landscape", face: "var(--foreground)", ink: "var(--trail-blue)", edge: "var(--trail-amber)" },
+  { src: "/close/frames/15-ceramic-chrome-4x3.webp", aspect: "landscape", face: "var(--trail-amber)", ink: "var(--foreground)", edge: "var(--destructive)" },
 ] as const;
 
 const ASPECT_CLASS = {
