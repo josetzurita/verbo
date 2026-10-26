@@ -130,14 +130,25 @@ export const close = {
   titleRest: "deserves a brand",
   titleEmphasis: "equal to it.",
   body: "If you believe your brand can do more for your business, we want to hear from you.",
-  email: "hola@verbobrands.co",
-  emailHref: "mailto:hola@verbobrands.co",
+  email: "juliana@verbobrands.com",
+  emailHref: "mailto:juliana@verbobrands.com",
   whatsappHref: "https://wa.me/573183460278?text=Hi%20Verbo%2C%20I%27d%20like%20to%20talk%20about%20my%20brand.",
   whatsappLabel: "Chat with Verbo on WhatsApp",
   studio: "Verbo Brands",
   practice: "Strategy, brand and growth",
   plate: "/close/plate.jpg",
   plateAlt: "Hellenistic marble bust in warm side light",
+} as const;
+
+export const legalLinks = [
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
+] as const;
+
+export const notFound = {
+  code: "404",
+  title: "Oops! This page doesn't exist.",
+  cta: "Home page",
 } as const;
 
 export type WorkCase = {

@@ -5,9 +5,9 @@ const input = {
     name: "Verbo",
     shortName: "Verbo",
     description:
-      "Consultora boutique de branding estratégico. Construimos marcas desde el entendimiento del negocio y las personas, con rigor, criterio y alma.",
-    locale: "es",
-    canonicalUrl: "http://127.0.0.1:4317",
+      "Verbo is a boutique strategic branding consultancy in Bogotá. We build brands from a deep understanding of the business and the people, with rigor, judgment and soul.",
+    locale: "en",
+    canonicalUrl: "https://verbobrands.com",
   },
   theme: {
     mode: "dark",

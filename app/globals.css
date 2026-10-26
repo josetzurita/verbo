@@ -341,6 +341,25 @@ html.intro-skip .intro-loader {
   width: min(100%, calc(26dvh * 1632 / 404.901));
 }
 
+.not-found-title {
+  font-size: max(2.5rem, min(6vw, 9dvh));
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+/* The 404 numerals fill the screen: bounded by width on phones and by height on desktops, so one
+   composition fits a 14-inch laptop and a 32-inch monitor in a single 100dvh. */
+.not-found-code {
+  font-size: min(40vw, 46dvh);
+}
+
+@media (min-width: 768px) {
+  .not-found-code {
+    font-size: min(32vw, 50dvh);
+  }
+}
+
 /* 14-inch desktops are wide enough for the 1500px layout and short enough
    that those sizes no longer match a 32-inch screen. Tall viewports stay put. */
 @media (min-width: 768px) and (max-height: 1100px) {

@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Figtree } from "next/font/google";
+import { AnalyticsConsent } from "../components/analytics-consent";
 import { CoordinateCursor } from "../components/coordinate-cursor";
 import { EdgeTint } from "../components/edge-tint";
 import { HomeNav } from "../components/home-nav";
 import { introSkipScript } from "../components/intro-gate";
 import { MainContent } from "../components/main-content";
 import { SkipLink } from "../components/skip-link";
+import { WhatsappFab } from "../components/whatsapp-fab";
 import { createMetadata, jsonLdWebSite } from "../lib/seo";
 import { getWorkCases } from "../lib/projects";
 import { htmlLang, htmlThemeDataset } from "../lib/project-config";
@@ -62,6 +64,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <HomeNav cases={cases} />
           <EdgeTint />
           <MainContent>{children}</MainContent>
+          <WhatsappFab />
+          <AnalyticsConsent />
         </Providers>
       </body>
     </html>

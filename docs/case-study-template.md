@@ -185,7 +185,7 @@ Lienzo lists the other five: Altos de Guayacanes, Boroló, B-Side, Exponencial C
 
 ### 14. Site close
 
-The shared footer: "Let's talk", "A trajectory like yours deserves a brand equal to it.", the contact line, and hola@verbobrands.co. It is not written per project.
+The shared footer: "Let's talk", "A trajectory like yours deserves a brand equal to it.", the contact line, and juliana@verbobrands.com. It is not written per project.
 
 ## Slot list
 

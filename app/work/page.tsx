@@ -7,7 +7,7 @@ import { projectConfig } from "@/project.config";
 
 export const metadata: Metadata = createMetadata(projectConfig, {
   title: "Work",
-  description: "Selected branding projects by Verbo, filterable by service.",
+  description: "Selected branding projects by Verbo, a boutique consultancy in Bogotá. Filter by service to see strategy, naming, identity and web work.",
   path: "/work",
 });
 

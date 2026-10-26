@@ -8,6 +8,8 @@ export default async function sitemap() {
   return createSitemap(projectConfig, [
     "/",
     "/work",
+    "/privacy",
+    "/terms",
     ...(await getCaseStudies()).map((study) => `/work/${study.slug}`),
   ]);
 }

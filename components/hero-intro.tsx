@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { verboWordLetters } from "@/lib/brand-paths";
-import { discoveryLabel, heroLead, heroSlogan } from "@/lib/home-content";
+import { close, discoveryLabel, heroLead, heroSlogan } from "@/lib/home-content";
 import { gsap, registerGsap, useGSAP } from "./gsap";
 import { onIntroReveal } from "./intro-gate";
 import { UnderlineLink } from "./underline-link";
@@ -95,7 +95,7 @@ export function HeroIntro() {
               ))}
               <UnderlineLink
                 id="discovery"
-                href="mailto:hola@verbobrands.co"
+                href={close.emailHref}
                 entrance="mount"
                 delay={0.38}
                 ruleClassName="translate-y-3"

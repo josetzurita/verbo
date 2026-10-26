@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, type CSSProperties } from "react";
-import { close } from "@/lib/home-content";
+import { close, legalLinks } from "@/lib/home-content";
+import { CONSENT_OPEN_EVENT, gaId } from "@/lib/analytics";
 import { verboWordLetters } from "@/lib/brand-paths";
 import { gsap, registerGsap, useGSAP } from "./gsap";
 import { ResponsiveImage } from "./responsive-image";
@@ -409,7 +410,23 @@ export function CloseSection() {
         </div>
         <div className="pointer-events-none relative z-30 flex items-center justify-between gap-6 px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-[12px] font-light leading-none tracking-[-0.03em] md:px-12">
           <p className="whitespace-nowrap">{close.studio}</p>
-          <p className="whitespace-nowrap">{close.practice}</p>
+          <nav aria-label="Legal" className="pointer-events-auto flex items-center gap-4 md:gap-6">
+            {legalLinks.map((link) => (
+              <a key={link.href} href={link.href} className="whitespace-nowrap py-2 hover:opacity-70">
+                {link.label}
+              </a>
+            ))}
+            {gaId ? (
+              <button
+                type="button"
+                className="whitespace-nowrap py-2 hover:opacity-70"
+                onClick={() => window.dispatchEvent(new Event(CONSENT_OPEN_EVENT))}
+              >
+                Cookies
+              </button>
+            ) : null}
+          </nav>
+          <p className="whitespace-nowrap max-md:hidden">{close.practice}</p>
         </div>
       </footer>
     </>

@@ -335,7 +335,7 @@ export function AboutSection() {
               <div data-coordinate-label="meet" className="about-portrait-frame relative aspect-[292/380] w-full overflow-hidden">
                 <ResponsiveImage
                   src={about.portrait}
-                  alt=""
+                  alt={`Portrait of ${member.name}, ${member.role}`}
                   width={605}
                   height={908}
                   sizes="(min-width: 1500px) 18vw, (min-width: 640px) 46vw, 92vw"

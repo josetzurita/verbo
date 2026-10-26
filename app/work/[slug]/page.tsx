@@ -28,6 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: study.summary,
     path: `/work/${study.slug}`,
     ogImage: study.hero.src,
+    ogImageAlt: study.hero.alt || `${study.name} - Verbo case study`,
   });
 }
 

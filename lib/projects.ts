@@ -92,10 +92,15 @@ function focusOf(hotspot: { x?: number; y?: number } | null | undefined): string
   return `${(hotspot.x * 100).toFixed(1)}% ${(hotspot.y * 100).toFixed(1)}%`;
 }
 
-function toImage(raw: RawImage | undefined, field: string): CaseImage {
+// A Studio image without alt text still gets a description from its project, so no content image ships with alt="".
+function toImage(raw: RawImage | undefined, field: string, fallbackAlt = ""): CaseImage {
+  const alt = raw?.alt?.trim() || fallbackAlt;
+  if (!alt && process.env.NODE_ENV !== "production") {
+    console.warn(`[projects] ${field} has no alt text in Sanity.`);
+  }
   return {
     src: need(raw?.src, `${field}.src`),
-    alt: raw?.alt ?? "",
+    alt,
     width: need(raw?.width, `${field}.width`),
     height: need(raw?.height, `${field}.height`),
     focus: focusOf(raw?.hotspot),
@@ -111,21 +116,23 @@ function exactly<T>(items: readonly T[] | undefined, count: number, field: strin
 }
 
 function toStudy(project: RawProject, raw: RawStudy): Omit<CaseStudy, "more"> {
+  const img = (raw: RawImage | undefined, field: string) =>
+    toImage(raw, field, `${project.name} - Verbo project image`);
   const [t1, t2] = exactly(raw.title, 2, "title");
   const [trio1, trio2, trio3] = exactly(raw.gallery?.trio, 3, "gallery.trio").map((image, i) =>
-    toImage(image, `gallery.trio[${i}]`),
+    img(image, `gallery.trio[${i}]`),
   );
   const [note1, note2] = exactly(raw.gallery?.plateNote, 2, "gallery.plateNote");
   const [card1, card2, card3] = exactly(raw.layers?.cards, 3, "layers.cards").map((card, i) => ({
     label: card.label ?? "",
     title: card.title ?? "",
     body: card.body ?? "",
-    image: toImage(card.image, `layers.cards[${i}].image`),
+    image: img(card.image, `layers.cards[${i}].image`),
   }));
-  const [pair1, pair2] = exactly(raw.pair, 2, "pair").map((image, i) => toImage(image, `pair[${i}]`));
+  const [pair1, pair2] = exactly(raw.pair, 2, "pair").map((image, i) => img(image, `pair[${i}]`));
   const [v1, v2, v3, v4] = exactly(raw.visible?.items, 4, "visible.items").map((item, i) => ({
     caption: item.caption ?? "",
-    image: toImage(item.image, `visible.items[${i}].image`),
+    image: img(item.image, `visible.items[${i}].image`),
   }));
 
   return {
@@ -137,21 +144,21 @@ function toStudy(project: RawProject, raw: RawStudy): Omit<CaseStudy, "more"> {
     siteHref: raw.siteHref ?? "",
     siteLabel: raw.siteLabel || "Visit site",
     practices: raw.practices ?? [],
-    hero: toImage(raw.hero, "hero"),
+    hero: img(raw.hero, "hero"),
     statement: need(raw.statement, "statement"),
     impactTitle: raw.impactTitle || "What changed",
     impact: raw.impact ?? [],
     essay: raw.essay ?? [],
     gallery: {
-      wide: toImage(raw.gallery?.wide, "gallery.wide"),
+      wide: img(raw.gallery?.wide, "gallery.wide"),
       trio: [need(trio1, "trio"), need(trio2, "trio"), need(trio3, "trio")],
-      plate: toImage(raw.gallery?.plate, "gallery.plate"),
+      plate: img(raw.gallery?.plate, "gallery.plate"),
       plateNote: [need(note1, "plateNote"), need(note2, "plateNote")],
     },
     layers: {
       title: raw.layers?.title || "Built in layers",
       body: exactly(raw.layers?.body, 3, "layers.body"),
-      image: toImage(raw.layers?.image, "layers.image"),
+      image: img(raw.layers?.image, "layers.image"),
       cards: [need(card1, "cards"), need(card2, "cards"), need(card3, "cards")],
     },
     shift: {
@@ -167,12 +174,12 @@ function toStudy(project: RawProject, raw: RawStudy): Omit<CaseStudy, "more"> {
     },
     places: {
       title: raw.places?.title ?? "",
-      image: toImage(raw.places?.image, "places.image"),
+      image: img(raw.places?.image, "places.image"),
       // A row without its own thumbnail reuses the places image.
       items: (raw.places?.items ?? []).map((item, i) => ({
         name: item.name ?? "",
         region: item.region ?? "",
-        image: toImage(item.image?.src ? item.image : raw.places?.image, `places.items[${i}].image`),
+        image: img(item.image?.src ? item.image : raw.places?.image, `places.items[${i}].image`),
       })),
     },
   };
@@ -203,7 +210,7 @@ function fromSanity(raw: readonly RawProject[]): Projects {
   const hrefFor = (slug: string) => (studies.has(slug) ? `/work/${slug}` : null);
 
   const cases: WorkCase[] = withImages.map((project, i) => {
-    const image = toImage(project.image, "image");
+    const image = toImage(project.image, "image", `${project.name} - Verbo project`);
     const services = categories(project.services);
     return {
       index: String(i + 1).padStart(2, "0"),
@@ -230,7 +237,7 @@ function fromSanity(raw: readonly RawProject[]): Projects {
         name: project.name,
         line: project.moreLine || project.tag || "",
         href: hrefFor(project.slug) ?? "/#work",
-        image: toImage(project.image, "image"),
+        image: toImage(project.image, "image", `${project.name} - Verbo project`),
       })),
   }));
 

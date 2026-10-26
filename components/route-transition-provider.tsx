@@ -12,6 +12,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { classifyNavigation, shouldInterceptNavigation } from "./classify-navigation";
 import { cancelHomeHero, homeHeroRequested, isHomeHeroHref } from "./home-scroll";
 import { MAIN_CONTENT_ID, ROUTE_TRANSITION_COVER_MS, ROUTE_TRANSITION_TIMEOUT_MS } from "./route-transition-types";
 import type {
@@ -145,6 +146,39 @@ export function RouteTransitionProvider({
   }, [pathname, phase, settle, smooth]);
 
   useEffect(() => () => clearTimers(), [clearTimers]);
+
+  // Plain <a> tags get the same cover as TransitionLink. Links that already handled the click
+  // (TransitionLink, next/link, the nav) have called preventDefault by the time this runs.
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || !(event.target instanceof Element)) {
+        return;
+      }
+      const anchor = event.target.closest("a[href]");
+      if (!(anchor instanceof HTMLAnchorElement) || anchor.origin !== window.location.origin) {
+        return;
+      }
+      const kind = classifyNavigation({
+        href: `${anchor.pathname}${anchor.search}${anchor.hash}`,
+        currentPathname: window.location.pathname,
+        target: anchor.target || undefined,
+        download: anchor.hasAttribute("download"),
+        metaKey: event.metaKey,
+        ctrlKey: event.ctrlKey,
+        shiftKey: event.shiftKey,
+        altKey: event.altKey,
+        button: event.button,
+      });
+      const samePage = anchor.pathname === window.location.pathname && anchor.search === window.location.search;
+      if (!shouldInterceptNavigation(kind) || samePage) {
+        return;
+      }
+      event.preventDefault();
+      navigate(`${anchor.pathname}${anchor.search}${anchor.hash}`);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, [navigate]);
 
   const state = useMemo<RouteTransitionApi>(
     () => ({

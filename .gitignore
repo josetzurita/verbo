@@ -9,3 +9,6 @@ tsconfig.tsbuildinfo
 .taste-skill
 .cursor
 .wrangler
+
+# Claude Code personal settings
+.claude/settings.local.json
