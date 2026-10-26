@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useLayoutEffect, useRef, useState } from "react";
 import { about } from "@/lib/home-content";
 import { gsap, registerGsap, ScrollTrigger, useGSAP } from "./gsap";
 import { ResponsiveImage } from "./responsive-image";
@@ -24,6 +24,51 @@ function groupWords(container: HTMLElement) {
     }
   }
   return groups.map((group) => group.join(" "));
+}
+
+const GLUE_WORDS = 4;
+
+// Phone only: the last words of each sentence stay together (see `max-md:whitespace-nowrap` below), so a
+// line never ends on "building" with "brands for others." alone on the next one.
+function chunksOf(segment: string) {
+  const chunks: { words: string[]; glued: boolean }[] = [];
+  for (const sentence of segment.split(/(?<=[.!?])\s+/)) {
+    const words = sentence.split(" ").filter(Boolean);
+    const cut = Math.max(0, words.length - GLUE_WORDS);
+    if (cut > 0) {
+      chunks.push({ words: words.slice(0, cut), glued: false });
+    }
+    chunks.push({ words: words.slice(cut), glued: true });
+  }
+  return chunks;
+}
+
+// A "\n" in the copy starts a new line on phones only.
+function Words({ text, measure }: { text: string; measure: boolean }) {
+  return text.split("\n").map((segment, segmentIndex) => (
+    <Fragment key={segmentIndex}>
+      {segmentIndex > 0 ? (
+        <>
+          {" "}
+          <br className="md:hidden" />
+        </>
+      ) : null}
+      {chunksOf(segment).map((chunk, chunkIndex) => {
+        const tokens = chunk.words.map((word, index) => (
+          <span key={`${index}-${word}`} data-about-token={measure ? word : undefined} className="inline">
+            {index > 0 ? " " : null}
+            {word}
+          </span>
+        ));
+        return (
+          <Fragment key={chunkIndex}>
+            {chunkIndex > 0 ? " " : null}
+            {chunk.glued ? <span className="max-md:whitespace-nowrap">{tokens}</span> : tokens}
+          </Fragment>
+        );
+      })}
+    </Fragment>
+  ));
 }
 
 function AboutParagraph({
@@ -64,20 +109,23 @@ function AboutParagraph({
 
   return (
     <p className={`relative ${className ?? ""}`}>
-      <span ref={measureRef} aria-hidden="true" className="invisible block">
-        {text.split(" ").map((word, index) => (
-          <span key={`${index}-${word}`} data-about-token={word} className="inline">
-            {index > 0 ? " " : null}
-            {word}
-          </span>
-        ))}
+      {/* md and up: lines are measured, then each rises on its own (the desktop design). */}
+      <span ref={measureRef} aria-hidden="true" className="invisible block max-md:hidden">
+        <Words text={text} measure />
       </span>
-      <span className="absolute inset-0">
+      <span className="absolute inset-0 max-md:hidden">
         {lines.map((line, index) => (
           <span key={`${index}-${line}`} className="block overflow-hidden">
             <span className="about-line block">{line}</span>
           </span>
         ))}
+      </span>
+      {/* Phones: plain wrapping text that rises as one block. Measuring lines is not reliable in
+          mobile Safari, where a stale measurement leaves lines wrapping into extra short ones. */}
+      <span className="block overflow-hidden md:hidden">
+        <span className="about-line block">
+          <Words text={text} measure={false} />
+        </span>
       </span>
     </p>
   );
@@ -252,7 +300,7 @@ export function AboutSection() {
           </h2>
 
           <div className="about-copy flex w-full min-w-0 flex-col gap-10 md:flex-row md:items-stretch md:gap-x-8 min-[1500px]:ml-auto min-[1500px]:w-auto min-[1500px]:gap-x-[3.9375rem]">
-            <div className="grid min-w-0 flex-1 gap-[1.2em] text-[18px] font-light leading-[1.2] tracking-[-0.04em] min-[1500px]:w-[31.25rem] min-[1500px]:flex-none">
+            <div className="grid min-w-0 flex-1 gap-[1.2em] text-[18px] font-light text-copy leading-[1.2] tracking-[-0.04em] min-[1500px]:w-[31.25rem] min-[1500px]:flex-none">
               {about.lead.map((paragraph) => (
                 <AboutParagraph key={paragraph} text={paragraph} onReady={markCopyReady} />
               ))}
@@ -260,7 +308,7 @@ export function AboutSection() {
             <div className="flex min-w-0 flex-1 flex-col min-[1500px]:w-[31.5rem] min-[1500px]:flex-none">
               <AboutParagraph
                 text={about.aside}
-                className="text-[18px] font-light leading-[1.2] tracking-[-0.04em]"
+                className="text-[18px] font-light leading-[1.2] tracking-[-0.04em] text-copy"
                 onReady={markCopyReady}
               />
               <UnderlineLink

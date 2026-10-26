@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Figtree } from "next/font/google";
 import { CoordinateCursor } from "../components/coordinate-cursor";
+import { EdgeTint } from "../components/edge-tint";
 import { HomeNav } from "../components/home-nav";
 import { introSkipScript } from "../components/intro-gate";
 import { MainContent } from "../components/main-content";
 import { SkipLink } from "../components/skip-link";
 import { createMetadata, jsonLdWebSite } from "../lib/seo";
-import { getServices } from "../lib/services";
+import { getWorkCases } from "../lib/projects";
 import { htmlLang, htmlThemeDataset } from "../lib/project-config";
 import { projectConfig } from "../project.config";
 import { Providers } from "./providers";
@@ -22,8 +23,17 @@ const figtree = Figtree({
 
 export const metadata: Metadata = createMetadata(projectConfig);
 
+// Edge to edge on phones: the page runs under the status bar and the browser toolbar. Safari 26 ignores
+// theme-color (EdgeTint steers its tint); Android Chrome and older iOS still read it. #39170d is the field color.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#39170d",
+};
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const services = await getServices();
+  const cases = await getWorkCases();
 
   return (
     <html
@@ -49,7 +59,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Providers config={projectConfig}>
           <SkipLink />
           <CoordinateCursor />
-          <HomeNav services={services} />
+          <HomeNav cases={cases} />
+          <EdgeTint />
           <MainContent>{children}</MainContent>
         </Providers>
       </body>

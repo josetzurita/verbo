@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { close } from "@/lib/home-content";
 import { verboWordLetters } from "@/lib/brand-paths";
 import { gsap, registerGsap, useGSAP } from "./gsap";
@@ -45,6 +45,22 @@ const PLATES = [
   { frame: 5, left: "97%", width: "7.75rem", duration: 25, progress: 0.73 },
 ] as const;
 
+// Phones have no hover and no room for plates drifting through the copy, so the plates become one slow
+// strip of their own. An item with `ink` is a WhatsApp square (the colored square the desktop cursor
+// turns into); the rest are photos. A square is always on screen and tappable.
+const STRIP = [
+  { frame: 0 },
+  { frame: 5 },
+  { frame: 3, ink: "var(--foreground)" },
+  { frame: 10 },
+  { frame: 7 },
+  { frame: 4, ink: "var(--foreground)" },
+  { frame: 1 },
+  { frame: 12 },
+  { frame: 5, ink: "var(--foreground)" },
+  { frame: 8 },
+] as const;
+
 function frameSize(aspect: (typeof FRAMES)[number]["aspect"]) {
   if (aspect === "portrait") {
     return { width: 900, height: 1200 };
@@ -59,6 +75,23 @@ const SLOW_RATE = 0.32;
 
 export function CloseSection() {
   const rootRef = useRef<HTMLElement>(null);
+
+  // From md up the footer is fixed behind the whole page. Safari 26 (iPad too) tints its toolbars from
+  // fixed elements at the edges, so the footer stays the dark field color until the reveal is about a
+  // screen away. On phones it is in the page flow and the spacer is hidden, so it never arms (see CSS).
+  useEffect(() => {
+    const footer = rootRef.current;
+    const reveal = document.getElementById("close-reveal");
+    if (!footer || !reveal) {
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => footer.classList.toggle("close-armed", Boolean(entry?.isIntersecting)),
+      { rootMargin: "100% 0px 100% 0px" },
+    );
+    observer.observe(reveal);
+    return () => observer.disconnect();
+  }, []);
 
   useGSAP(
     () => {
@@ -198,8 +231,11 @@ export function CloseSection() {
         build();
 
         const cleanups: Array<() => void> = [];
-        for (const node of nodes) {
+        // Hover slow-down, blur and the click-through are for a mouse; a tap on a phone just follows the link.
+        const mouse = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+        for (const node of mouse ? nodes : []) {
           const enter = () => focusPlate(node);
+          const open = () => window.open(close.whatsappHref, "_blank", "noopener,noreferrer");
           const leave = (event: PointerEvent) => {
             const next = event.relatedTarget;
             if (next instanceof Element && next.closest("[data-close-float]") === node) {
@@ -211,9 +247,11 @@ export function CloseSection() {
           };
           node.addEventListener("pointerenter", enter);
           node.addEventListener("pointerleave", leave);
+          node.addEventListener("click", open);
           cleanups.push(() => {
             node.removeEventListener("pointerenter", enter);
             node.removeEventListener("pointerleave", leave);
+            node.removeEventListener("click", open);
           });
         }
 
@@ -242,13 +280,16 @@ export function CloseSection() {
 
   return (
     <>
-      <div id="close-reveal" aria-hidden="true" className="pointer-events-none h-[100dvh]" />
+      {/* The menu's Contact link lands here: the end of the page, where the footer is fully shown. */}
+      <span id="contact" aria-hidden="true" className="block" />
+      <div id="close-reveal" aria-hidden="true" className="pointer-events-none h-[100dvh] max-md:hidden" />
       <footer
         ref={rootRef}
         id="close"
-        className="theme-paper fixed inset-x-0 bottom-0 z-0 flex h-[100dvh] flex-col overflow-hidden bg-background pt-[8rem] text-foreground"
+        // Phones: a normal block at the end of the page, not a fixed layer revealed from behind it.
+        className="theme-paper fixed inset-x-0 bottom-0 z-0 flex h-[100dvh] flex-col overflow-hidden bg-background pt-20 text-foreground max-md:static! max-md:h-auto! max-md:min-h-svh md:pt-[8rem]"
       >
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 max-md:hidden">
           {PLATES.map((plate) => {
             const frame = FRAMES[plate.frame];
             const size = frameSize(frame.aspect);
@@ -284,16 +325,16 @@ export function CloseSection() {
             );
           })}
         </div>
-        <div className="pointer-events-none relative flex min-h-0 flex-1 flex-col items-center justify-center gap-5 px-5 text-center md:gap-6 md:px-12">
-          <div className="relative z-10 flex flex-col items-center gap-5 text-[var(--blend-difference)] mix-blend-difference md:gap-6">
+        <div className="pointer-events-none relative flex min-h-0 flex-1 flex-col items-center justify-center gap-4 px-5 text-center md:gap-6 md:px-12">
+          <div className="relative z-10 flex flex-col items-center gap-4 text-foreground md:text-[var(--blend-difference)] md:mix-blend-difference md:gap-6">
             <p className="type-label">{close.label}</p>
-            <h2 className="w-full max-w-[40em] text-[clamp(2.6rem,6.4vw,5.75rem)] font-light leading-[1.05] tracking-[-0.045em]">
+            <h2 className="w-full max-w-[40em] text-[2.4rem] font-light md:text-[clamp(2.6rem,6.4vw,5.75rem)] leading-[1.05] tracking-[-0.045em]">
               <span className="block">{close.titleLead}</span>
               <span className="block">
                 {close.titleRest} {close.titleEmphasis}
               </span>
             </h2>
-            <p className="max-w-[34ch] text-[16px] font-light leading-[1.4] tracking-[-0.03em] md:text-[19px]">
+            <p className="copy-dim max-w-[34ch] text-[16px] font-light leading-[1.4] tracking-[-0.03em] md:text-[19px]">
               {close.body}
             </p>
           </div>
@@ -303,6 +344,54 @@ export function CloseSection() {
           >
             {close.email}
           </a>
+        </div>
+        <div className="close-strip relative mb-3 overflow-hidden md:hidden">
+          <ul className="close-strip-track flex w-max">
+            {[0, 1].flatMap((copy) =>
+              STRIP.map((item, index) => {
+                const frame = FRAMES[item.frame];
+                const size = frameSize(frame.aspect);
+                return (
+                  // The strip is two identical runs so it loops without a seam; the second is a repeat for assistive tech.
+                  <li
+                    key={`${copy}-${index}`}
+                    aria-hidden={copy === 1 || undefined}
+                    className="mr-3 shrink-0"
+                    style={{ height: "var(--strip-h)" }}
+                  >
+                    {"ink" in item ? (
+                      <a
+                        href={close.whatsappHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={close.whatsappLabel}
+                        tabIndex={copy === 1 ? -1 : undefined}
+                        className="flex aspect-square h-full items-center justify-center border-2 transition-[scale] duration-150 active:scale-95"
+                        style={{ backgroundColor: frame.face, borderColor: frame.edge, color: item.ink }}
+                      >
+                        <span aria-hidden="true" className="close-whatsapp-icon" />
+                      </a>
+                    ) : (
+                      <div
+                        className={`relative h-full overflow-hidden border-2 ${ASPECT_CLASS[frame.aspect]}`}
+                        style={{ borderColor: frame.edge }}
+                      >
+                        <ResponsiveImage
+                          src={frame.src}
+                          alt=""
+                          width={size.width}
+                          height={size.height}
+                          sizes="160px"
+                          className="absolute inset-0 h-full w-full max-w-none object-cover"
+                          style={{ height: "100%", width: "100%", objectFit: "cover", maxWidth: "none" }}
+                        />
+                      </div>
+                    )}
+                  </li>
+                );
+              }),
+            )}
+          </ul>
         </div>
         <div className="pointer-events-none relative px-5 pb-2 md:px-12">
           <div role="img" aria-label="Verbo" className="close-mark relative mx-auto">
@@ -318,7 +407,7 @@ export function CloseSection() {
             ))}
           </div>
         </div>
-        <div className="pointer-events-none relative z-30 flex items-center justify-between gap-6 px-5 py-4 text-[12px] font-light leading-none tracking-[-0.03em] md:px-12">
+        <div className="pointer-events-none relative z-30 flex items-center justify-between gap-6 px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-[12px] font-light leading-none tracking-[-0.03em] md:px-12">
           <p className="whitespace-nowrap">{close.studio}</p>
           <p className="whitespace-nowrap">{close.practice}</p>
         </div>

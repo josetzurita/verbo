@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
 import { belief } from "@/lib/home-content";
 import { gsap, registerGsap, useGSAP } from "./gsap";
 import { UnderlineLink } from "./underline-link";
@@ -179,7 +179,7 @@ export function BeliefSection() {
       <section
         ref={rootRef}
         id="belief"
-        className="sticky top-0 flex h-dvh items-end bg-background pb-16 pl-5 pr-5 md:pb-[120px] md:pl-12 md:pr-12"
+        className="relative top-0 flex min-h-svh items-end bg-background pb-16 pl-5 pr-5 pt-28 md:sticky md:h-dvh md:min-h-0 md:pb-[120px] md:pl-12 md:pr-12 md:pt-0"
       >
         <div className="grid w-full items-end gap-12 xl:grid-cols-12 xl:gap-x-8">
           <h2
@@ -200,18 +200,21 @@ export function BeliefSection() {
                 <BeliefSequence />
               </span>
             </span>
-            <span className="relative z-[1] block">
+            {/* Desktop keeps the designed line breaks; on phones the rest of the sentence flows and balances. */}
+            <span className="relative z-[1] block max-md:inline">
               <BeliefWords text={`${bridge} ${restingLead}`} />
-            </span>
+            </span>{" "}
             {restingLines.map((line) => (
-              <span key={line} className="relative z-[1] block">
-                <BeliefWords text={line} />
-              </span>
+              <Fragment key={line}>
+                <span className="relative z-[1] block max-md:inline">
+                  <BeliefWords text={line} />
+                </span>{" "}
+              </Fragment>
             ))}
           </h2>
 
           <div className="belief-copy relative z-[1] w-full min-w-0 max-w-[344px] justify-self-start xl:col-span-4 xl:col-start-9 xl:w-[344px]">
-            <div className="grid gap-[1.2em] text-[18px] leading-[1.2] tracking-[-0.04em]">
+            <div className="grid gap-[1.2em] text-[18px] leading-[1.2] tracking-[-0.04em] text-copy">
               {belief.paragraphs.map((paragraph) => (
                 <p key={paragraph} className="overflow-hidden">
                   <span className="belief-paragraph block">{paragraph}</span>
@@ -233,7 +236,7 @@ export function BeliefSection() {
           </div>
         </div>
       </section>
-      <div aria-hidden="true" className="h-[40dvh]" />
+      <div aria-hidden="true" className="hidden h-[40dvh] md:block" />
     </>
   );
 }

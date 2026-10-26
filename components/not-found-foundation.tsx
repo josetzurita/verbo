@@ -14,7 +14,7 @@ export function NotFoundFoundation({
       <h1 className="mt-4 text-3xl font-medium tracking-tight">
         This page is not in {config.site.name}.
       </h1>
-      <p className="mt-4 max-w-[60ch] text-sm leading-relaxed text-foreground/75">
+      <p className="mt-4 max-w-[60ch] text-sm leading-relaxed text-copy">
         Check the address or return to the home page. Identity on this screen
         comes from project configuration.
       </p>

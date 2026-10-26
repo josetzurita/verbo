@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import type { CaseMoreItem } from "@/lib/case-study";
 import { gsap, registerGsap, useGSAP } from "./gsap";
-import { ResponsiveImage } from "./responsive-image";
+import { CasePhoto } from "./case-photo";
 import { TransitionLink } from "./transition-link";
 
 export function CaseMore({ items }: { items: readonly CaseMoreItem[] }) {
@@ -24,7 +24,8 @@ export function CaseMore({ items }: { items: readonly CaseMoreItem[] }) {
       const distance = () => Math.max(0, track.scrollWidth - frame.clientWidth);
       const mm = gsap.matchMedia();
 
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+      // The pin is desktop only. On phones it held about 2.6 screens of scroll, so there the strip swipes.
+      mm.add("(prefers-reduced-motion: no-preference) and (min-width: 768px)", () => {
         frame.style.overflow = "hidden";
         const tween = gsap.to(track, {
           x: () => -distance(),
@@ -47,7 +48,7 @@ export function CaseMore({ items }: { items: readonly CaseMoreItem[] }) {
         };
       });
 
-      mm.add("(prefers-reduced-motion: reduce)", () => {
+      mm.add("(prefers-reduced-motion: reduce), (max-width: 767px)", () => {
         frame.style.overflowX = "auto";
         return () => {
           frame.style.overflowX = "";
@@ -66,7 +67,7 @@ export function CaseMore({ items }: { items: readonly CaseMoreItem[] }) {
       ref={rootRef}
       id="case-more"
       aria-labelledby="case-more-title"
-      className="flex h-[110vh] flex-col items-center justify-center gap-10 overflow-hidden bg-background text-foreground md:gap-14"
+      className="flex h-[110vh] flex-col max-md:h-auto max-md:py-24 items-center justify-center gap-10 overflow-hidden bg-background text-foreground md:gap-14"
     >
       <h2
         id="case-more-title"
@@ -74,19 +75,20 @@ export function CaseMore({ items }: { items: readonly CaseMoreItem[] }) {
       >
         More work
       </h2>
-      <div ref={frameRef} className="@container w-full">
+      <div ref={frameRef} className="swipe-track @container w-full overscroll-x-contain max-md:snap-x max-md:snap-mandatory max-md:scroll-px-5">
         <ul ref={trackRef} aria-label="More work" className="flex w-max items-start gap-4 px-5 will-change-transform md:gap-5 md:px-12">
           {items.map((item) => (
-            <li key={item.name} className="w-[calc(100cqw-2.5rem)] shrink-0 md:w-[calc((100cqw-6rem-1.25rem)/2)]">
+            <li key={item.name} className="w-[84cqw] shrink-0 snap-start md:w-[calc((100cqw-6rem-1.25rem)/2)]">
               <TransitionLink
                 href={item.href}
                 data-coordinate-project=""
                 className="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
               >
                 <div className="relative aspect-[16/10] max-h-[42vh] w-full overflow-hidden bg-surface">
-                  <ResponsiveImage
+                  <CasePhoto
                     src={item.image.src}
                     alt={item.image.alt}
+                    lqip={item.image.lqip}
                     fill
                     sizes="(min-width: 768px) 50vw, 100vw"
                     className="object-cover transition-transform duration-700 ease-[var(--ease-out-expo)] motion-safe:group-hover:scale-[1.04]"
@@ -94,7 +96,7 @@ export function CaseMore({ items }: { items: readonly CaseMoreItem[] }) {
                   />
                 </div>
                 <p className="mt-4 text-[clamp(1.75rem,2.4vw,2.75rem)] font-light leading-none tracking-[-0.04em]">{item.name}</p>
-                <p className="mt-2 max-w-[36ch] text-base font-normal leading-relaxed text-foreground/70">{item.line}</p>
+                <p className="mt-2 max-w-[36ch] text-base font-normal leading-relaxed text-copy">{item.line}</p>
               </TransitionLink>
             </li>
           ))}

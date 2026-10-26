@@ -15,7 +15,7 @@ export function ErrorFoundation({
       <h1 className="mt-4 text-3xl font-medium tracking-tight">
         The page could not finish rendering.
       </h1>
-      <p className="mt-4 max-w-[60ch] text-sm leading-relaxed text-foreground/75">
+      <p className="mt-4 max-w-[60ch] text-sm leading-relaxed text-copy">
         {error.message || "An unexpected error occurred."}
       </p>
       <button

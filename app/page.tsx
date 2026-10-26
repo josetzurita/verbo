@@ -13,7 +13,7 @@ export default async function HomePage() {
   return (
     <>
       <IntroLoader cases={cases} />
-      <div className="relative z-[var(--z-raised)] bg-background">
+      <div data-edge-source="" className="relative z-[var(--z-raised)] bg-background">
         <section id="top" className="flex min-h-[100dvh] flex-col">
           <HeroIntro />
         </section>

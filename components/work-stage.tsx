@@ -3,22 +3,15 @@
 import { useEffect, useRef } from "react";
 import type { WorkCase } from "@/lib/home-content";
 import type { Service } from "@/lib/services";
-import { finishHomeHero, homeHeroRequested, HOME_SCROLL_KEY } from "./home-scroll";
+import { anchorTop, finishHomeHero, homeHeroRequested, HOME_SCROLL_KEY } from "./home-scroll";
 import { CustomEase, gsap, registerGsap, ScrollTrigger, useGSAP } from "./gsap";
 import { ResponsiveImage } from "./responsive-image";
 import { HANDOFF_VIEWPORTS, ServicesHandoff } from "./services-handoff";
 import { TransitionLink } from "./transition-link";
 import { useRouteTransition } from "./use-route-transition";
 import { useSmoothScroll, type SmoothScrollToOptions } from "./use-smooth-scroll";
-
-const imageBorders = [
-  "var(--trail-blue)",
-  "var(--trail-amber)",
-  "var(--trail-yellow)",
-  "var(--foreground)",
-  "color-mix(in srgb, var(--trail-blue) 55%, var(--foreground))",
-  "color-mix(in srgb, var(--trail-amber) 50%, var(--foreground))",
-] as const;
+import { ViewSquare } from "./view-square";
+import { imageBorders } from "./image-borders";
 
 const STEP_EASE = "power3.out";
 const CARD_EASE = "service-card-out";
@@ -39,6 +32,8 @@ function cardSettleEase() {
 }
 const FADE_DURATION = 0.8;
 const STEP = 0.6;
+// Where the #services marker sits in the handoff: just past the point the first service card lands.
+const SERVICES_MARK = 0.3;
 
 function stepSpans(count: number, viewHeight: number) {
   const span = Math.round(viewHeight * STEP);
@@ -152,6 +147,7 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
         const titleRow = root.querySelector<HTMLElement>(".services-title-row");
         const titleWords = gsap.utils.toArray<HTMLElement>(".services-title-word", root);
         const serviceCards = gsap.utils.toArray<HTMLElement>(".services-handoff-stage .services-card", root);
+        const servicesMark = root.querySelector<HTMLElement>("#services");
         const count = cards.length;
         if (!track || !scene || !column || count < 2) {
           return;
@@ -168,7 +164,21 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
         }
         const savedScroll = Number(sessionStorage.getItem(HOME_SCROLL_KEY));
         const hasSavedScroll = !homeHeroRequested() && Number.isFinite(savedScroll) && savedScroll > 0;
-        let restoring = hasSavedScroll;
+        // Arriving on /#section (a menu link from another page): go to that section, not the saved
+        // scroll. Keep it there through the layout refreshes until the visitor scrolls.
+        const hashNode =
+          !homeHeroRequested() && window.location.hash.length > 1
+            ? document.getElementById(decodeURIComponent(window.location.hash.slice(1)))
+            : null;
+        let followHash = Boolean(hashNode);
+        const stopFollow = () => {
+          followHash = false;
+        };
+        const followInputs = ["wheel", "touchstart", "keydown", "pointerdown"] as const;
+        for (const type of followInputs) {
+          window.addEventListener(type, stopFollow, { passive: true });
+        }
+        let restoring = hasSavedScroll && !followHash;
         const previousRestoration = history.scrollRestoration;
         history.scrollRestoration = "manual";
         const persistScroll = () => {
@@ -434,6 +444,10 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
             }
             return;
           }
+          if (followHash && hashNode && alive) {
+            scrollToRef.current(anchorTop(hashNode), { immediate: true, force: true });
+            return;
+          }
           if (!restoring || !alive || restoreLock) {
             return;
           }
@@ -466,7 +480,13 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
           pinType: "fixed",
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          onRefresh: (self) => sync(self, true),
+          onRefresh: (self) => {
+            if (servicesMark) {
+              const { lastOffset, handoff } = measure();
+              servicesMark.style.top = `${Math.round(lastOffset + handoff * SERVICES_MARK)}px`;
+            }
+            sync(self, true);
+          },
           onUpdate: (self) => sync(self, false),
         });
 
@@ -544,12 +564,35 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
           }
           window.removeEventListener("scroll", onScroll);
           window.removeEventListener("pagehide", persistScroll);
+          for (const type of followInputs) {
+            window.removeEventListener(type, stopFollow);
+          }
           ScrollTrigger.removeEventListener("refreshInit", pinHeroBeforeRefresh);
           ScrollTrigger.removeEventListener("refresh", restoreScroll);
           history.scrollRestoration = previousRestoration;
           gsap.killTweensOf(progress);
           trigger.kill();
           delete root.dataset.returning;
+          servicesMark?.style.removeProperty("top");
+        };
+      });
+
+      // Reading layout: the #services marker sits on the services block.
+      mm.add("(max-width: 767px), (prefers-reduced-motion: reduce)", () => {
+        const servicesMark = root.querySelector<HTMLElement>("#services");
+        const reading = root.querySelector<HTMLElement>(".services-handoff-reading");
+        if (!servicesMark || !reading) {
+          return;
+        }
+        const place = () => {
+          servicesMark.style.top = `${Math.round(reading.getBoundingClientRect().top - root.getBoundingClientRect().top)}px`;
+        };
+        place();
+        const observer = new ResizeObserver(place);
+        observer.observe(root);
+        return () => {
+          observer.disconnect();
+          servicesMark.style.removeProperty("top");
         };
       });
 
@@ -566,6 +609,8 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
       id="work"
       className="theme-paper relative z-[var(--z-raised)] bg-background text-foreground"
     >
+      {/* The menu's Services link lands here; the top is set once the layout is measured. */}
+      <span id="services" aria-hidden="true" className="pointer-events-none absolute top-0 left-0 h-px w-px" />
       <div className="work-track relative bg-background">
         <div className="work-stage relative h-[100dvh] items-center gap-8 overflow-hidden px-12 pt-[8rem] pb-12">
           <div className="work-stage-meta relative z-[1] h-full min-h-0 min-w-0">
@@ -596,7 +641,7 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
                 {cases.map((item, index) => (
                   <li key={item.name} className="work-card pointer-events-none absolute top-1/2 left-1/2 w-[min(92%,32rem)] will-change-transform">
                     <div
-                      className="work-card-frame h-[34dvh] overflow-hidden border-2 bg-surface"
+                      className="work-card-frame relative h-[34dvh] overflow-hidden border-2 bg-surface"
                       style={{ borderColor: imageBorders[index] ?? "var(--foreground)" }}
                     >
                       <ResponsiveImage
@@ -611,6 +656,7 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
                           <p className="flex h-full items-end px-4 py-6 text-sm text-foreground/70">{item.name}</p>
                         }
                       />
+                      {item.href ? <ViewSquare /> : null}
                     </div>
                   </li>
                 ))}
@@ -641,7 +687,7 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
                   <h3 className="mt-3 text-[clamp(2.75rem,3.6vw,4.25rem)] font-medium leading-[1.02] tracking-[-0.04em]">
                     {item.name}
                   </h3>
-                  <p className="work-copy-body mt-4 text-base font-normal leading-relaxed">{item.description}</p>
+                  <p className="work-copy-body mt-4 text-base font-normal leading-relaxed text-copy">{item.description}</p>
                 </li>
               ))}
             </ol>
@@ -664,7 +710,7 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
             <p className="text-sm font-normal leading-relaxed">{item.tag}</p>
             <h3 className="text-[clamp(2.25rem,8vw,3rem)] font-medium leading-[1.05] tracking-[-0.04em]">
               {item.href ? (
-                <TransitionLink href={item.href} className="after:absolute after:inset-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">
+                <TransitionLink href={item.href} className="after:absolute after:inset-0 after:z-[2] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">
                   {item.name}
                 </TransitionLink>
               ) : (
@@ -672,7 +718,7 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
               )}
             </h3>
             <div
-              className="border-2 bg-surface"
+              className="relative border-2 bg-surface"
               style={{ borderColor: imageBorders[index] ?? "var(--foreground)" }}
             >
               <ResponsiveImage
@@ -684,8 +730,9 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
                 className="h-auto w-full"
                 fallback={<p className="px-4 py-16 text-sm">{item.name}</p>}
               />
+              {item.href ? <ViewSquare /> : null}
             </div>
-            <p className="text-base font-normal leading-relaxed">{item.description}</p>
+            <p className="text-base font-normal leading-relaxed text-copy">{item.description}</p>
             <p className="text-sm font-normal leading-relaxed">{item.services}</p>
           </li>
         ))}

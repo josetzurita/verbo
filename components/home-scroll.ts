@@ -25,6 +25,16 @@ export function homeHeroRequested() {
   return sessionStorage.getItem(HOME_SCROLL_RESET_KEY) === "1";
 }
 
+// Where a home section starts. A sticky section reports where it is stuck, not where it starts,
+// so measure it from the block before it.
+export function anchorTop(node: HTMLElement) {
+  const before = node.previousElementSibling;
+  if (getComputedStyle(node).position === "sticky" && before) {
+    return before.getBoundingClientRect().bottom + window.scrollY;
+  }
+  return node.getBoundingClientRect().top + window.scrollY;
+}
+
 export function finishHomeHero() {
   sessionStorage.removeItem(HOME_SCROLL_RESET_KEY);
   sessionStorage.setItem(HOME_SCROLL_KEY, "0");

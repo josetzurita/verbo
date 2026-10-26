@@ -83,7 +83,7 @@ export function DialogDescription({
 }: ComponentPropsWithoutRef<typeof DialogPrimitive.Description>) {
   return (
     <DialogPrimitive.Description
-      className={cn("text-sm leading-relaxed text-foreground/75", className)}
+      className={cn("text-sm leading-relaxed text-copy", className)}
       {...props}
     />
   );

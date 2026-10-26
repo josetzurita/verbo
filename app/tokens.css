@@ -13,6 +13,8 @@
   --trail-blue: #2d83ea;
   --trail-yellow: #fefd04;
   --about-card-plain: white;
+  /* Body copy is the foreground at this strength (text-copy), so headings lead. Change it here only. */
+  --copy-mix: 70%;
 
   --font-sans: var(--font-figtree), "Figtree", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", monospace;
@@ -376,6 +378,7 @@ header[data-surface="paper"] {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-copy: color-mix(in srgb, var(--foreground) var(--copy-mix), transparent);
   --color-surface: var(--surface);
   --color-surface-muted: var(--surface-muted);
   --color-border: var(--border);

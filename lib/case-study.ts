@@ -5,6 +5,8 @@ export type CaseImage = {
   height: number;
   // CSS object-position from the Studio hotspot. Absent means centered.
   focus?: string;
+  // Sanity's base64 blur preview, shown while the image loads. Absent on placeholders.
+  lqip?: string;
 };
 
 export type CaseCard = {

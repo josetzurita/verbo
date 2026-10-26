@@ -53,7 +53,8 @@ type RawProject = {
   caseStudy?: RawStudy | null;
 };
 
-const IMAGE = `{ "src": asset->url, "width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height, alt, hotspot }`;
+// lqip is a tiny blurred copy of the image; case pages show it while the real one loads.
+const IMAGE = `{ "src": asset->url, "width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height, "lqip": asset->metadata.lqip, alt, hotspot }`;
 
 const PROJECTS_QUERY = `*[_type == "project" && defined(slug.current)] | order(order asc) {
   name,
@@ -98,6 +99,7 @@ function toImage(raw: RawImage | undefined, field: string): CaseImage {
     width: need(raw?.width, `${field}.width`),
     height: need(raw?.height, `${field}.height`),
     focus: focusOf(raw?.hotspot),
+    lqip: raw?.lqip ?? undefined,
   };
 }
 

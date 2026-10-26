@@ -134,6 +134,19 @@ html.intro-skip .intro-loader {
   letter-spacing: -0.04em;
 }
 
+/* Case title: each line keeps its break, so size the longest line to the page width.
+   0.43em is Figtree Light's average advance at -0.055em tracking, measured with a little headroom. */
+.case-title {
+  --case-gutter: 1.25rem;
+  font-size: min(15rem, 11.6vw, calc((100vw - 2 * var(--case-gutter)) / (var(--title-chars, 21) * 0.43)));
+}
+
+@media (min-width: 768px) {
+  .case-title {
+    --case-gutter: 3rem;
+  }
+}
+
 /* /work filter chips share the deliverable pill shape. */
 .work-filter-row {
   display: flex;
@@ -180,8 +193,14 @@ html.intro-skip .intro-loader {
   font-size: 0.8125rem;
 }
 
+/* Body copy dim where a text color can't be used: the footer paragraph sits in a blend-difference group on desktop. */
+.copy-dim {
+  opacity: var(--copy-mix);
+}
+
 .services-card-copy {
   margin: 0;
+  color: var(--color-copy);
   font-size: 1.125rem;
   font-weight: 300;
   line-height: 1.45;
@@ -488,6 +507,53 @@ html.intro-skip .intro-loader {
   width: var(--close-float-w);
 }
 
+/* md and up: dark until the reveal is near (see CloseSection), so the fixed footer never tints Safari's
+   toolbars cream. Phones keep the paper footer, which sits in the page flow there. */
+@media (min-width: 768px) {
+  #close:not(.close-armed) {
+    background-color: var(--foreground);
+  }
+}
+
+/* Phone footer: one slow strip of photos and WhatsApp squares. Transform only; a touch holds it still. */
+.close-strip {
+  --strip-h: clamp(4rem, 12dvh, 6.5rem);
+}
+
+.close-strip-track {
+  animation: close-strip 48s linear infinite;
+  will-change: transform;
+}
+
+.close-strip:active .close-strip-track {
+  animation-play-state: paused;
+}
+
+@keyframes close-strip {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .close-strip {
+    overflow-x: auto;
+  }
+
+  .close-strip-track {
+    animation: none;
+  }
+}
+
+.close-whatsapp-icon {
+  display: block;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: currentColor;
+  -webkit-mask: url("/close/whatsapp.png") center / contain no-repeat;
+  mask: url("/close/whatsapp.png") center / contain no-repeat;
+}
+
 .cursor-whatsapp {
   display: block;
   width: 3.5rem;
@@ -500,6 +566,39 @@ html.intro-skip .intro-loader {
 @media (max-width: 767px) {
   .close-float {
     width: 5.5rem;
+  }
+
+  /* Phone line breaks: even out headings, and keep a single word off the last line of a paragraph. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* Menu motion lives in home-nav.tsx (GSAP). */
+.menu-card-arrow {
+  transition: transform var(--duration-fast, 0.2s) ease-out;
+}
+
+/* Phone project carousels (menu, case "More work"): swipe, no visible scrollbar. */
+.menu-track,
+.swipe-track {
+  scrollbar-width: none;
+}
+
+.menu-track::-webkit-scrollbar,
+.swipe-track::-webkit-scrollbar {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .menu-card:hover .menu-card-arrow {
+    transform: translateX(0.3rem);
   }
 }
 

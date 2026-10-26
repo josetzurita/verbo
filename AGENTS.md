@@ -12,6 +12,7 @@ Read this file first. It is meant to replace a full codebase read. Open a file o
 - Exactly one Lenis instance, created only when `motion.smoothScroll` is true.
 - Route transitions are `none` or `overlay`. Overlay visuals live in `app/route-overlay.tsx`.
 - Semantic tokens only. No Inter, no Lucide, no `#000000` / `#ffffff`.
+- Body copy (running paragraphs) uses `text-copy`. How dim it is lives in `--copy-mix` in `app/tokens.css`; change it there, never per component. Headings, links and small labels stay at full foreground.
 - Visible copy uses hyphens, not em dashes.
 - Production identity comes from `project.config.ts`. Do not invent missing values.
 - `/styleguide` is a development specimen. Keep it out of public navigation. It is noindexed. Production returns 404 unless `ENABLE_STYLEGUIDE=true`.
@@ -66,7 +67,7 @@ Stack: Next.js 15 App Router, React 19, Tailwind v4, GSAP + ScrollTrigger (+ Cus
 | Copy, cases, services, about, close (placeholders) | `lib/home-content.ts` |
 | Projects and services from Sanity | `lib/projects.ts`, `lib/services.ts` (services double as filter categories) |
 | Logo and mark paths | `lib/brand-paths.ts` |
-| Nav, menu dialog, paper surface flip, hide on scroll | `components/home-nav.tsx`, `components/nav-mark.tsx` |
+| Nav, menu dialog, paper surface flip, hide on scroll | `components/home-nav.tsx`, `components/nav-mark.tsx`. Menu copy is `menu` in `lib/home-content.ts`. Its section links target `#belief`, `#work`, `#services` (a marker the Work stage places at the first service card), `#about` and `#contact` (a marker before the footer). Arriving on `/#section` overrides the saved home scroll. |
 | Crosshair cursor and image trail | `components/coordinate-cursor.tsx`, `components/cursor-trail.ts`, `components/underline-link.tsx` |
 | Lenis setup and GSAP sync | `components/smooth-scroll-provider.tsx`, `smooth-scroll-options.ts` (`lerp 0.25`), `smooth-scroll-sync.ts` |
 | Scroll API (`scrollTo`, `duration`, `immediate`) | `components/use-smooth-scroll.ts` |
@@ -92,4 +93,5 @@ Stack: Next.js 15 App Router, React 19, Tailwind v4, GSAP + ScrollTrigger (+ Cus
 - Studio: `../studio-verbo-brands` (deployed to verbo-brands.sanity.studio). Types: `project`, `service`, `deliverable`, `caseImage`.
 - Projects reference services and deliverables, and those references drive the `/work` filter. Services feed the "Our expertise" cards and the menu.
 - Document ids use dashes (`project-albora`). A dotted id is a private path, and the public site cannot read it.
+- Case pages load images through `components/case-photo.tsx` (four widths, quality 85, Sanity `lqip` blur placeholder). After publishing new images, run `node scripts/warm-case-images.mjs` so the first visitor gets cached transforms. The homepage keeps `ResponsiveImage`.
 - Import from Drive: `node scripts/fetch-drive.mjs` (downloads and optimizes to `../verbo-drive/`), then `npx sanity exec scripts/import-drive.ts --with-user-token` (add `-- --dry` to validate). Content lives in `scripts/content/*.json`.

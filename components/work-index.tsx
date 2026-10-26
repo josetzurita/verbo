@@ -5,6 +5,7 @@ import type { WorkCase } from "@/lib/home-content";
 import type { Service } from "@/lib/services";
 import { ResponsiveImage } from "./responsive-image";
 import { TransitionLink } from "./transition-link";
+import { ViewSquare } from "./view-square";
 
 const imageBorders = [
   "var(--trail-blue)",
@@ -155,7 +156,7 @@ export function WorkIndex({ cases, services }: { cases: readonly WorkCase[]; ser
         <ol className="mt-6 grid gap-x-5 gap-y-16 md:grid-cols-2">
           {shown.map((item, index) => (
             <li key={item.name} data-coordinate-project="" className="relative grid content-start gap-4">
-              <div className="border-2 bg-surface" style={{ borderColor: imageBorders[index % imageBorders.length] }}>
+              <div className="relative border-2 bg-surface" style={{ borderColor: imageBorders[index % imageBorders.length] }}>
                 <ResponsiveImage
                   src={item.image}
                   alt={item.alt}
@@ -166,13 +167,14 @@ export function WorkIndex({ cases, services }: { cases: readonly WorkCase[]; ser
                   style={{ objectPosition: item.focus }}
                   fallback={<p className="px-4 py-16 text-sm">{item.name}</p>}
                 />
+                {item.href ? <ViewSquare /> : null}
               </div>
               <p className="text-sm font-normal leading-relaxed">{item.tag}</p>
               <h2 className="text-[clamp(2rem,3vw,3.25rem)] font-medium leading-[1.02] tracking-[-0.04em]">
                 {item.href ? (
                   <TransitionLink
                     href={item.href}
-                    className="after:absolute after:inset-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+                    className="after:absolute after:inset-0 after:z-[2] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
                   >
                     {item.name}
                   </TransitionLink>
@@ -180,7 +182,7 @@ export function WorkIndex({ cases, services }: { cases: readonly WorkCase[]; ser
                   item.name
                 )}
               </h2>
-              <p className="max-w-[56ch] text-base font-normal leading-relaxed">{item.description}</p>
+              <p className="max-w-[56ch] text-base font-normal leading-relaxed text-copy">{item.description}</p>
               <p className="text-sm font-normal leading-relaxed">{item.services}</p>
             </li>
           ))}

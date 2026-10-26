@@ -37,13 +37,6 @@ export function CaseMotion({ children }: { children: ReactNode }) {
           stagger: 0.08,
           delay: delay + 0.35,
         });
-        gsap.from(q("[data-case-wordmark]"), {
-          yPercent: 30,
-          autoAlpha: 0,
-          duration: 1.3,
-          ease: "power3.out",
-          delay: delay + 0.45,
-        });
 
         const hero = root.querySelector<HTMLElement>("[data-case-hero]");
         const heroMedia = hero?.querySelector("img");

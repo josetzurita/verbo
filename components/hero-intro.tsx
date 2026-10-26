@@ -74,11 +74,11 @@ export function HeroIntro() {
 
   return (
     <div ref={rootRef} className="flex min-h-0 flex-1 flex-col">
-      <div className="hero-copy flex min-h-0 w-full flex-1 items-center overflow-x-auto px-5 pt-[8rem] md:px-12">
-        <div className="flex w-max flex-col">
+      <div className="hero-copy flex min-h-0 w-full flex-1 items-center px-5 pt-24 md:overflow-x-auto md:px-12 md:pt-[8rem]">
+        <div className="relative flex w-full flex-col max-md:pb-[4.5rem] md:w-max">
           <h1
             aria-label="Creating to shape the world."
-            className="text-[clamp(1.7rem,6.66vw,7.184rem)] font-light leading-[0.96] tracking-[-0.04em]"
+            className="text-[12.2vw] font-light leading-[0.96] tracking-[-0.04em] md:text-[clamp(1.7rem,6.66vw,7.184rem)]"
           >
             <span className="block whitespace-nowrap">
               {firstLine.map((word, index) => (
@@ -99,14 +99,14 @@ export function HeroIntro() {
                 entrance="mount"
                 delay={0.38}
                 ruleClassName="translate-y-3"
-                className="bottom-[calc(1.25rem+0.29em)] ml-16 align-baseline"
+                className="bottom-[calc(1.25rem+0.29em)] ml-16 align-baseline max-md:absolute! max-md:bottom-0 max-md:left-0 max-md:ml-0 max-md:text-[20px] max-[360px]:text-[17px]!"
               >
                 {discoveryLabel}
               </UnderlineLink>
             </span>
           </h1>
           <div className="mt-6 max-w-[min(48ch,calc(100vw-2.5rem))] overflow-hidden pb-[0.12em] md:max-w-[min(48ch,calc(100vw-6rem))]">
-            <p className="hero-lead type-body">{heroLead}</p>
+            <p className="hero-lead type-body text-copy">{heroLead}</p>
           </div>
         </div>
       </div>

@@ -1,15 +1,16 @@
+import type { CSSProperties } from "react";
 import type { CaseImage, CaseStudy } from "@/lib/case-study";
 import { cn } from "@/lib/utils";
 import { CaseMore } from "./case-more";
 import { CaseMotion } from "./case-motion";
+import { CasePhoto } from "./case-photo";
 import { CloseSection } from "./close-section";
-import { ResponsiveImage } from "./responsive-image";
 import { UnderlineLink } from "./underline-link";
 
-const CARD_SPANS = ["md:col-span-5", "md:col-span-4", "md:col-span-3"] as const;
+const FULL_WIDTH = "(min-width: 768px) calc(100vw - 6rem), calc(100vw - 2.5rem)";
 
 const label = "text-sm font-normal leading-relaxed tracking-[-0.02em] text-foreground/60";
-const body = "text-[18px] font-light leading-[1.25] tracking-[-0.04em]";
+const body = "text-[18px] font-light leading-[1.25] tracking-[-0.04em] text-copy";
 const sectionTitle = "text-[clamp(2.5rem,4.2vw,4.75rem)] font-light leading-[0.95] tracking-[-0.04em]";
 const gutter = "px-5 md:px-12";
 const section = "pt-24 md:pt-40";
@@ -20,24 +21,34 @@ function Frame({
   className,
   priority,
   cover,
+  natural,
+  eager,
 }: {
   image: CaseImage;
   sizes: string;
   className?: string;
   priority?: boolean;
   cover?: boolean;
+  /** Frame takes the image's own shape, so nothing is cropped. */
+  natural?: boolean;
+  /** Fetch right after the hero instead of waiting for the scroll to come near. */
+  eager?: boolean;
 }) {
   return (
     <div
       data-case-frame=""
       className={cn(cover ? "absolute inset-0" : "relative", "overflow-hidden bg-surface", className)}
+      style={natural ? { aspectRatio: `${image.width} / ${image.height}` } : undefined}
     >
-      <ResponsiveImage
+      <CasePhoto
         src={image.src}
         alt={image.alt}
+        lqip={image.lqip}
         fill
         sizes={sizes}
         priority={priority}
+        loading={eager ? "eager" : undefined}
+        fetchPriority={eager ? "low" : undefined}
         className="object-cover will-change-transform"
         style={{ objectPosition: image.focus }}
       />
@@ -50,7 +61,7 @@ function MaskedLine({ text }: { text: string }) {
   return (
     <span aria-hidden="true" className="block whitespace-nowrap">
       {words.map((word, index) => (
-        <span key={`${word}-${index}`} className="inline-block overflow-hidden pb-[0.22em] align-bottom">
+        <span key={`${word}-${index}`} className="inline-block overflow-hidden pb-[0.18em] -mb-[0.18em] align-bottom">
           <span data-case-word="" className="inline-block will-change-transform">
             {word}
             {index < words.length - 1 ? "\u00a0" : ""}
@@ -109,7 +120,6 @@ function ClosingMeta({ study }: { study: CaseStudy }) {
 }
 
 export function CaseStudyView({ study }: { study: CaseStudy }) {
-  const [trioA, trioB, trioC] = study.gallery.trio;
   const [visibleA, visibleB, visibleC, visibleD] = study.visible.items;
   const [pairNarrow, pairWide] = study.pair;
 
@@ -122,7 +132,8 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
             <header className={cn(gutter, "pt-24")}>
               <h1
                 aria-label={study.title.join(" ")}
-                className="text-[clamp(2.25rem,11.6vw,15rem)] font-light leading-[0.92] tracking-[-0.055em]"
+                className="case-title font-light leading-[0.95] tracking-[-0.055em]"
+                style={{ "--title-chars": Math.max(...study.title.map((line) => line.length)) } as CSSProperties}
               >
                 <MaskedLine text={study.title[0]} />
                 <MaskedLine text={study.title[1]} />
@@ -133,25 +144,16 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
             </header>
 
             <figure data-case-hero="" className="relative mt-14 h-[78svh] overflow-hidden bg-surface md:mt-20 md:h-auto md:aspect-[16/9]">
-              <ResponsiveImage
+              <CasePhoto
                 src={study.hero.src}
                 alt={study.hero.alt}
+                lqip={study.hero.lqip}
                 fill
                 priority
-                sizes="100vw"
+                        sizes="100vw"
                 className="object-cover will-change-transform"
                 style={{ objectPosition: study.hero.focus }}
               />
-              <div aria-hidden="true" className="absolute inset-0 bg-foreground/35" />
-              <p
-                aria-hidden="true"
-                data-case-wordmark=""
-                className="absolute inset-0 flex items-center justify-center text-background"
-              >
-                <span className="w-[min(18.75rem,78vw)] text-center text-[clamp(4rem,14vw,5.75rem)] font-light leading-[0.85] tracking-[-0.06em]">
-                  {study.wordmark}
-                </span>
-              </p>
             </figure>
 
             <section aria-labelledby="case-statement" className={cn(gutter, section, "grid gap-16 md:grid-cols-12 md:gap-5")}>
@@ -159,7 +161,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
                 <h2
                   id="case-statement"
                   data-case-reveal=""
-                  className="max-w-[16ch] text-[clamp(2rem,3.4vw,3.75rem)] font-light leading-[1] tracking-[-0.04em] md:sticky md:top-28"
+                  className="text-[1.75rem] font-light md:max-w-[16ch] md:text-[clamp(2rem,3.4vw,3.75rem)] leading-[1] tracking-[-0.04em] md:sticky md:top-28"
                 >
                   {study.statement}
                 </h2>
@@ -189,12 +191,10 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
             </section>
 
             <section aria-label="Gallery" className={cn(gutter, section, "grid gap-5")}>
-              <Frame image={study.gallery.wide} sizes="100vw" className="aspect-[16/9]" />
-              <div className="grid gap-5 md:grid-cols-[1.25fr_0.8fr_1.25fr]">
-                <Frame image={trioA} sizes="(min-width: 768px) 38vw, 100vw" className="aspect-[4/5] md:aspect-auto md:h-[40vw]" />
-                <Frame image={trioB} sizes="(min-width: 768px) 25vw, 100vw" className="aspect-[3/4] md:aspect-auto md:h-[40vw]" />
-                <Frame image={trioC} sizes="(min-width: 768px) 38vw, 100vw" className="aspect-[4/5] md:aspect-auto md:h-[40vw]" />
-              </div>
+              <Frame image={study.gallery.wide} sizes={FULL_WIDTH} className="aspect-[16/9]" eager />
+              {study.gallery.trio.map((image) => (
+                <Frame key={image.src} image={image} sizes={FULL_WIDTH} natural />
+              ))}
               <div className="relative">
                 <Frame image={study.gallery.plate} sizes="100vw" className="aspect-[4/5] md:aspect-[21/9]" />
                 <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-foreground/25" />
@@ -223,16 +223,16 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
                   </div>
                 </div>
               </div>
-              <ul className="mt-5 grid gap-5 md:grid-cols-12">
-                {study.layers.cards.map((card, index) => (
-                    <li key={card.title} className={cn("relative flex min-h-[34rem] flex-col justify-end overflow-hidden bg-surface p-3 md:h-[44vw] md:max-h-[52rem] md:p-4", CARD_SPANS[index])}>
-                      <Frame image={card.image} sizes="(min-width: 768px) 40vw, 100vw" cover />
-                      <div data-case-reveal="" className="relative bg-surface p-5 md:p-6">
-                        <p className="text-sm font-normal leading-relaxed tracking-[-0.02em]">{card.label}</p>
-                        <h3 className="mt-1 text-[clamp(1.75rem,2.6vw,2.75rem)] font-light leading-none tracking-[-0.04em]">{card.title}</h3>
-                        <p className="mt-4 max-w-[30ch] text-base font-light leading-[1.25] tracking-[-0.03em]">{card.body}</p>
-                      </div>
-                    </li>
+              <ul className="mt-16 grid gap-16 md:mt-24 md:gap-24">
+                {study.layers.cards.map((card) => (
+                  <li key={card.title} className="grid gap-6 md:grid-cols-12 md:items-start md:gap-5">
+                    <div data-case-reveal="" className="max-md:order-last md:sticky md:top-28 md:col-span-4">
+                      <p className="text-sm font-normal leading-relaxed tracking-[-0.02em]">{card.label}</p>
+                      <h3 className="mt-1 text-[clamp(1.75rem,2.6vw,2.75rem)] font-light leading-none tracking-[-0.04em]">{card.title}</h3>
+                      <p className="mt-4 max-w-[30ch] text-base font-light leading-[1.25] tracking-[-0.03em] text-copy">{card.body}</p>
+                    </div>
+                    <Frame image={card.image} sizes="(min-width: 768px) 66vw, calc(100vw - 2.5rem)" natural className="md:col-span-8" />
+                  </li>
                 ))}
               </ul>
             </section>
@@ -246,7 +246,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
                   <li
                     key={pair.from}
                     data-case-shift=""
-                    className="grid gap-x-5 gap-y-1 overflow-hidden border-t border-foreground/15 py-5 text-[clamp(1.9rem,3.6vw,4.25rem)] font-light leading-[1.02] tracking-[-0.045em] md:grid-cols-2 md:py-7"
+                    className="grid gap-x-5 gap-y-1 overflow-hidden border-t border-foreground/15 py-5 text-[1.5rem] font-light leading-[1.02] tracking-[-0.045em] md:grid-cols-2 md:py-7 md:text-[clamp(1.9rem,3.6vw,4.25rem)]"
                   >
                     <span data-case-from="" className="block text-foreground/35 will-change-transform">
                       {pair.from}

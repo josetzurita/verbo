@@ -1,4 +1,25 @@
 export const discoveryLabel = "Schedule a free discovery session";
+export const viewLabel = "View";
+
+// Targets are ids on the home page, or a path (starts with "/") for another page. #services and #contact are markers placed by the Work stage and the footer.
+export const menu = {
+  title: "Menu",
+  closeLabel: "Close",
+  links: [
+    { label: "Why us?", target: "#belief" },
+    { label: "Work", target: "/work" },
+    { label: "Services", target: "#services" },
+    { label: "About", target: "#about" },
+    { label: "Contact", target: "#contact" },
+  ],
+  headerWorkLabel: "Our Work",
+  selectedWorkLabel: "Selected work",
+  allProjectsLabel: "All projects",
+  allProjectsHref: "/work",
+  whatsappShort: "WhatsApp",
+  previousLabel: "Previous project",
+  nextLabel: "Next project",
+} as const;
 
 export const heroSlogan = ["Strategy", "Brand & Growth"] as const;
 
@@ -85,8 +106,8 @@ export const services = [
 export const about = {
   title: ["A verb does", "not describe.", "It acts."] as const,
   lead: [
-    "Verbo Brands grew out of years of building brands for others. Of understanding business from the inside, learning what works and what doesn't, and growing as a strategist and as a person.",
-    "We are a boutique consultancy based in Bogotá - small by choice, deep in our approach by conviction. We work with only a few brands at a time because we believe full dedication cannot be divided.",
+    "Verbo Brands grew out of years of building brands for others.\nOf understanding business from the inside, learning what works and what doesn't, and growing as a strategist and as a person.",
+    "We are a boutique consultancy based in Bogotá - small by choice, deep in our approach by conviction. We work with only a few brands at a time because we believe full dedication cannot be divided.",
   ] as const,
   aside:
     "What sets us apart isn't the tools we use, but how we think: we start with a genuine understanding of people and businesses, connect strategy with creativity, and measure success in growth, not likes.",
@@ -111,6 +132,8 @@ export const close = {
   body: "If you believe your brand can do more for your business, we want to hear from you.",
   email: "hola@verbobrands.co",
   emailHref: "mailto:hola@verbobrands.co",
+  whatsappHref: "https://wa.me/573183460278?text=Hi%20Verbo%2C%20I%27d%20like%20to%20talk%20about%20my%20brand.",
+  whatsappLabel: "Chat with Verbo on WhatsApp",
   studio: "Verbo Brands",
   practice: "Strategy, brand and growth",
   plate: "/close/plate.jpg",
