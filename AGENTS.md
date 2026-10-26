@@ -2,7 +2,7 @@
 
 Verbo, a branding-agency portfolio. One theme for the whole page: field `#39170d`, type `#faf5ee`, Figtree Light. Scaffolded from the CDS client-site starter. Keep the production shell constraints.
 
-Read this file first. It is meant to replace a full codebase read. Open a file only when the task touches it. `HANDOFF.md` has the longer history.
+Read this file first. It is meant to replace a full codebase read. Open a file only when the task touches it.
 
 ## Rules
 
@@ -27,7 +27,7 @@ Read this file first. It is meant to replace a full codebase read. Open a file o
 
 ## Commands
 
-pnpm is not installed on the owner's machine. Use npm (the `pnpm-lock.yaml` is still the lockfile of record).
+Use npm; `package-lock.json` is the lockfile.
 
 ```bash
 npm run dev        # http://localhost:4317 (EADDRINUSE = a dev server is already running)

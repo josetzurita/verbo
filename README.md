@@ -6,19 +6,19 @@ This app is the CDS client-site starter (`templates/client-site` from [starter-w
 
 ## Run
 
-Node 20+ and pnpm 10.
+Node 20+ and npm.
 
 ```bash
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
 The dev server binds `0.0.0.0:4317`. Open [http://127.0.0.1:4317](http://127.0.0.1:4317).
 
 ```bash
-pnpm typecheck
-pnpm test
-pnpm build
+npm run typecheck
+npm test
+npm run build
 ```
 
 Identity, theme mode, and smooth scroll live in `project.config.ts`. Colors live in `app/tokens.css`. `/styleguide` is a development specimen and stays out of the public nav.
