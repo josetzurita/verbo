@@ -68,41 +68,124 @@ export function createMetadata(
   };
 }
 
-export function jsonLdWebSite(config: ProjectConfig) {
+export function organizationId(config: ProjectConfig): string {
+  return `${canonicalUrl(config)}#organization`;
+}
+
+// Organization plus WebSite, one graph in the root layout. Case and index pages point back with @id.
+export function jsonLdSite(config: ProjectConfig, services: readonly string[] = []) {
+  const org = config.site.organization;
+  const id = organizationId(config);
   return {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: config.site.name,
-    description: config.site.description,
-    url: canonicalUrl(config),
-    inLanguage: config.site.locale,
+    "@graph": [
+      {
+        "@type": "ProfessionalService",
+        "@id": id,
+        name: config.site.name,
+        description: config.site.description,
+        url: canonicalUrl(config),
+        logo: canonicalUrl(config, "/icon-512.png"),
+        image: canonicalUrl(config, DEFAULT_OG_IMAGE.path),
+        ...(org
+          ? {
+              email: org.email,
+              address: { "@type": "PostalAddress", addressLocality: org.locality, addressCountry: org.country },
+            }
+          : {}),
+        ...(services.length > 0 ? { knowsAbout: services } : {}),
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${canonicalUrl(config)}#website`,
+        name: config.site.name,
+        description: config.site.description,
+        url: canonicalUrl(config),
+        inLanguage: config.site.locale,
+        publisher: { "@id": id },
+      },
+    ],
+  };
+}
+
+export function jsonLdBreadcrumbs(
+  config: ProjectConfig,
+  trail: ReadonlyArray<{ name: string; path: string }>,
+) {
+  return {
+    "@type": "BreadcrumbList",
+    itemListElement: trail.map((crumb, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: crumb.name,
+      item: canonicalUrl(config, crumb.path),
+    })),
   };
 }
 
 export function jsonLdWebPage(
   config: ProjectConfig,
-  page: { title: string; path: string; description?: string },
+  page: {
+    type?: "WebPage" | "CollectionPage";
+    title: string;
+    path: string;
+    description?: string;
+    breadcrumbs?: ReadonlyArray<{ name: string; path: string }>;
+  },
 ) {
   return {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    name: page.title,
-    description: page.description ?? config.site.description,
-    url: canonicalUrl(config, page.path),
-    isPartOf: {
-      "@type": "WebSite",
-      name: config.site.name,
-      url: canonicalUrl(config),
-    },
+    "@graph": [
+      {
+        "@type": page.type ?? "WebPage",
+        name: page.title,
+        description: page.description ?? config.site.description,
+        url: canonicalUrl(config, page.path),
+        isPartOf: { "@id": `${canonicalUrl(config)}#website` },
+      },
+      ...(page.breadcrumbs ? [jsonLdBreadcrumbs(config, page.breadcrumbs)] : []),
+    ],
   };
 }
 
+export function jsonLdCaseStudy(
+  config: ProjectConfig,
+  study: { name: string; slug: string; summary: string; image: string; practices: readonly string[]; updatedAt?: string },
+) {
+  const path = `/work/${study.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CreativeWork",
+        name: study.name,
+        headline: `${study.name}, case study`,
+        description: study.summary,
+        url: canonicalUrl(config, path),
+        image: study.image,
+        inLanguage: config.site.locale,
+        creator: { "@id": organizationId(config) },
+        ...(study.practices.length > 0 ? { genre: study.practices } : {}),
+        ...(study.updatedAt ? { dateModified: study.updatedAt } : {}),
+      },
+      jsonLdBreadcrumbs(config, [
+        { name: config.site.name, path: "/" },
+        { name: "Work", path: "/work" },
+        { name: study.name, path },
+      ]),
+    ],
+  };
+}
+
+// Pages without a real modified date leave lastmod out instead of stamping the build time.
 export function createSitemap(
   config: ProjectConfig,
-  paths: string[],
-): Array<{ url: string; lastModified?: Date }> {
-  const lastModified = new Date();
-  return paths.map((path) => ({ url: canonicalUrl(config, path), lastModified }));
+  entries: ReadonlyArray<{ path: string; lastModified?: string }>,
+): Array<{ url: string; lastModified?: string }> {
+  return entries.map(({ path, lastModified }) => ({
+    url: canonicalUrl(config, path),
+    ...(lastModified ? { lastModified } : {}),
+  }));
 }
 
 export function createRobots(config: ProjectConfig): {

@@ -4,6 +4,9 @@
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"name": "verbo",
 	"compatibility_date": "2026-10-19",
+	// Served only from verbobrands.com, so the workers.dev copy can't be indexed as a duplicate.
+	"workers_dev": false,
+	"preview_urls": true,
 	"assets": {
 		"directory": "./out",
 		"not_found_handling": "404-page",

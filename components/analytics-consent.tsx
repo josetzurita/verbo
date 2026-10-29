@@ -85,7 +85,7 @@ export function AnalyticsConsent() {
         >
           <p className="type-body-sm text-copy">
             We use cookies to measure how the site is used. Nothing is tracked unless you accept.{" "}
-            <a className="text-foreground underline underline-offset-4" href="/privacy">
+            <a className="text-foreground underline underline-offset-4" href="/privacy/">
               Privacy policy
             </a>
           </p>

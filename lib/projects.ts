@@ -41,6 +41,7 @@ type RawStudy = {
 type RawCategory = { slug?: string; name?: string } | string | null;
 
 type RawProject = {
+  _updatedAt?: string;
   name: string;
   slug: string;
   tag?: string;
@@ -57,6 +58,7 @@ type RawProject = {
 const IMAGE = `{ "src": asset->url, "width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height, "lqip": asset->metadata.lqip, alt, hotspot }`;
 
 const PROJECTS_QUERY = `*[_type == "project" && defined(slug.current)] | order(order asc) {
+  _updatedAt,
   name,
   "slug": slug.current,
   tag,
@@ -138,6 +140,7 @@ function toStudy(project: RawProject, raw: RawStudy): Omit<CaseStudy, "more"> {
   return {
     slug: project.slug,
     name: project.name,
+    updatedAt: project._updatedAt,
     summary: need(raw.summary, "summary"),
     title: [need(t1, "title[0]"), need(t2, "title[1]")],
     wordmark: raw.wordmark || project.name,

@@ -73,6 +73,12 @@ export type ProjectConfig = {
     description: string;
     locale: string;
     canonicalUrl: string;
+    // Feeds the Organization JSON-LD. Optional so the starter's other sites can leave it out.
+    organization?: {
+      email: string;
+      locality: string;
+      country: string;
+    };
   };
   theme: {
     mode: ProjectThemeMode;
@@ -235,6 +241,15 @@ export function validateProjectConfig(
   const locale = readString(siteInput?.locale, "site.locale", issues);
   const canonicalRaw = readString(siteInput?.canonicalUrl, "site.canonicalUrl", issues);
   const canonicalUrl = validateCanonicalUrl(canonicalRaw, production, issues);
+  const organizationRaw = siteInput?.organization;
+  const organizationInput = isRecord(organizationRaw) ? organizationRaw : null;
+  const organization = organizationInput
+    ? {
+        email: readString(organizationInput.email, "site.organization.email", issues),
+        locality: readString(organizationInput.locality, "site.organization.locality", issues),
+        country: readString(organizationInput.country, "site.organization.country", issues),
+      }
+    : undefined;
 
   if (locale && !LOCALE_PATTERN.test(locale)) {
     issues.push("site.locale must be a BCP 47 language tag");
@@ -305,7 +320,7 @@ export function validateProjectConfig(
   }
 
   return {
-    site: { name, shortName, description, locale, canonicalUrl },
+    site: { name, shortName, description, locale, canonicalUrl, ...(organization ? { organization } : {}) },
     theme: { mode: mode as ProjectThemeMode, radius: radius as ProjectRadiusPolicy },
     motion: {
       profile: profile as ProjectMotionProfileName,

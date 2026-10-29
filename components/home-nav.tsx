@@ -108,7 +108,8 @@ export function HomeNav({ cases }: { cases: readonly WorkCase[] }) {
 
   function hashHref(hash: string) {
     if (hash.startsWith("/")) {
-      return hash;
+      // Plain anchors skip Link's trailingSlash handling, so add it here to avoid a redirect hop.
+      return hash.endsWith("/") ? hash : `${hash}/`;
     }
     return onHome ? hash : `/${hash}`;
   }

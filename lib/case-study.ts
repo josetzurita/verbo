@@ -31,6 +31,8 @@ export type CaseMoreItem = {
 export type CaseStudy = {
   slug: string;
   name: string;
+  // Sanity's _updatedAt; the sitemap's lastmod. Absent on placeholder studies.
+  updatedAt?: string;
   summary: string;
   title: readonly [string, string];
   wordmark: string;

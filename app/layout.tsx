@@ -8,8 +8,10 @@ import { introSkipScript } from "../components/intro-gate";
 import { MainContent } from "../components/main-content";
 import { SkipLink } from "../components/skip-link";
 import { WhatsappFab } from "../components/whatsapp-fab";
-import { createMetadata, jsonLdWebSite } from "../lib/seo";
+import { JsonLd } from "../components/json-ld";
+import { createMetadata, jsonLdSite } from "../lib/seo";
 import { getWorkCases } from "../lib/projects";
+import { getServices } from "../lib/services";
 import { htmlLang, htmlThemeDataset } from "../lib/project-config";
 import { projectConfig } from "../project.config";
 import { Providers } from "./providers";
@@ -35,7 +37,7 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cases = await getWorkCases();
+  const [cases, services] = await Promise.all([getWorkCases(), getServices()]);
 
   return (
     <html
@@ -52,12 +54,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </noscript>
       </head>
       <body>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(jsonLdWebSite(projectConfig)),
-          }}
-        />
+        <JsonLd data={jsonLdSite(projectConfig, services.map((service) => service.name))} />
         <Providers config={projectConfig}>
           <SkipLink />
           <CoordinateCursor />

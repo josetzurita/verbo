@@ -9,6 +9,11 @@ const input = {
     locale: "en",
     // Set NEXT_PUBLIC_SITE_URL at build time to serve from another address (the workers.dev preview).
     canonicalUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://verbobrands.com",
+    organization: {
+      email: "juliana@verbobrands.com",
+      locality: "Bogotá",
+      country: "CO",
+    },
   },
   theme: {
     mode: "dark",

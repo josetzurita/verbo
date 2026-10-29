@@ -141,8 +141,8 @@ export const close = {
 } as const;
 
 export const legalLinks = [
-  { label: "Privacy", href: "/privacy" },
-  { label: "Terms", href: "/terms" },
+  { label: "Privacy", href: "/privacy/" },
+  { label: "Terms", href: "/terms/" },
 ] as const;
 
 export const notFound = {

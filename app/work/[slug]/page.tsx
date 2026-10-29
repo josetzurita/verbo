@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CaseStudyView } from "@/components/case-study-view";
+import { JsonLd } from "@/components/json-ld";
 import { getCaseStudies, getCaseStudy } from "@/lib/projects";
-import { createMetadata } from "@/lib/seo";
+import { createMetadata, jsonLdCaseStudy } from "@/lib/seo";
 import { projectConfig } from "@/project.config";
 
 type PageProps = {
@@ -38,5 +39,19 @@ export default async function CaseStudyPage({ params }: PageProps) {
   if (!study) {
     notFound();
   }
-  return <CaseStudyView study={study} />;
+  return (
+    <>
+      <JsonLd
+        data={jsonLdCaseStudy(projectConfig, {
+          name: study.name,
+          slug: study.slug,
+          summary: study.summary,
+          image: study.hero.src,
+          practices: study.practices,
+          updatedAt: study.updatedAt,
+        })}
+      />
+      <CaseStudyView study={study} />
+    </>
+  );
 }
