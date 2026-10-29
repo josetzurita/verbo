@@ -134,6 +134,7 @@ export const close = {
   emailHref: "mailto:juliana@verbobrands.com",
   whatsappHref: "https://wa.me/573183460278?text=Hi%20Verbo%2C%20I%27d%20like%20to%20talk%20about%20my%20brand.",
   whatsappLabel: "Chat with Verbo on WhatsApp",
+  phone: "+57 318 346 0278",
   studio: "Verbo Brands",
   practice: "Strategy, brand and growth",
   plate: "/close/plate.jpg",
