@@ -61,3 +61,37 @@ const gate = createIntroGate(() =>
 export const introPending = gate.pending;
 export const releaseIntro = gate.release;
 export const onIntroReveal = gate.onReveal;
+
+/** Fired once the home hero's entrance has finished (or skipped under reduced motion). */
+export const HERO_DONE_EVENT = "verbo:hero-done";
+/** Longest anything waits on the hero before going ahead anyway. */
+export const HERO_FALLBACK_MS = INTRO_FALLBACK_MS + 4000;
+
+let heroDone = false;
+
+export function markHeroDone() {
+  if (heroDone) {
+    return;
+  }
+  heroDone = true;
+  window.dispatchEvent(new Event(HERO_DONE_EVENT));
+}
+
+/** Calls `listener` once the hero has played, right away if it already has. */
+export function onHeroDone(listener: () => void) {
+  if (heroDone) {
+    listener();
+    return () => undefined;
+  }
+  const run = () => {
+    clearTimeout(fallback);
+    window.removeEventListener(HERO_DONE_EVENT, run);
+    listener();
+  };
+  const fallback = setTimeout(run, HERO_FALLBACK_MS);
+  window.addEventListener(HERO_DONE_EVENT, run);
+  return () => {
+    clearTimeout(fallback);
+    window.removeEventListener(HERO_DONE_EVENT, run);
+  };
+}

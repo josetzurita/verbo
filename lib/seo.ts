@@ -83,6 +83,7 @@ export function jsonLdSite(config: ProjectConfig, services: readonly string[] = 
         "@type": "ProfessionalService",
         "@id": id,
         name: config.site.name,
+        ...(config.site.legalName ? { alternateName: config.site.legalName } : {}),
         description: config.site.description,
         url: canonicalUrl(config),
         logo: canonicalUrl(config, "/icon-512.png"),
@@ -90,6 +91,13 @@ export function jsonLdSite(config: ProjectConfig, services: readonly string[] = 
         ...(org
           ? {
               email: org.email,
+              telephone: org.telephone,
+              contactPoint: {
+                "@type": "ContactPoint",
+                contactType: "sales",
+                email: org.email,
+                telephone: org.telephone,
+              },
               address: { "@type": "PostalAddress", addressLocality: org.locality, addressCountry: org.country },
             }
           : {}),
@@ -153,15 +161,19 @@ export function jsonLdCaseStudy(
   study: { name: string; slug: string; summary: string; image: string; practices: readonly string[]; updatedAt?: string },
 ) {
   const path = `/work/${study.slug}`;
+  const url = canonicalUrl(config, path);
   return {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "CreativeWork",
+        "@id": `${url}#work`,
+        mainEntityOfPage: url,
+        isPartOf: { "@id": `${canonicalUrl(config)}#website` },
         name: study.name,
         headline: `${study.name}, case study`,
         description: study.summary,
-        url: canonicalUrl(config, path),
+        url,
         image: study.image,
         inLanguage: config.site.locale,
         creator: { "@id": organizationId(config) },
@@ -191,12 +203,11 @@ export function createSitemap(
 export function createRobots(config: ProjectConfig): {
   rules: { userAgent: string; allow: string; disallow: string[] };
   sitemap: string;
-  host: string;
 } {
+  // No Host line: only Yandex ever read it, and the canonical tags already name the host.
   return {
     rules: { userAgent: "*", allow: "/", disallow: ["/styleguide"] },
     sitemap: canonicalUrl(config, "/sitemap.xml"),
-    host: config.site.canonicalUrl,
   };
 }
 

@@ -330,7 +330,7 @@ export function CloseSection() {
           <div className="relative z-10 flex flex-col items-center gap-4 text-foreground md:text-[var(--blend-difference)] md:mix-blend-difference md:gap-6">
             <p className="type-label">{close.label}</p>
             <h2 className="w-full max-w-[40em] text-[2.4rem] font-light md:text-[clamp(2.6rem,6.4vw,5.75rem)] leading-[1.05] tracking-[-0.045em]">
-              <span className="block">{close.titleLead}</span>
+              <span className="block">{close.titleLead}</span>{" "}
               <span className="block">
                 {close.titleRest} {close.titleEmphasis}
               </span>

@@ -30,9 +30,9 @@ export const belief = {
   lines: ["Branding isn’t art.", "It’s the most", "important"] as const,
   resting: ["business", "decision a", "company can", "make."] as const,
   frames: [
-    { src: "/belief/sequence-1.png", border: "var(--trail-blue)" },
-    { src: "/belief/sequence-2.png", border: "var(--trail-amber)" },
-    { src: "/belief/sequence-3.png", border: "var(--trail-yellow)" },
+    { src: "/belief/sequence-1.webp", border: "var(--trail-blue)" },
+    { src: "/belief/sequence-2.webp", border: "var(--trail-amber)" },
+    { src: "/belief/sequence-3.webp", border: "var(--trail-yellow)" },
   ] as const,
   paragraphs: [
     "In a world where design lives in the visual and strategy lives in spreadsheets, Verbo proposes that the most powerful brand is not imagined.",
@@ -113,7 +113,7 @@ export const about = {
     "What sets us apart isn't the tools we use, but how we think: we start with a genuine understanding of people and businesses, connect strategy with creativity, and measure success in growth, not likes.",
   cta: "Meet the team",
   ctaHref: "#team",
-  portrait: "/about/portrait.png",
+  portrait: "/about/portrait.webp",
   team: [
     { name: "Juliana Cabrera", role: "Strategy", tone: "var(--trail-yellow)" },
     { name: "Juliana Cabrera", role: "Design", tone: "var(--foreground)" },

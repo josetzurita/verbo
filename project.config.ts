@@ -4,6 +4,8 @@ const input = {
   site: {
     name: "Verbo",
     shortName: "Verbo",
+    // The trade name in the legal pages and footer; also the schema alternateName.
+    legalName: "Verbo Brands",
     description:
       "Verbo is a boutique strategic branding consultancy in Bogotá. We build brands from a deep understanding of the business and the people, with rigor, judgment and soul.",
     locale: "en",
@@ -11,6 +13,7 @@ const input = {
     canonicalUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://verbobrands.com",
     organization: {
       email: "juliana@verbobrands.com",
+      telephone: "+57 318 346 0278",
       locality: "Bogotá",
       country: "CO",
     },

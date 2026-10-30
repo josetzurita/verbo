@@ -17,7 +17,15 @@ function caseLoader({ src, width, quality }: ImageLoaderProps) {
   return imageLoader({ src, width: step, quality });
 }
 
-type CasePhotoProps = Omit<ResponsiveImageProps, "loader" | "placeholder" | "blurDataURL"> & {
+/** The same widths and quality as a plain srcset, for <img> tags outside next/image (the intro loader). */
+export function caseSrcSet(src: string): string | undefined {
+  if (imageLoader({ src, width: LARGEST }) === src) {
+    return undefined;
+  }
+  return STEPS.map((step) => `${imageLoader({ src, width: step, quality: CASE_QUALITY })} ${step}w`).join(", ");
+}
+
+type CasePhotoProps =Omit<ResponsiveImageProps, "loader" | "placeholder" | "blurDataURL"> & {
   /** Sanity lqip. Shown blurred until the image arrives. */
   lqip?: string;
 };

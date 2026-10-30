@@ -5,11 +5,19 @@ import { getCaseStudies, getWorkCases } from "../lib/projects";
 import { createMetadata } from "../lib/seo";
 import { projectConfig } from "../project.config";
 
-export const metadata: Metadata = createMetadata(projectConfig, {
+const base = createMetadata(projectConfig, {
   title: "Page not found",
   description: "This page does not exist. Head back to the Verbo home page.",
   noIndex: true,
 });
+
+// Next already adds its own noindex to the 404, so a second robots tag would only conflict. The page has
+// no address of its own, so og:url is dropped rather than pointing at the home page.
+export const metadata: Metadata = {
+  ...base,
+  robots: undefined,
+  openGraph: { ...base.openGraph, url: undefined },
+};
 
 const MAX_IMAGES = 40;
 

@@ -193,13 +193,13 @@ export function BeliefSection() {
           >
             <span className="relative z-[1] block">
               <BeliefWords text={openingLine} />
-            </span>
+            </span>{" "}
             <span className="relative z-[1] block">
               <span className="relative isolate inline-block">
                 <BeliefWords text={secondLine} />
                 <BeliefSequence />
               </span>
-            </span>
+            </span>{" "}
             {/* Desktop keeps the designed line breaks; on phones the rest of the sentence flows and balances. */}
             <span className="relative z-[1] block max-md:inline">
               <BeliefWords text={`${bridge} ${restingLead}`} />

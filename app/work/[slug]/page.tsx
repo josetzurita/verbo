@@ -12,6 +12,12 @@ type PageProps = {
 
 export const dynamicParams = false;
 
+// "Lukatto: strategy and naming case study". The first two practices say what kind of work it was.
+function caseTitle(name: string, practices: readonly string[]) {
+  const kinds = practices.slice(0, 2).map((practice) => practice.toLowerCase());
+  return kinds.length > 0 ? `${name}: ${kinds.join(" and ")} case study` : `${name}, case study`;
+}
+
 export async function generateStaticParams() {
   const slugs = (await getCaseStudies()).map((study) => ({ slug: study.slug }));
   // Static export fails on an empty list, so with no case studies emit one 404 page.
@@ -25,7 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {};
   }
   return createMetadata(projectConfig, {
-    title: `${study.name}, case study`,
+    title: caseTitle(study.name, study.practices),
     description: study.summary,
     path: `/work/${study.slug}`,
     ogImage: study.hero.src,

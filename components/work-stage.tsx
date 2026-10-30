@@ -615,9 +615,9 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
         <div className="work-stage relative h-[100dvh] items-center gap-8 overflow-hidden px-12 pt-[8rem] pb-12">
           <div className="work-stage-meta relative z-[1] h-full min-h-0 min-w-0">
             <h2 className="pointer-events-none absolute top-0 left-0 text-[clamp(2.6rem,4vw,4.75rem)] font-light leading-[0.95] tracking-[-0.04em]">
-              Our
+              Our{" "}
               <br />
-              selected
+              selected{" "}
               <br />
               projects
             </h2>
@@ -697,9 +697,9 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
       </div>
 
       <h2 className="work-reading-title px-5 pt-16 text-[clamp(2.75rem,10vw,4.25rem)] font-light leading-[0.95] tracking-[-0.04em]">
-        Our
+        Our{" "}
         <br />
-        selected
+        selected{" "}
         <br />
         projects
       </h2>

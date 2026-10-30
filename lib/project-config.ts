@@ -70,12 +70,14 @@ export type ProjectConfig = {
   site: {
     name: string;
     shortName: string;
+    legalName?: string;
     description: string;
     locale: string;
     canonicalUrl: string;
     // Feeds the Organization JSON-LD. Optional so the starter's other sites can leave it out.
     organization?: {
       email: string;
+      telephone: string;
       locality: string;
       country: string;
     };
@@ -238,6 +240,7 @@ export function validateProjectConfig(
   const name = readString(siteInput?.name, "site.name", issues);
   const shortName = readString(siteInput?.shortName, "site.shortName", issues);
   const description = readString(siteInput?.description, "site.description", issues);
+  const legalName = siteInput?.legalName === undefined ? undefined : readString(siteInput.legalName, "site.legalName", issues);
   const locale = readString(siteInput?.locale, "site.locale", issues);
   const canonicalRaw = readString(siteInput?.canonicalUrl, "site.canonicalUrl", issues);
   const canonicalUrl = validateCanonicalUrl(canonicalRaw, production, issues);
@@ -246,6 +249,7 @@ export function validateProjectConfig(
   const organization = organizationInput
     ? {
         email: readString(organizationInput.email, "site.organization.email", issues),
+        telephone: readString(organizationInput.telephone, "site.organization.telephone", issues),
         locality: readString(organizationInput.locality, "site.organization.locality", issues),
         country: readString(organizationInput.country, "site.organization.country", issues),
       }
@@ -320,7 +324,15 @@ export function validateProjectConfig(
   }
 
   return {
-    site: { name, shortName, description, locale, canonicalUrl, ...(organization ? { organization } : {}) },
+    site: {
+      name,
+      shortName,
+      ...(legalName ? { legalName } : {}),
+      description,
+      locale,
+      canonicalUrl,
+      ...(organization ? { organization } : {}),
+    },
     theme: { mode: mode as ProjectThemeMode, radius: radius as ProjectRadiusPolicy },
     motion: {
       profile: profile as ProjectMotionProfileName,

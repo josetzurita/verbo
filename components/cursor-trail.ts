@@ -96,7 +96,7 @@ const brandCrops: readonly Crop[] = [
 ];
 
 const peopleFrame = {
-  src: "/about/portrait.png",
+  src: "/about/portrait.webp",
   width: 280,
   height: 420,
   left: "50%",

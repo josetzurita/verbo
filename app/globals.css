@@ -16,6 +16,13 @@ body {
   font-weight: 300;
 }
 
+/* A real space between masked word spans, so crawlers read "Creating to", not "Creatingto". Figtree's
+   space is 0.25em; with tracking reset and -0.03em it matches the 0.22em gap the masks used to add. */
+.word-gap {
+  letter-spacing: 0;
+  margin-right: -0.03em;
+}
+
 /* The intro loader is server rendered. The head script adds .intro-skip on deep links and other pages. */
 html.intro-skip .intro-loader {
   display: none;

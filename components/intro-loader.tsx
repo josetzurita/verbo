@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { verboMarkPupil, verboMarkRing } from "@/lib/brand-paths";
 import type { WorkCase } from "@/lib/home-content";
+import { caseSrcSet } from "./case-photo";
 import { CustomEase, gsap, registerGsap, useGSAP } from "./gsap";
 import { introPending, releaseIntro } from "./intro-gate";
 
@@ -42,6 +43,9 @@ const quadrants = [
   { x: -1, y: 1 },
   { x: 1, y: 1 },
 ] as const;
+
+// Matches frameSize(): 72vw on phones, else the smaller of 34vw and 46vh at 4:3.
+const FRAME_SIZES = "(max-width: 767px) 72vw, min(34vw, 61.34vh)";
 
 const scrollKeys = new Set([" ", "ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End"]);
 
@@ -323,6 +327,8 @@ export function IntroLoader({ cases }: { cases: readonly WorkCase[] }) {
             <img
               key={shot.key}
               src={shot.src}
+              srcSet={caseSrcSet(shot.src)}
+              sizes={FRAME_SIZES}
               alt=""
               decoding="async"
               className="intro-shot absolute inset-0 h-full w-full object-cover"

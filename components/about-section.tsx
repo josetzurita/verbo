@@ -133,12 +133,12 @@ function AboutParagraph({
 
 function AboutWords({ text }: { text: string }) {
   return text.split(" ").map((word, index) => (
-    <span
-      key={`${index}-${word}`}
-      className="mr-[0.22em] inline-block overflow-hidden align-bottom pb-[0.12em] -mb-[0.12em] leading-[inherit]"
-    >
-      <span className="about-word inline-block leading-[inherit]">{word}</span>
-    </span>
+    <Fragment key={`${index}-${word}`}>
+      {index > 0 ? <span className="word-gap"> </span> : null}
+      <span className="inline-block overflow-hidden align-bottom pb-[0.12em] -mb-[0.12em] leading-[inherit]">
+        <span className="about-word inline-block leading-[inherit]">{word}</span>
+      </span>
+    </Fragment>
   ));
 }
 
@@ -292,10 +292,13 @@ export function AboutSection() {
       >
         <div className="about-intro flex flex-col gap-12 min-[1500px]:flex-row min-[1500px]:items-end">
           <h2 className="about-headline max-w-[29.25rem] shrink-0 text-[clamp(3.25rem,5.09vw,5.5rem)] font-light leading-[0.9] tracking-[-0.04em]">
-            {about.title.map((line) => (
-              <span key={line} className="block min-[1500px]:whitespace-nowrap">
-                <AboutWords text={line} />
-              </span>
+            {about.title.map((line, index) => (
+              <Fragment key={line}>
+                {index > 0 ? " " : null}
+                <span className="block min-[1500px]:whitespace-nowrap">
+                  <AboutWords text={line} />
+                </span>
+              </Fragment>
             ))}
           </h2>
 

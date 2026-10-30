@@ -7,7 +7,7 @@ import { createMetadata, jsonLdWebPage } from "@/lib/seo";
 import { projectConfig } from "@/project.config";
 
 const page = {
-  title: "Work",
+  title: "Branding projects and case studies",
   description: "Selected branding projects by Verbo, a boutique consultancy in Bogotá. Filter by service to see strategy, naming, identity and web work.",
   path: "/work",
 };
@@ -24,7 +24,7 @@ export default async function WorkPage() {
           type: "CollectionPage",
           breadcrumbs: [
             { name: projectConfig.site.name, path: "/" },
-            { name: page.title, path: page.path },
+            { name: "Work", path: page.path },
           ],
         })}
       />

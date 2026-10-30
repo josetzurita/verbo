@@ -135,7 +135,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
                 className="case-title font-light leading-[0.95] tracking-[-0.055em]"
                 style={{ "--title-chars": Math.max(...study.title.map((line) => line.length)) } as CSSProperties}
               >
-                <MaskedLine text={study.title[0]} />
+                <MaskedLine text={study.title[0]} />{" "}
                 <MaskedLine text={study.title[1]} />
               </h1>
               <div className="mt-14 md:mt-20">

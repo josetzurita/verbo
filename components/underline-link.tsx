@@ -64,11 +64,12 @@ export function UnderlineLink({
         const length = rule.getTotalLength();
         let playing = false;
         gsap.set(rule, { strokeDasharray: length, strokeDashoffset: length });
-        gsap.set(label, { yPercent: 120, autoAlpha: 0 });
+        // Opacity, not autoAlpha: visibility:hidden would strip the link's accessible name until it scrolls in.
+        gsap.set(label, { yPercent: 120, opacity: 0 });
 
         const play = () => {
           const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
-          timeline.to(label, { yPercent: 0, autoAlpha: 1, duration: 0.75 }, delay);
+          timeline.to(label, { yPercent: 0, opacity: 1, duration: 0.75 }, delay);
           timeline.to(rule, { strokeDashoffset: 0, duration: 0.85 }, delay + 0.08);
         };
 
