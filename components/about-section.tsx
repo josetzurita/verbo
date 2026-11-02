@@ -316,6 +316,7 @@ export function AboutSection() {
               />
               <UnderlineLink
                 href={about.ctaHref}
+                external
                 trailX="right"
                 trailY="top"
                 trailCount={6}
@@ -335,7 +336,7 @@ export function AboutSection() {
               className="about-card flex min-h-[32rem] flex-col overflow-hidden px-3 pt-3 pb-6 text-background"
               style={{ backgroundColor: member.tone }}
             >
-              <div data-coordinate-label="meet" className="about-portrait-frame relative aspect-[292/380] w-full overflow-hidden">
+              <div data-coordinate-label={member.name.toLowerCase()} className="about-portrait-frame relative aspect-[292/380] w-full overflow-hidden">
                 <ResponsiveImage
                   src={member.photo}
                   alt={`Portrait of ${member.name}, ${member.role}`}

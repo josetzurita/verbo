@@ -339,12 +339,22 @@ export function CloseSection() {
               {close.body}
             </p>
           </div>
-          <a
-            href={close.emailHref}
-            className="pointer-events-auto relative z-10 inline-flex whitespace-nowrap border border-foreground px-6 py-3 text-[0.6875rem] font-normal uppercase tracking-[0.12em] transition-[transform,background-color,color] duration-[var(--duration-fast)] ease-[var(--ease-out-expo)] hover:bg-foreground hover:text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground active:scale-[0.98]"
-          >
-            {close.email}
-          </a>
+          <div className="relative z-10 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href={close.whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pointer-events-auto relative z-10 inline-flex whitespace-nowrap border border-foreground px-6 py-3 text-[0.6875rem] font-normal uppercase tracking-[0.12em] transition-[transform,background-color,color] duration-[var(--duration-fast)] ease-[var(--ease-out-expo)] hover:bg-foreground hover:text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground active:scale-[0.98]"
+            >
+              {close.cta}
+            </a>
+            <a
+              href={close.emailHref}
+              className="pointer-events-auto relative z-10 inline-flex whitespace-nowrap border border-foreground px-6 py-3 text-[0.6875rem] font-normal uppercase tracking-[0.12em] transition-[transform,background-color,color] duration-[var(--duration-fast)] ease-[var(--ease-out-expo)] hover:bg-foreground hover:text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground active:scale-[0.98]"
+            >
+              {close.email}
+            </a>
+          </div>
         </div>
         <div className="close-strip relative mb-3 overflow-hidden md:hidden">
           <ul className="close-strip-track flex w-max">

@@ -98,9 +98,9 @@ const brandCrops: readonly Crop[] = [
 
 const peopleFrame = {
   width: 280,
-  height: 420,
+  height: 373.333,
   left: "50%",
-  top: "-72px",
+  top: "-40px",
   transform: "translateX(-50%)",
 } as const;
 
@@ -298,6 +298,7 @@ export function mountCursorTrail(options: {
     image.className = "pointer-events-none absolute max-w-none";
     image.style.width = `${crop.width}px`;
     image.style.height = `${crop.height}px`;
+    image.style.objectFit = "cover";
     image.style.left = crop.left;
     image.style.top = crop.top;
     image.style.transform = crop.transform;

@@ -26,6 +26,8 @@ type UnderlineLinkProps = {
   trailCount?: number;
   trailSet?: TrailSet;
   cursor?: "trail" | "mark";
+  /** Open in a new tab (WhatsApp and other off-site links). */
+  external?: boolean;
 };
 
 export function UnderlineLink({
@@ -43,6 +45,7 @@ export function UnderlineLink({
   trailCount,
   trailSet,
   cursor = "trail",
+  external = false,
 }: UnderlineLinkProps) {
   const rootRef = useRef<HTMLAnchorElement>(null);
   const ruleRef = useRef<SVGLineElement>(null);
@@ -121,6 +124,8 @@ export function UnderlineLink({
       ref={rootRef}
       id={id}
       href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
       {...(cursor === "trail" ? cursorTrailAttribute : { "data-coordinate-mark": "" })}
       data-cursor-trail-x={cursor === "trail" ? trailX : undefined}
       data-cursor-trail-y={cursor === "trail" ? trailY : undefined}

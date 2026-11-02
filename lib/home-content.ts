@@ -112,7 +112,7 @@ export const about = {
   aside:
     "What sets us apart isn't the tools we use, but how we think: we start with a genuine understanding of people and businesses, connect strategy with creativity, and measure success in growth, not likes.",
   cta: "Meet the team",
-  ctaHref: "#team",
+  ctaHref: "https://wa.me/573183460278?text=Hi%20Verbo%2C%20I%20want%20to%20meet%20your%20team%21",
   team: [
     { name: "Juliana", role: "Owner", photo: "/about/juliana.webp", tone: "var(--trail-yellow)" },
     { name: "Adriana", role: "Creative Director", photo: "/about/adriana.webp", tone: "var(--foreground)" },
@@ -128,6 +128,7 @@ export const close = {
   titleRest: "deserves a brand",
   titleEmphasis: "equal to it.",
   body: "If you believe your brand can do more for your business, we want to hear from you.",
+  cta: "Let's talk",
   email: "juliana@verbobrands.com",
   emailHref: "mailto:juliana@verbobrands.com",
   whatsappHref: "https://wa.me/573183460278?text=Hi%20Verbo%2C%20I%27d%20like%20to%20talk%20about%20my%20brand.",
