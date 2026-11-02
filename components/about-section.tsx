@@ -331,24 +331,24 @@ export function AboutSection() {
         <ul id="team" className="about-team mt-16 gap-3 min-[1500px]:mt-20">
           {about.team.map((member) => (
             <li
-              key={member.role}
+              key={member.name}
               className="about-card flex min-h-[32rem] flex-col overflow-hidden px-3 pt-3 pb-6 text-background"
               style={{ backgroundColor: member.tone }}
             >
               <div data-coordinate-label="meet" className="about-portrait-frame relative aspect-[292/380] w-full overflow-hidden">
                 <ResponsiveImage
-                  src={about.portrait}
+                  src={member.photo}
                   alt={`Portrait of ${member.name}, ${member.role}`}
-                  width={605}
-                  height={908}
+                  quality={90}
+                  width={1500}
+                  height={2000}
                   sizes="(min-width: 1500px) 18vw, (min-width: 640px) 46vw, 92vw"
                   className="about-portrait absolute inset-0 h-full w-full max-w-none object-cover"
                   style={{ objectFit: "cover", objectPosition: "center", width: "100%", height: "100%", maxWidth: "none" }}
                 />
               </div>
-              <p className="mt-3 text-[18px] font-light leading-[1.2] tracking-[-0.04em]">{about.quote}</p>
               <div className="about-card-meta mt-auto flex items-center justify-between gap-3 pt-8">
-                <p className="text-[14px] font-normal leading-[1.1] tracking-[-0.04em]">{member.name}</p>
+                <p className="text-[20px] font-normal leading-[1.1] tracking-[-0.04em]">{member.name}</p>
                 <span className="border border-background px-2.5 py-1 text-[0.625rem] font-normal uppercase leading-none tracking-[0.12em]">
                   {member.role}
                 </span>

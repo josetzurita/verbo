@@ -38,9 +38,11 @@ export function CaseMotion({ children }: { children: ReactNode }) {
           delay: delay + 0.35,
         });
 
+        // Phones show every image whole, so the crop-in zooms below are desktop only.
+        const zoom = window.matchMedia("(min-width: 768px)").matches;
         const hero = root.querySelector<HTMLElement>("[data-case-hero]");
         const heroMedia = hero?.querySelector("img");
-        if (hero && heroMedia) {
+        if (zoom && hero && heroMedia) {
           gsap.fromTo(
             heroMedia,
             { yPercent: -5, scale: 1.12 },
@@ -72,7 +74,7 @@ export function CaseMotion({ children }: { children: ReactNode }) {
 
         for (const frame of q("[data-case-frame]")) {
           const media = frame.querySelector("img");
-          if (!media) {
+          if (!zoom || !media) {
             continue;
           }
           gsap.fromTo(

@@ -1,0 +1,295 @@
+{
+  "summary": {
+    "health_score": 65,
+    "business_type": "Agency / professional services (boutique branding consultancy, Bogotá, Colombia)",
+    "top_findings": [
+      "Team section shows a placeholder: 'Juliana Cabrera' five times with five roles",
+      "Headings lose their word spaces in raw HTML ('Creatingtoshapetheworld.')",
+      "Intro loader waits for 8 full-size photos (~3.1 MB): mobile LCP 20.9s in lab",
+      "No long-term caching on any asset, including hashed /_next/static files",
+      "No off-site footprint (no Google Business Profile, LinkedIn, directories, sameAs)"
+    ],
+    "quick_wins": [
+      "Add public/_headers: immutable caching for /_next/static/* plus basic security headers",
+      "Put real spaces between word spans in animated headings",
+      "Replace the five placeholder team cards with one real founder card",
+      "Delete out/styleguide after build so it returns a real 404",
+      "Convert about/portrait.png and belief/*.png to WebP and drop the below-fold preloads"
+    ]
+  },
+  "categories": [
+    {
+      "name": "Technical SEO",
+      "score": 82,
+      "what_works": [
+        "http and www 301 to https apex",
+        "All 12 sitemap URLs 200, self-canonical, indexable",
+        "Real 404 with noindex for unknown URLs",
+        "Content fully in raw HTML",
+        "llms.txt present"
+      ],
+      "findings": [
+        {
+          "title": "No security headers",
+          "severity": "High",
+          "description": "No CSP, X-Content-Type-Options, frame protection, Referrer-Policy or Permissions-Policy on any response.",
+          "recommendation": "Add public/_headers with nosniff, frame protection, Referrer-Policy strict-origin-when-cross-origin and Permissions-Policy. HSTS later."
+        },
+        {
+          "title": "Hashed assets not cached",
+          "severity": "High",
+          "description": "/_next/static/* and images return Cache-Control: public, max-age=0, must-revalidate.",
+          "recommendation": "_headers: /_next/static/* max-age=31536000, immutable; image folders a long max-age."
+        },
+        {
+          "title": "/styleguide/ is a soft 404",
+          "severity": "Medium",
+          "description": "Returns 200 with a 'Page not found' body and noindex.",
+          "recommendation": "Remove out/styleguide in the production build so the 404 page handles it."
+        },
+        {
+          "title": "Duplicate robots meta on 404",
+          "severity": "Medium",
+          "description": "404 page has both 'noindex' and 'noindex, nofollow', and og:url points to the home page.",
+          "recommendation": "Emit one robots tag and drop og:url on the 404."
+        },
+        {
+          "title": "Small leftovers",
+          "severity": "Low",
+          "description": "307 for slash-less URLs (Workers), og:type website on cases, deprecated Host: line in robots.txt, no IndexNow.",
+          "recommendation": "Optional: og:type article for cases, drop Host:, add an IndexNow key."
+        }
+      ]
+    },
+    {
+      "name": "Content Quality",
+      "score": 52,
+      "what_works": [
+        "Eight case bodies are genuinely distinct (max 1.8% overlap)",
+        "Real named clients, six link to live sites",
+        "Service passages are self-contained definitions",
+        "Readability fits a business audience"
+      ],
+      "findings": [
+        {
+          "title": "Placeholder team",
+          "severity": "Critical",
+          "description": "'Juliana Cabrera' appears five times with roles Strategy/Design/Research/Copy/Direction (lib/home-content.ts).",
+          "recommendation": "Show the real team, or one founder card for Juliana Cabrera Bonilla with a short bio and Person schema."
+        },
+        {
+          "title": "No proof in case studies",
+          "severity": "High",
+          "description": "No year, client quote or measurable outcome on any case.",
+          "recommendation": "Add a facts row (year, client, country, scope) and one client quote or result per case."
+        },
+        {
+          "title": "No service pages",
+          "severity": "High",
+          "description": "Naming, strategy and rebranding queries have no landing page. Verbo created the Albora, Altalba, Lienzo, Autip and Lukatto names.",
+          "recommendation": "Start with a Naming page, then Brand strategy and Real-estate branding."
+        },
+        {
+          "title": "No outside authority signals",
+          "severity": "High",
+          "description": "No awards, press, directories or social profiles.",
+          "recommendation": "Create LinkedIn, Google Business Profile, Behance and Clutch/Sortlist profiles."
+        },
+        {
+          "title": "Home copy rendered twice",
+          "severity": "Medium",
+          "description": "Desktop and mobile versions of projects and services are both in the HTML: 2,217 words, about 1,100 unique.",
+          "recommendation": "Render one version and adapt it with CSS where possible."
+        }
+      ]
+    },
+    {
+      "name": "On-Page SEO",
+      "score": 63,
+      "what_works": [
+        "Unique titles and descriptions on all pages",
+        "One H1 per page",
+        "Every page reachable from internal links"
+      ],
+      "findings": [
+        {
+          "title": "Headings lose word spaces",
+          "severity": "High",
+          "description": "Raw HTML: H1 'Creatingtoshapetheworld.', H2 'Averbdoesnotdescribe.Itacts.', footer H2 'yoursdeserves' on every page.",
+          "recommendation": "Insert a space text node between word spans in the split-text components."
+        },
+        {
+          "title": "Home H1 contains the CTA and no topic term",
+          "severity": "High",
+          "description": "H1 text includes 'Schedule a free discovery session'; no 'branding' or 'Bogotá'.",
+          "recommendation": "Move the CTA out of the H1."
+        },
+        {
+          "title": "Case and /work/ titles carry no search terms",
+          "severity": "Medium",
+          "description": "'Work - Verbo', 'Albora, case study - Verbo'.",
+          "recommendation": "For example 'Branding projects in Colombia - Verbo', 'Albora - residential brand naming and identity - Verbo'."
+        },
+        {
+          "title": "Case H1 is a slogan",
+          "severity": "Medium",
+          "description": "For example 'From the field to your table' instead of 'Berry House'.",
+          "recommendation": "Keep the slogan visually but make the project name part of the H1."
+        }
+      ]
+    },
+    {
+      "name": "Schema / Structured Data",
+      "score": 78,
+      "what_works": [
+        "Valid JSON-LD on every page",
+        "@id links resolve",
+        "BreadcrumbList eligible on /work/ and cases"
+      ],
+      "findings": [
+        {
+          "title": "Thin organization node",
+          "severity": "Medium",
+          "description": "No telephone, areaServed or contactPoint.",
+          "recommendation": "Add telephone +57 318 346 0278, areaServed, contactPoint and alternateName 'Verbo Brands'."
+        },
+        {
+          "title": "Thin CreativeWork",
+          "severity": "Medium",
+          "description": "No @id, mainEntityOfPage, dateCreated or client.",
+          "recommendation": "Add @id and mainEntityOfPage; add a year field in Sanity for dateCreated."
+        },
+        {
+          "title": "No founder Person",
+          "severity": "Low",
+          "description": "Nothing names who runs Verbo.",
+          "recommendation": "Add a Person node for the founder once the About section is real."
+        }
+      ]
+    },
+    {
+      "name": "Performance (CWV)",
+      "score": 68,
+      "what_works": [
+        "CLS 0 everywhere",
+        "Fonts self-hosted via next/font",
+        "Case pages serve AVIF srcset with blur placeholders",
+        "GA4 not loaded before consent"
+      ],
+      "findings": [
+        {
+          "title": "Intro loader blocks LCP",
+          "severity": "High",
+          "description": "Lab: home LCP 20.9s mobile / 5.3s desktop; the loader decodes 8 untransformed 2500px Sanity JPEGs (about 3.1 MB).",
+          "recommendation": "Request them at 800-1200w with auto=format, preload only the first, and gate the loader on the first frame."
+        },
+        {
+          "title": "Close-section plates are heavy",
+          "severity": "Medium",
+          "description": "About 2.3 MB on desktop for plates shown at 160-220px.",
+          "recommendation": "Cap generated widths near 480px."
+        },
+        {
+          "title": "Case LCP tied to the reveal animation",
+          "severity": "Low",
+          "description": "Mobile 4.6s with 1.7s render delay; the hero AVIF is only 75 KB.",
+          "recommendation": "Make the first case image eager and high priority, with no opacity-0 start."
+        }
+      ]
+    },
+    {
+      "name": "AI Search Readiness",
+      "score": 55,
+      "what_works": [
+        "All AI crawlers get 200 and server-rendered HTML",
+        "llms.txt valid",
+        "Agent-friendliness check 91/100; the menu dialog is accessible"
+      ],
+      "findings": [
+        {
+          "title": "robots.txt vs terms on AI training",
+          "severity": "Medium",
+          "description": "The terms forbid AI training; robots.txt allows GPTBot, CCBot, Google-Extended and others.",
+          "recommendation": "Owner decision: block training crawlers only and add Content-Signal: search=yes, ai-input=yes, ai-train=no, or soften the terms."
+        },
+        {
+          "title": "CTA links nameless until scrolled",
+          "severity": "Medium",
+          "description": "underline-link.tsx hides labels with autoAlpha 0, so 'Get to know us' and 'Meet the team' have no accessible name at load.",
+          "recommendation": "Animate opacity only (no visibility), or add an aria-label."
+        },
+        {
+          "title": "Brand name inconsistency",
+          "severity": "Low",
+          "description": "'Verbo' in titles and schema, 'Verbo Brands' in copy; 'Verbo' collides with the Spanish word.",
+          "recommendation": "Use 'Verbo Brands' as alternateName and in key copy."
+        }
+      ]
+    },
+    {
+      "name": "Images",
+      "score": 52,
+      "what_works": [
+        "Alt text on all content images",
+        "Width and height set, no layout shift"
+      ],
+      "findings": [
+        {
+          "title": "Oversized PNGs in public/",
+          "severity": "High",
+          "description": "about/portrait.png is 795 KB at 605x908; belief/sequence-1/2/3.png are 143-280 KB and preloaded though below the fold.",
+          "recommendation": "Convert to WebP/AVIF and remove the preloads."
+        }
+      ]
+    }
+  ],
+  "action_plan": {
+    "phases": [
+      {
+        "name": "Phase 1: Critical Fixes",
+        "timeframe": "Week 1",
+        "items": [
+          "Real team / founder content",
+          "Fix heading word spaces",
+          "Move the CTA out of the home H1",
+          "public/_headers: caching and security headers",
+          "Styleguide real 404 and a single robots tag on the 404"
+        ]
+      },
+      {
+        "name": "Phase 2: High-Impact Improvements",
+        "timeframe": "Weeks 2-3",
+        "items": [
+          "Lighter intro loader images",
+          "WebP for the portrait and belief images; cap plate widths",
+          "Case facts row, project-name H1, keyword titles",
+          "Schema: telephone, areaServed, CreativeWork @id and dates",
+          "Decide the AI-training policy in robots.txt"
+        ]
+      },
+      {
+        "name": "Phase 3: Content & Authority",
+        "timeframe": "Month 2",
+        "items": [
+          "Google Business Profile, LinkedIn, Behance, Clutch/Sortlist; then sameAs",
+          "Naming service page, then strategy and real-estate branding",
+          "Client quotes and results on cases",
+          "Spanish version (planned)"
+        ]
+      },
+      {
+        "name": "Phase 4: Monitoring & Iteration",
+        "timeframe": "Ongoing",
+        "items": [
+          "Search Console coverage and queries",
+          "PageSpeed Insights / CrUX once traffic exists",
+          "Re-run /seo audit after each phase; set a drift baseline"
+        ]
+      }
+    ]
+  },
+  "artifacts": {
+    "findings_dir": "findings/",
+    "screenshots_dir": "screenshots/"
+  }
+}

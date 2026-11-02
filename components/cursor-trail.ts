@@ -1,4 +1,5 @@
 import { gsap } from "./gsap";
+import { about } from "@/lib/home-content";
 
 /** Opt a control into the shared cursor image trail. */
 export const cursorTrailAttribute = {
@@ -96,7 +97,6 @@ const brandCrops: readonly Crop[] = [
 ];
 
 const peopleFrame = {
-  src: "/about/portrait.webp",
   width: 280,
   height: 420,
   left: "50%",
@@ -104,13 +104,11 @@ const peopleFrame = {
   transform: "translateX(-50%)",
 } as const;
 
-const peopleCrops: readonly Crop[] = [
-  { ...peopleFrame, stroke: "var(--trail-yellow)" },
-  { ...peopleFrame, stroke: "var(--foreground)" },
-  { ...peopleFrame, stroke: "var(--trail-blue)" },
-  { ...peopleFrame, stroke: "var(--about-card-plain)" },
-  { ...peopleFrame, stroke: "var(--trail-amber)" },
-];
+const peopleCrops: readonly Crop[] = about.team.map((member) => ({
+  ...peopleFrame,
+  src: member.photo,
+  stroke: member.tone,
+}));
 
 function cropsFor(set: TrailSet): readonly Crop[] {
   return set === "people" ? peopleCrops : brandCrops;

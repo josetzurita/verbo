@@ -113,15 +113,13 @@ export const about = {
     "What sets us apart isn't the tools we use, but how we think: we start with a genuine understanding of people and businesses, connect strategy with creativity, and measure success in growth, not likes.",
   cta: "Meet the team",
   ctaHref: "#team",
-  portrait: "/about/portrait.webp",
   team: [
-    { name: "Juliana Cabrera", role: "Strategy", tone: "var(--trail-yellow)" },
-    { name: "Juliana Cabrera", role: "Design", tone: "var(--foreground)" },
-    { name: "Juliana Cabrera", role: "Research", tone: "var(--trail-blue)" },
-    { name: "Juliana Cabrera", role: "Copy", tone: "var(--about-card-plain)" },
-    { name: "Juliana Cabrera", role: "Direction", tone: "var(--trail-amber)" },
+    { name: "Juliana", role: "Owner", photo: "/about/juliana.webp", tone: "var(--trail-yellow)" },
+    { name: "Adriana", role: "Creative Director", photo: "/about/adriana.webp", tone: "var(--foreground)" },
+    { name: "José", role: "Senior Web Designer", photo: "/about/jose.webp", tone: "var(--trail-blue)" },
+    { name: "Andrea", role: "Senior Designer", photo: "/about/andrea.webp", tone: "var(--about-card-plain)" },
+    { name: "Valentina", role: "Senior Designer", photo: "/about/valentina.webp", tone: "var(--trail-amber)" },
   ] as const,
-  quote: "The most powerful brand is not imagined. It is built, decision by decision.",
 };
 
 export const close = {

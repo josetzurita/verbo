@@ -22,6 +22,7 @@ function Frame({
   priority,
   cover,
   natural,
+  crop,
   eager,
 }: {
   image: CaseImage;
@@ -31,14 +32,25 @@ function Frame({
   cover?: boolean;
   /** Frame takes the image's own shape, so nothing is cropped. */
   natural?: boolean;
+  /** Keep the className shape on phones too (thumbnails). Otherwise phones show the whole image. */
+  crop?: boolean;
   /** Fetch right after the hero instead of waiting for the scroll to come near. */
   eager?: boolean;
 }) {
   return (
     <div
       data-case-frame=""
-      className={cn(cover ? "absolute inset-0" : "relative", "overflow-hidden bg-surface", className)}
-      style={natural ? { aspectRatio: `${image.width} / ${image.height}` } : undefined}
+      className={cn(
+        cover ? "absolute inset-0" : "relative",
+        "overflow-hidden bg-surface",
+        !natural && !crop && "max-md:aspect-(--natural)",
+        className,
+      )}
+      style={
+        natural
+          ? { aspectRatio: `${image.width} / ${image.height}` }
+          : ({ "--natural": `${image.width} / ${image.height}` } as CSSProperties)
+      }
     >
       <CasePhoto
         src={image.src}
@@ -143,7 +155,9 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
               </div>
             </header>
 
-            <figure data-case-hero="" className="relative mt-14 h-[78svh] overflow-hidden bg-surface md:mt-20 md:h-auto md:aspect-[16/9]">
+            <figure data-case-hero="" className="relative mt-14 overflow-hidden bg-surface max-md:aspect-(--natural) md:mt-20 md:aspect-[16/9]"
+              style={{ "--natural": `${study.hero.width} / ${study.hero.height}` } as CSSProperties}
+            >
               <CasePhoto
                 src={study.hero.src}
                 alt={study.hero.alt}
@@ -191,12 +205,12 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
             </section>
 
             <section aria-label="Gallery" className={cn(gutter, section, "grid gap-5")}>
-              <Frame image={study.gallery.wide} sizes={FULL_WIDTH} className="aspect-[16/9]" eager />
+              <Frame image={study.gallery.wide} sizes={FULL_WIDTH} className="md:aspect-[16/9]" eager />
               {study.gallery.trio.map((image) => (
                 <Frame key={image.src} image={image} sizes={FULL_WIDTH} natural />
               ))}
               <div className="relative">
-                <Frame image={study.gallery.plate} sizes="100vw" className="aspect-[4/5] md:aspect-[21/9]" />
+                <Frame image={study.gallery.plate} sizes="100vw" className="md:aspect-[21/9]" />
                 <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-foreground/25" />
                 <p className="absolute top-5 left-5 max-w-[14ch] text-[clamp(1.5rem,2.6vw,3rem)] font-light leading-[1] tracking-[-0.04em] text-background md:top-10 md:left-10">
                   {study.gallery.plateNote[0]}
@@ -209,7 +223,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
 
             <section aria-labelledby="case-layers" className={cn(gutter, section)}>
               <div className="grid gap-10 md:grid-cols-12 md:items-center md:gap-5">
-                <Frame image={study.layers.image} sizes="(min-width: 768px) 33vw, 100vw" className="aspect-square md:col-span-4" />
+                <Frame image={study.layers.image} sizes="(min-width: 768px) 33vw, 100vw" className="md:aspect-square md:col-span-4" />
                 <div data-case-reveal="" className="md:col-span-5 md:col-start-8">
                   <h2 id="case-layers" className={sectionTitle}>
                     {study.layers.title}
@@ -260,8 +274,8 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
             </section>
 
             <section aria-label="On the road" className={cn(gutter, section, "grid gap-5 md:grid-cols-[1fr_2fr]")}>
-              <Frame image={pairNarrow} sizes="(min-width: 768px) 33vw, 100vw" className="aspect-[3/4]" />
-              <Frame image={pairWide} sizes="(min-width: 768px) 66vw, 100vw" className="aspect-[4/3] md:aspect-auto md:h-full" />
+              <Frame image={pairNarrow} sizes="(min-width: 768px) 33vw, 100vw" className="md:aspect-[3/4]" />
+              <Frame image={pairWide} sizes="(min-width: 768px) 66vw, 100vw" className="md:aspect-auto md:h-full" />
             </section>
 
             {study.quote.body ? (
@@ -280,19 +294,19 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
 
             <section aria-labelledby="case-visible" className={cn(gutter, section, "grid gap-y-16 md:grid-cols-12 md:gap-x-5 md:gap-y-24")}>
               <figure className="md:col-span-5">
-                <Frame image={visibleA.image} sizes="(min-width: 768px) 42vw, 100vw" className="aspect-[4/3]" />
+                <Frame image={visibleA.image} sizes="(min-width: 768px) 42vw, 100vw" className="md:aspect-[4/3]" />
                 <figcaption className={cn(label, "mt-3")}>{visibleA.caption}</figcaption>
               </figure>
               <figure className="md:col-span-3 md:col-start-9 md:mt-48">
-                <Frame image={visibleB.image} sizes="(min-width: 768px) 25vw, 100vw" className="aspect-square" />
+                <Frame image={visibleB.image} sizes="(min-width: 768px) 25vw, 100vw" className="md:aspect-square" />
                 <figcaption className={cn(label, "mt-3")}>{visibleB.caption}</figcaption>
               </figure>
               <figure className="md:col-span-4 md:col-start-4 md:-mt-32">
-                <Frame image={visibleC.image} sizes="(min-width: 768px) 33vw, 100vw" className="aspect-[4/3]" />
+                <Frame image={visibleC.image} sizes="(min-width: 768px) 33vw, 100vw" className="md:aspect-[4/3]" />
                 <figcaption className={cn(label, "mt-3")}>{visibleC.caption}</figcaption>
               </figure>
               <figure className="md:col-span-3 md:col-start-1">
-                <Frame image={visibleD.image} sizes="(min-width: 768px) 25vw, 100vw" className="aspect-square" />
+                <Frame image={visibleD.image} sizes="(min-width: 768px) 25vw, 100vw" className="md:aspect-square" />
                 <figcaption className={cn(label, "mt-3")}>{visibleD.caption}</figcaption>
               </figure>
               <div data-case-reveal="" className="self-end md:col-span-4 md:col-start-8">
@@ -314,7 +328,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
             </section>
 
             <section aria-labelledby="case-places" className={cn(gutter, section, "grid gap-5 md:grid-cols-2")}>
-              <Frame image={study.places.image} sizes="(min-width: 768px) 50vw, 100vw" className="aspect-[4/5] md:aspect-auto md:h-full" />
+              <Frame image={study.places.image} sizes="(min-width: 768px) 50vw, 100vw" className="md:aspect-auto md:h-full" />
               <div className="bg-surface p-6 md:p-10">
                 <h2 id="case-places" className="text-sm font-normal leading-relaxed tracking-[-0.02em] text-foreground/60">
                   {study.places.title}
@@ -322,7 +336,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
                 <ul className="mt-8">
                   {study.places.items.map((place) => (
                     <li key={place.name} data-case-reveal="" className="flex items-center gap-5 border-t border-foreground/15 py-4">
-                      <Frame image={place.image} sizes="96px" className="size-16 shrink-0 md:size-20" />
+                      <Frame image={place.image} sizes="96px" className="size-16 shrink-0 md:size-20" crop />
                       <p className="min-w-0 text-[clamp(1.75rem,3vw,3.25rem)] font-light leading-none tracking-[-0.045em]">
                         {place.name}
                       </p>
