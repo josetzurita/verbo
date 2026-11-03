@@ -23,7 +23,7 @@ export const menu = {
 export const heroSlogan = ["Strategy", "Brand & Growth"] as const;
 
 export const heroLead =
-  "We are a boutique strategic branding consultancy. We build brands from a deep understanding of the business and the people, with discernment, and with soul.";
+  "We are an independent strategic branding consultancy. We make businesses matter through the power of branding.";
 
 export const belief = {
   lines: ["Branding isn’t art.", "It’s the most", "important"] as const,
@@ -94,11 +94,11 @@ export const services = [
   },
   {
     slug: "strategic-accompaniment",
-    name: "Strategic accompaniment",
-    title: ["Strategic", "accompaniment"],
+    name: "Brand Counseling",
+    title: ["Brand", "Counseling"],
     deliverables: ["Retainer", "Counsel", "Review", "Partnership"],
     description:
-      "Strategic accompaniment is a retainer and ongoing counsel for brands that want to keep growing with judgment. We stay after the identity is in the world, reviewing the choices that show up in real use and helping decide what comes next. We are not vendors who deliver a file and disappear. We are allies for the stretch of work that follows.",
+      "Brand counseling is a retainer and ongoing guidance for brands that want to keep growing with judgment. We stay after the identity is in the world, reviewing the choices that show up in real use and helping decide what comes next. We are not vendors who deliver a file and disappear. We are allies for the stretch of work that follows.",
   },
 ] as const;
 

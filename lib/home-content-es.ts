@@ -37,9 +37,9 @@ export const viewLabel = "Ver";
 // Kept in English on purpose: the slogan is not translated.
 export const heroSlogan = ["Strategy", "Brand & Growth"] as const;
 
-// ES: review
+// From the owner.
 export const heroLead =
-  "Somos una consultora boutique de branding estratégico. Construimos marcas desde una comprensión profunda del negocio y de las personas, con criterio y con alma.";
+  "Somos una consultora boutique especializada en estrategia de marca. Construimos marcas a partir de un profundo entendimiento de los negocios y las personas.";
 
 // ES: review (the file's statement is split to fit the live line breaks)
 export const belief: Widen<typeof beliefEn> = {
