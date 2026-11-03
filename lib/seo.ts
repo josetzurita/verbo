@@ -42,7 +42,7 @@ export function createMetadata(
   const imageAlt =
     page.ogImageAlt ??
     (locale === "es"
-      ? `El logotipo de ${config.site.name} con la frase "Creando para transformar el mundo." y el lema "Estrategia, Marca & Crecimiento"`
+      ? `El logotipo de ${config.site.name} con la frase "Creando para transformar el mundo." y el lema "Strategy, Brand & Growth"`
       : `The ${config.site.name} wordmark with the line "Creating to shape the world." and the slogan "Strategy, Brand & Growth"`);
   const description = page.description ?? (locale === "es" ? SITE_DESCRIPTION_ES : config.site.description);
   const path = page.path ?? "/";

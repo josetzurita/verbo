@@ -17,7 +17,6 @@ export const menu: Widen<typeof menuEn> = {
   title: "Menú",
   closeLabel: "Cerrar",
   links: [
-    { label: "¿Por qué nosotros?", target: "#belief" }, // ES: review
     { label: "Trabajo", target: "/work" },
     { label: "Servicios", target: "#services" }, // ES: review
     { label: "Nosotros", target: "#about" },
@@ -35,7 +34,8 @@ export const menu: Widen<typeof menuEn> = {
 export const discoveryLabel = "Agenda una sesión de descubrimiento gratuita";
 export const viewLabel = "Ver";
 
-export const heroSlogan = ["Estrategia", "Marca & Crecimiento"] as const;
+// Kept in English on purpose: the slogan is not translated.
+export const heroSlogan = ["Strategy", "Brand & Growth"] as const;
 
 // ES: review
 export const heroLead =

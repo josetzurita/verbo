@@ -28,7 +28,7 @@ const focusClass =
 
 const smallLinkClass = `inline-flex min-h-11 items-center whitespace-nowrap text-sm font-normal leading-none ${focusClass}`;
 
-const headerTargets = new Set(["/work", "#belief", "#services", "#contact"]);
+const headerTargets = new Set(["/work", "#services", "#contact"]);
 
 function NavLoopLabel({ children, padClassName = "px-[0.08em] py-[0.28em]" }: { children: string; padClassName?: string }) {
   const clipRef = useRef<HTMLSpanElement>(null);

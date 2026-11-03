@@ -6,7 +6,6 @@ export const menu = {
   title: "Menu",
   closeLabel: "Close",
   links: [
-    { label: "Why us?", target: "#belief" },
     { label: "Work", target: "/work" },
     { label: "Services", target: "#services" },
     { label: "About", target: "#about" },
