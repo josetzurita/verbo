@@ -281,7 +281,7 @@ export type Ui = {
   caseStudy: string;
   whatWeDid: string;
   designBy: string;
-  strategyBy: string;
+  partnerCredit: string;
   founderOf: (name: string) => string;
   moreWork: string;
   gallery: string;
@@ -326,7 +326,7 @@ export const ui: Ui = {
   caseStudy: "Case study",
   whatWeDid: "What we did",
   designBy: "Design",
-  strategyBy: "Strategic team",
+  partnerCredit: "This project was completed during Juliana’s time as a partner at MAXIMAbrands.",
   founderOf: (name) => `Founder, ${name}`,
   moreWork: "More work",
   gallery: "Gallery",

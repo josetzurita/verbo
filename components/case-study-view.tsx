@@ -116,15 +116,12 @@ function HeroMeta({
   study,
   whatWeDid,
   designBy,
-  strategyBy,
 }: {
   study: CaseStudy;
   whatWeDid: string;
   designBy: string;
-  strategyBy: string;
 }) {
   const hasDesigners = !!study.designers && study.designers.length > 0;
-  const hasStrategists = !!study.strategists && study.strategists.length > 0;
   const meta = { "data-case-hero-meta": "" };
   return (
     <div className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-5 gap-y-10 md:grid-cols-12">
@@ -137,35 +134,31 @@ function HeroMeta({
         ) : null}
       </div>
       <Practices study={study} meta={meta} whatWeDid={whatWeDid} narrow />
-      {hasDesigners || hasStrategists ? (
+      {hasDesigners ? (
         <div {...meta} className="col-span-2 md:col-span-4 md:col-start-9 lg:col-span-2 lg:col-start-11">
-          {hasDesigners ? (
-            <div>
-              <p className={label}>{designBy}</p>
-              <ul className={cn(body, "mt-2")}>
-                {study.designers?.map((name) => (
-                  <li key={name}>{name}</li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-          {hasStrategists ? (
-            <div className={hasDesigners ? "mt-6" : undefined}>
-              <p className={label}>{strategyBy}</p>
-              <ul className={cn(body, "mt-2")}>
-                {study.strategists?.map((name) => (
-                  <li key={name}>{name}</li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+          <p className={label}>{designBy}</p>
+          <ul className={cn(body, "mt-2")}>
+            {study.designers?.map((name) => (
+              <li key={name}>{name}</li>
+            ))}
+          </ul>
         </div>
       ) : null}
     </div>
   );
 }
 
-function ClosingMeta({ study, caseStudy, whatWeDid }: { study: CaseStudy; caseStudy: string; whatWeDid: string }) {
+function ClosingMeta({
+  study,
+  caseStudy,
+  whatWeDid,
+  partnerCredit,
+}: {
+  study: CaseStudy;
+  caseStudy: string;
+  whatWeDid: string;
+  partnerCredit: string;
+}) {
   const meta = { "data-case-reveal": "" };
   return (
     <div className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-5 gap-y-10 md:grid-cols-12">
@@ -176,6 +169,9 @@ function ClosingMeta({ study, caseStudy, whatWeDid }: { study: CaseStudy; caseSt
         {study.name}
       </p>
       <Practices study={study} meta={meta} whatWeDid={whatWeDid} />
+      <p {...meta} className={cn(label, "col-span-2 max-w-[46ch] text-balance md:col-span-6 md:col-start-1")}>
+        {partnerCredit}
+      </p>
     </div>
   );
 }
@@ -201,7 +197,7 @@ export function CaseStudyView({ study, locale }: { study: CaseStudy; locale: Loc
                 <MaskedLine text={study.title[1]} />
               </h1>
               <div className="mt-14 md:mt-20">
-                <HeroMeta study={study} whatWeDid={ui.whatWeDid} designBy={ui.designBy} strategyBy={ui.strategyBy} />
+                <HeroMeta study={study} whatWeDid={ui.whatWeDid} designBy={ui.designBy} />
               </div>
             </header>
 
@@ -398,7 +394,12 @@ export function CaseStudyView({ study, locale }: { study: CaseStudy; locale: Loc
             </section>
 
             <section aria-label={ui.caseDetails} className={cn(gutter, section, "pb-24 md:pb-40")}>
-              <ClosingMeta study={study} caseStudy={ui.caseStudy} whatWeDid={ui.whatWeDid} />
+              <ClosingMeta
+                study={study}
+                caseStudy={ui.caseStudy}
+                whatWeDid={ui.whatWeDid}
+                partnerCredit={ui.partnerCredit}
+              />
             </section>
           </article>
         </CaseMotion>

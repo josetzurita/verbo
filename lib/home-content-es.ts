@@ -134,7 +134,7 @@ export const ui: Ui = {
   caseStudy: "Caso de estudio",
   whatWeDid: "Lo que hicimos",
   designBy: "Diseño",
-  strategyBy: "Equipo estratégico",
+  partnerCredit: "Este proyecto fue realizado durante el tiempo de Juliana como socia de MAXIMAbrands.",
   founderOf: (name) => `Fundador, ${name}`,
   moreWork: "Más trabajo",
   gallery: "Galería",
