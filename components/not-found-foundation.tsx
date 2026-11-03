@@ -1,12 +1,10 @@
 "use client";
 
 import { useRef } from "react";
-import { notFound } from "@/lib/home-content";
+import { useContent, useLocalePath } from "./locale-provider";
 import { gsap, registerGsap, useGSAP } from "./gsap";
 import { TransitionLink } from "./transition-link";
 import { UnderlineLink } from "./underline-link";
-
-const digits = Array.from(notFound.code);
 
 // Same frame and timing as the button trail in cursor-trail.ts.
 const FRAME_WIDTH = 195;
@@ -43,6 +41,9 @@ function jitter(): number {
 }
 
 export function NotFoundFoundation({ projects }: { projects: readonly NotFoundProject[] }) {
+  const { notFound, ui } = useContent();
+  const localePath = useLocalePath();
+  const digits = Array.from(notFound.code);
   const rootRef = useRef<HTMLDivElement>(null);
   const codeRef = useRef<HTMLHeadingElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
@@ -193,8 +194,8 @@ export function NotFoundFoundation({ projects }: { projects: readonly NotFoundPr
     >
       <h1 ref={codeRef} className="flex min-h-0 flex-1">
         <TransitionLink
-          href="/work"
-          aria-label={`${notFound.code}, see our work`}
+          href={localePath("/work")}
+          aria-label={`${notFound.code}, ${ui.notFoundLink}`}
           className="flex flex-1 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-foreground"
         >
           <span className="not-found-code flex select-none whitespace-nowrap font-light leading-[0.8] tracking-[-0.04em]">
@@ -212,7 +213,7 @@ export function NotFoundFoundation({ projects }: { projects: readonly NotFoundPr
         <div className="overflow-hidden">
           <p className="nf-copy not-found-title pb-[0.14em]">{notFound.title}</p>
         </div>
-        <UnderlineLink href="/" entrance="mount" delay={0.5} trailSet="brand">
+        <UnderlineLink href={localePath("/")} entrance="mount" delay={0.5} trailSet="brand">
           {notFound.cta}
         </UnderlineLink>
       </div>

@@ -1,12 +1,10 @@
 "use client";
 
 import { Fragment, useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
-import { belief } from "@/lib/home-content";
+import { useContent, useLocalePath } from "./locale-provider";
 import { gsap, registerGsap, useGSAP } from "./gsap";
 import { UnderlineLink } from "./underline-link";
 
-const [openingLine, secondLine, bridge] = belief.lines;
-const [restingLead, ...restingLines] = belief.resting;
 const FRAME_HOLD_MS = 700;
 
 const FRAME_PLACEMENTS = [
@@ -25,6 +23,7 @@ function BeliefWords({ text }: { text: string }) {
 }
 
 function BeliefSequence() {
+  const { belief } = useContent();
   const rootRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -88,6 +87,10 @@ function BeliefSequence() {
 }
 
 export function BeliefSection() {
+  const { belief } = useContent();
+  const [openingLine = "", secondLine = "", bridge = ""] = belief.lines;
+  const [restingLead = "", ...restingLines] = belief.resting;
+  const localePath = useLocalePath();
   const rootRef = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -222,7 +225,7 @@ export function BeliefSection() {
               ))}
             </div>
             <UnderlineLink
-              href={belief.ctaHref}
+              href={localePath(belief.ctaHref)}
               delay={0.5}
               trailX="left"
               trailY="level"

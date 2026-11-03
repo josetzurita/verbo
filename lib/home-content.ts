@@ -13,7 +13,7 @@ export const menu = {
     { label: "Contact", target: "#contact" },
   ],
   headerWorkLabel: "Our Work",
-  selectedWorkLabel: "Selected work",
+  selectedWorkLabel: "Our work",
   allProjectsLabel: "All projects",
   allProjectsHref: "/work",
   whatsappShort: "WhatsApp",
@@ -256,3 +256,98 @@ export const cases: readonly WorkCase[] = [
     href: null,
   },
 ];
+
+// Strings that were hardcoded in components. The Spanish twin lives in home-content-es.ts.
+export type Ui = {
+  workTitle: readonly [string, string];
+  expertiseTitle: readonly [string, string];
+  heroTitle: readonly [string, string];
+  heroTitleLabel: string;
+  skipLink: string;
+  homeLabel: string;
+  primaryNav: string;
+  legalNav: string;
+  cookiesLink: string;
+  closeLabel: string;
+  menuOpen: string;
+  menuClose: string;
+  seeAllWork: string;
+  viewProject: (name: string) => string;
+  filterGroup: string;
+  filterAll: string;
+  deliverablesOf: (name: string) => string;
+  projectCount: (count: number) => string;
+  emptyFilter: string;
+  showAll: string;
+  caseStudy: string;
+  whatWeDid: string;
+  founderOf: (name: string) => string;
+  moreWork: string;
+  gallery: string;
+  onTheRoad: string;
+  caseDetails: string;
+  caseTitle: (name: string, practices: readonly string[]) => string;
+  portrait: (name: string, role: string) => string;
+  notFoundLink: string;
+  languageLabel: string;
+  consent: {
+    label: string;
+    text: string;
+    privacy: string;
+    reject: string;
+    accept: string;
+    current: (granted: boolean) => string;
+  };
+  error: { label: string; title: string; fallback: string; retry: string };
+};
+
+export const ui: Ui = {
+  workTitle: ["Our", "work"],
+  expertiseTitle: ["Our", "expertise"],
+  heroTitle: ["Creating to", "shape the world."],
+  heroTitleLabel: "Creating to shape the world.",
+  skipLink: "Skip to content",
+  homeLabel: "Verbo, home",
+  primaryNav: "Primary",
+  legalNav: "Legal",
+  cookiesLink: "Cookies",
+  closeLabel: "Close",
+  menuOpen: "Open menu",
+  menuClose: "Close menu",
+  seeAllWork: "See all work",
+  viewProject: (name) => `View ${name}`,
+  filterGroup: "Filter projects by service",
+  filterAll: "All",
+  deliverablesOf: (name) => `${name} deliverables`,
+  projectCount: (count) => (count === 1 ? "1 project" : `${count} projects`),
+  emptyFilter: "No projects in this category yet.",
+  showAll: "Show all projects",
+  caseStudy: "Case study",
+  whatWeDid: "What we did",
+  founderOf: (name) => `Founder, ${name}`,
+  moreWork: "More work",
+  gallery: "Gallery",
+  onTheRoad: "On the road",
+  caseDetails: "Case details",
+  caseTitle: (name, practices) => {
+    const kinds = practices.slice(0, 2).map((practice) => practice.toLowerCase());
+    return kinds.length > 0 ? `${name}: ${kinds.join(" and ")} case study` : `${name}, case study`;
+  },
+  portrait: (name, role) => `Portrait of ${name}, ${role}`,
+  notFoundLink: "see our work",
+  languageLabel: "Language",
+  consent: {
+    label: "Cookie preferences",
+    text: "We use cookies to measure how the site is used. Nothing is tracked unless you accept.",
+    privacy: "Privacy policy",
+    reject: "Reject",
+    accept: "Accept",
+    current: (granted) => `Current choice: ${granted ? "accepted" : "rejected"}.`,
+  },
+  error: {
+    label: "Error",
+    title: "The page could not finish rendering.",
+    fallback: "An unexpected error occurred.",
+    retry: "Try again",
+  },
+};

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LOCALE_TAGS, localePath, type Locale } from "./i18n";
 import type { ProjectConfig } from "./project-config";
 
 export const DEFAULT_OG_IMAGE = { path: "/og.png", width: 1200, height: 630 } as const;
@@ -18,6 +19,10 @@ export function canonicalUrl(config: ProjectConfig, path = "/"): string {
   return `${base}${last.includes(".") || normalized.endsWith("/") ? normalized : `${normalized}/`}`;
 }
 
+// Spanish site description, from the translation file (section 1).
+export const SITE_DESCRIPTION_ES =
+  "Construimos marcas que duran. Branding estratégico desde Bogotá para empresas que quieren crecer con claridad y propósito.";
+
 export function createMetadata(
   config: ProjectConfig,
   page: {
@@ -28,6 +33,7 @@ export function createMetadata(
     ogImageAlt?: string;
     noIndex?: boolean;
   } = {},
+  locale: Locale = "en",
 ): Metadata {
   const title = page.title
     ? `${page.title} - ${config.site.name}`
@@ -35,9 +41,13 @@ export function createMetadata(
   // Describes public/og.png (scripts/make-brand-assets.mjs); pages with their own image pass their own alt.
   const imageAlt =
     page.ogImageAlt ??
-    `The ${config.site.name} wordmark with the line "Creating to shape the world." and the slogan "Strategy, Brand & Growth"`;
-  const description = page.description ?? config.site.description;
-  const url = canonicalUrl(config, page.path ?? "/");
+    (locale === "es"
+      ? `El logotipo de ${config.site.name} con la frase "Creando para transformar el mundo." y el lema "Estrategia, Marca & Crecimiento"`
+      : `The ${config.site.name} wordmark with the line "Creating to shape the world." and the slogan "Strategy, Brand & Growth"`);
+  const description = page.description ?? (locale === "es" ? SITE_DESCRIPTION_ES : config.site.description);
+  const path = page.path ?? "/";
+  const url = canonicalUrl(config, localePath(locale, path));
+  const otherLocale: Locale = locale === "en" ? "es" : "en";
   const customImage = Boolean(page.ogImage);
   const ogImage = canonicalUrl(config, page.ogImage ?? DEFAULT_OG_IMAGE.path);
   const ogImages = customImage
@@ -48,11 +58,21 @@ export function createMetadata(
     metadataBase: new URL(config.site.canonicalUrl),
     title,
     description,
-    alternates: page.noIndex ? undefined : { canonical: url },
+    alternates: page.noIndex
+      ? undefined
+      : {
+          canonical: url,
+          languages: {
+            [LOCALE_TAGS.en.hreflang]: canonicalUrl(config, localePath("en", path)),
+            [LOCALE_TAGS.es.hreflang]: canonicalUrl(config, localePath("es", path)),
+            "x-default": canonicalUrl(config, localePath("en", path)),
+          },
+        },
     robots: page.noIndex ? { index: false, follow: false } : { index: true, follow: true },
     openGraph: {
       type: "website",
-      locale: config.site.locale === "en" ? "en_US" : config.site.locale,
+      locale: LOCALE_TAGS[locale].og,
+      alternateLocale: [LOCALE_TAGS[otherLocale].og],
       url,
       siteName: config.site.name,
       title,
@@ -73,7 +93,7 @@ export function organizationId(config: ProjectConfig): string {
 }
 
 // Organization plus WebSite, one graph in the root layout. Case and index pages point back with @id.
-export function jsonLdSite(config: ProjectConfig, services: readonly string[] = []) {
+export function jsonLdSite(config: ProjectConfig, services: readonly string[] = [], locale: Locale = "en") {
   const org = config.site.organization;
   const id = organizationId(config);
   return {
@@ -84,8 +104,8 @@ export function jsonLdSite(config: ProjectConfig, services: readonly string[] = 
         "@id": id,
         name: config.site.name,
         ...(config.site.legalName ? { alternateName: config.site.legalName } : {}),
-        description: config.site.description,
-        url: canonicalUrl(config),
+        description: locale === "es" ? SITE_DESCRIPTION_ES : config.site.description,
+        url: canonicalUrl(config, localePath(locale, "/")),
         logo: canonicalUrl(config, "/icon-512.png"),
         image: canonicalUrl(config, DEFAULT_OG_IMAGE.path),
         ...(org
@@ -107,9 +127,9 @@ export function jsonLdSite(config: ProjectConfig, services: readonly string[] = 
         "@type": "WebSite",
         "@id": `${canonicalUrl(config)}#website`,
         name: config.site.name,
-        description: config.site.description,
-        url: canonicalUrl(config),
-        inLanguage: config.site.locale,
+        description: locale === "es" ? SITE_DESCRIPTION_ES : config.site.description,
+        url: canonicalUrl(config, localePath(locale, "/")),
+        inLanguage: LOCALE_TAGS[locale].html,
         publisher: { "@id": id },
       },
     ],
@@ -119,6 +139,7 @@ export function jsonLdSite(config: ProjectConfig, services: readonly string[] = 
 export function jsonLdBreadcrumbs(
   config: ProjectConfig,
   trail: ReadonlyArray<{ name: string; path: string }>,
+  locale: Locale = "en",
 ) {
   return {
     "@type": "BreadcrumbList",
@@ -126,7 +147,7 @@ export function jsonLdBreadcrumbs(
       "@type": "ListItem",
       position: i + 1,
       name: crumb.name,
-      item: canonicalUrl(config, crumb.path),
+      item: canonicalUrl(config, localePath(locale, crumb.path)),
     })),
   };
 }
@@ -140,6 +161,7 @@ export function jsonLdWebPage(
     description?: string;
     breadcrumbs?: ReadonlyArray<{ name: string; path: string }>;
   },
+  locale: Locale = "en",
 ) {
   return {
     "@context": "https://schema.org",
@@ -147,11 +169,12 @@ export function jsonLdWebPage(
       {
         "@type": page.type ?? "WebPage",
         name: page.title,
-        description: page.description ?? config.site.description,
-        url: canonicalUrl(config, page.path),
+        description: page.description ?? (locale === "es" ? SITE_DESCRIPTION_ES : config.site.description),
+        url: canonicalUrl(config, localePath(locale, page.path)),
+        inLanguage: LOCALE_TAGS[locale].html,
         isPartOf: { "@id": `${canonicalUrl(config)}#website` },
       },
-      ...(page.breadcrumbs ? [jsonLdBreadcrumbs(config, page.breadcrumbs)] : []),
+      ...(page.breadcrumbs ? [jsonLdBreadcrumbs(config, page.breadcrumbs, locale)] : []),
     ],
   };
 }
@@ -159,9 +182,10 @@ export function jsonLdWebPage(
 export function jsonLdCaseStudy(
   config: ProjectConfig,
   study: { name: string; slug: string; summary: string; image: string; practices: readonly string[]; updatedAt?: string },
+  locale: Locale = "en",
 ) {
   const path = `/work/${study.slug}`;
-  const url = canonicalUrl(config, path);
+  const url = canonicalUrl(config, localePath(locale, path));
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -171,33 +195,45 @@ export function jsonLdCaseStudy(
         mainEntityOfPage: url,
         isPartOf: { "@id": `${canonicalUrl(config)}#website` },
         name: study.name,
-        headline: `${study.name}, case study`,
+        headline: locale === "es" ? `${study.name}, caso de estudio` : `${study.name}, case study`,
         description: study.summary,
         url,
         image: study.image,
-        inLanguage: config.site.locale,
+        inLanguage: LOCALE_TAGS[locale].html,
         creator: { "@id": organizationId(config) },
         ...(study.practices.length > 0 ? { genre: study.practices } : {}),
         ...(study.updatedAt ? { dateModified: study.updatedAt } : {}),
       },
-      jsonLdBreadcrumbs(config, [
-        { name: config.site.name, path: "/" },
-        { name: "Work", path: "/work" },
-        { name: study.name, path },
-      ]),
+      jsonLdBreadcrumbs(
+        config,
+        [
+          { name: config.site.name, path: "/" },
+          { name: locale === "es" ? "Trabajo" : "Work", path: "/work" },
+          { name: study.name, path },
+        ],
+        locale,
+      ),
     ],
   };
 }
 
 // Pages without a real modified date leave lastmod out instead of stamping the build time.
+// Every page is listed once per language, each entry pointing at its twin.
 export function createSitemap(
   config: ProjectConfig,
   entries: ReadonlyArray<{ path: string; lastModified?: string }>,
-): Array<{ url: string; lastModified?: string }> {
-  return entries.map(({ path, lastModified }) => ({
-    url: canonicalUrl(config, path),
-    ...(lastModified ? { lastModified } : {}),
-  }));
+): Array<{ url: string; lastModified?: string; alternates: { languages: Record<string, string> } }> {
+  return entries.flatMap(({ path, lastModified }) => {
+    const languages = {
+      en: canonicalUrl(config, localePath("en", path)),
+      es: canonicalUrl(config, localePath("es", path)),
+    };
+    return (["en", "es"] as const).map((locale) => ({
+      url: languages[locale],
+      ...(lastModified ? { lastModified } : {}),
+      alternates: { languages },
+    }));
+  });
 }
 
 export function createRobots(config: ProjectConfig): {

@@ -3,7 +3,7 @@ import type { LegalDocument } from "@/lib/legal-content";
 export function LegalPage({ document }: { document: LegalDocument }) {
   return (
     <article className="content-reading min-h-[100dvh] pt-32 pb-24 md:pt-[11rem]">
-      <p className="type-label text-copy">Updated {document.updated}</p>
+      <p className="type-label text-copy">{document.updatedLabel ?? "Updated"} {document.updated}</p>
       <h1 className="type-h1 mt-4">{document.title}</h1>
       <p className="type-body-lg mt-8 text-copy">{document.intro}</p>
       {document.sections.map((section) => (

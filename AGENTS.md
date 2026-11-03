@@ -76,6 +76,15 @@ Stack: Next.js 15 App Router, React 19, Tailwind v4, GSAP + ScrollTrigger (+ Cus
 | Tokens | `app/tokens.css` |
 | Global and section CSS | `app/globals.css` |
 
+### Languages (EN / ES)
+
+- English lives at `/`, Spanish at `/es/…` (same slugs). Two root layouts, `app/(en)` and `app/(es)`, give each page its own `<html lang>`. Page bodies are shared in `components/pages/*` and take a `locale`; route files are thin. `app/global-not-found.tsx` is the English 404; the Spanish one is `app/(es)/es/404`, which `scripts/prune-export.mjs` moves to `out/es/404.html`.
+- Copy: `lib/home-content.ts` (English) and `lib/home-content-es.ts` (Spanish, with the `ui` strings), read through `getContent(locale)` in `lib/content.ts`. Client components use `useContent()`, `useLocale()` and `useLocalePath()` from `components/locale-provider.tsx`. Never hardcode visible text or an internal href in a component.
+- Legal text: `lib/legal-content.ts` and `lib/legal-content-es.ts`, via `lib/legal.ts`.
+- Sanity: project, service and deliverable documents have an `es` object (text only, images are shared; lists such as cards, captions and places match by position). `lib/projects.ts` and `lib/services.ts` overlay `es` onto the English record and fall back to English per field. Import: `npx sanity exec scripts/import-es.ts --with-user-token` in the Studio (`-- --dry` first). Source JSON: Studio `scripts/content/es/*.json` and `lib/es/services.json`.
+- Detection is client side (`components/locale-gate.ts`, inline in `<head>`; the site is static). A saved choice (`localStorage["verbo-lang"]`, set by the ENG/ESP switch) wins. Otherwise a Spanish browser on an English URL moves to `/es/`; a Spanish URL is never bounced to English without a saved choice. Crawlers are skipped.
+- `lib/seo.ts` takes a `locale` for canonicals, `hreflang` alternates, Open Graph locale and JSON-LD; the sitemap lists both languages.
+
 ### Short-screen rule
 
 `app/globals.css` has a `@media (min-width: 768px) and (max-height: 1100px)` block. It scales the 32" composition down for laptops. Put laptop fixes there, so tall screens are untouched. `work-stage.tsx` reads the same query (`shortDesktop`) for the service-card stop.

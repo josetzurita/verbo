@@ -2,13 +2,11 @@
 
 import { useRef } from "react";
 import { verboWordLetters } from "@/lib/brand-paths";
-import { close, discoveryLabel, heroLead, heroSlogan } from "@/lib/home-content";
 import { gsap, registerGsap, useGSAP } from "./gsap";
 import { markHeroDone, onIntroReveal } from "./intro-gate";
+import { LanguageToggle } from "./language-toggle";
+import { useContent } from "./locale-provider";
 import { UnderlineLink } from "./underline-link";
-
-const firstLine = ["Creating", "to"] as const;
-const secondLine = ["shape", "the", "world."] as const;
 
 function MaskedWord({
   children,
@@ -29,6 +27,9 @@ function MaskedWord({
 
 export function HeroIntro() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const { close, discoveryLabel, heroLead, heroSlogan, ui } = useContent();
+  const firstLine = ui.heroTitle[0].split(" ");
+  const secondLine = ui.heroTitle[1].split(" ");
 
   useGSAP(() => {
     registerGsap();
@@ -46,6 +47,7 @@ export function HeroIntro() {
         { yPercent: 115, duration: 0.8, stagger: 0.08 },
         0.58,
       );
+      timeline.from(".hero-lang", { autoAlpha: 0, duration: 0.7 }, 1.1);
       timeline.from(
         ".hero-lead",
         { yPercent: 110, autoAlpha: 0, duration: 0.85 },
@@ -77,14 +79,15 @@ export function HeroIntro() {
   }, { scope: rootRef });
 
   return (
-    <div ref={rootRef} className="flex min-h-0 flex-1 flex-col">
+    <div ref={rootRef} className="relative flex min-h-0 flex-1 flex-col">
+      <LanguageToggle className="hero-lang absolute top-24 right-5 z-[1] md:top-[8rem] md:right-12" />
       <div className="hero-copy flex min-h-0 w-full flex-1 items-center px-5 pt-24 md:overflow-x-auto md:px-12 md:pt-[8rem]">
         <div className="relative flex w-full flex-col max-md:pb-[4.5rem] md:w-max">
           {/* The CTA sits beside the H1, not inside it, so the heading is only the line. Last-baseline
               alignment keeps it on the baseline of "world." as when it was inline. */}
           <div className="md:flex md:items-baseline-last">
             <h1
-              aria-label="Creating to shape the world."
+              aria-label={ui.heroTitleLabel}
               className="text-[12.2vw] font-light leading-[0.96] tracking-[-0.04em] md:text-[clamp(1.7rem,6.66vw,7.184rem)]"
             >
               <span className="block whitespace-nowrap">

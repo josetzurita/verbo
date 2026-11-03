@@ -5,6 +5,7 @@ import type { WorkCase } from "@/lib/home-content";
 import type { Service } from "@/lib/services";
 import { anchorTop, finishHomeHero, homeHeroRequested, HOME_SCROLL_KEY } from "./home-scroll";
 import { CustomEase, gsap, registerGsap, ScrollTrigger, useGSAP } from "./gsap";
+import { useContent } from "./locale-provider";
 import { ResponsiveImage } from "./responsive-image";
 import { HANDOFF_VIEWPORTS, ServicesHandoff } from "./services-handoff";
 import { TransitionLink } from "./transition-link";
@@ -79,6 +80,7 @@ function snapHero() {
 }
 
 export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; services: readonly Service[] }) {
+  const { ui } = useContent();
   const rootRef = useRef<HTMLElement>(null);
   const { scrollTo } = useSmoothScroll();
   const scrollToRef = useRef(scrollTo);
@@ -615,11 +617,9 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
         <div className="work-stage relative h-[100dvh] items-center gap-8 overflow-hidden px-12 pt-[8rem] pb-12">
           <div className="work-stage-meta relative z-[1] h-full min-h-0 min-w-0">
             <h2 className="pointer-events-none absolute top-0 left-0 text-[clamp(2.6rem,4vw,4.75rem)] font-light leading-[0.95] tracking-[-0.04em]">
-              Our{" "}
+              {ui.workTitle[0]}{" "}
               <br />
-              selected{" "}
-              <br />
-              projects
+              {ui.workTitle[1]}
             </h2>
             <div aria-hidden="true" className="flex h-full min-h-0 flex-col justify-center">
               <div className="relative min-h-[14rem]">
@@ -668,7 +668,7 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
                   <TransitionLink
                     key={item.name}
                     href={item.href}
-                    aria-label={`View ${item.name}`}
+                    aria-label={ui.viewProject(item.name)}
                     data-coordinate-project=""
                     className="work-card-hit pointer-events-auto absolute top-0 left-0 block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
                   />
@@ -697,11 +697,9 @@ export function WorkStage({ cases, services }: { cases: readonly WorkCase[]; ser
       </div>
 
       <h2 className="work-reading-title px-5 pt-16 text-[clamp(2.75rem,10vw,4.25rem)] font-light leading-[0.95] tracking-[-0.04em]">
-        Our{" "}
+        {ui.workTitle[0]}{" "}
         <br />
-        selected{" "}
-        <br />
-        projects
+        {ui.workTitle[1]}
       </h2>
       <ol className="work-reading grid">
         {cases.map((item, index) => (

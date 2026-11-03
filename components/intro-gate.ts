@@ -10,7 +10,7 @@ export const INTRO_FALLBACK_MS = 8000;
  * every full load of home. This hides it on deep links and any other page.
  * Client navigation back home keeps <html>, so its done/skip class still applies.
  */
-export const introSkipScript = `(function(){if(location.pathname!=="/"||location.hash){document.documentElement.classList.add("${INTRO_SKIP_CLASS}")}})();`;
+export const introSkipScript = `(function(){var p=location.pathname;if((p!=="/"&&p!=="/es"&&p!=="/es/")||location.hash){document.documentElement.classList.add("${INTRO_SKIP_CLASS}")}})();`;
 
 type ClassListLike = Pick<DOMTokenList, "add" | "contains">;
 

@@ -1,13 +1,15 @@
+import { isHomePath } from "@/lib/i18n";
+
 export const HOME_SCROLL_KEY = "verbo-home-scroll";
 export const HOME_SCROLL_RESET_KEY = "verbo-home-scroll-reset";
 
 export function isHomeHeroHref(href: string, origin = "http://localhost") {
-  if (href === "/") {
+  if (href === "/" || href === "/es/") {
     return true;
   }
   try {
     const url = new URL(href, origin);
-    return url.pathname === "/" && url.hash === "";
+    return isHomePath(url.pathname) && url.hash === "";
   } catch {
     return false;
   }

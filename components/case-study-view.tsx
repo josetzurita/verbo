@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 import type { CaseImage, CaseStudy } from "@/lib/case-study";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { CaseMore } from "./case-more";
 import { CaseMotion } from "./case-motion";
@@ -84,11 +86,11 @@ function MaskedLine({ text }: { text: string }) {
   );
 }
 
-function Practices({ study, meta }: { study: CaseStudy; meta: Record<string, string> }) {
+function Practices({ study, meta, whatWeDid }: { study: CaseStudy; meta: Record<string, string>; whatWeDid: string }) {
   return (
     <>
       <p {...meta} className={cn(label, "col-start-1 md:col-span-2 md:col-start-7")}>
-        What we did
+        {whatWeDid}
       </p>
       <ul {...meta} className={cn(body, "md:col-span-4")}>
         {study.practices.map((practice) => (
@@ -99,7 +101,7 @@ function Practices({ study, meta }: { study: CaseStudy; meta: Record<string, str
   );
 }
 
-function HeroMeta({ study }: { study: CaseStudy }) {
+function HeroMeta({ study, whatWeDid }: { study: CaseStudy; whatWeDid: string }) {
   const meta = { "data-case-hero-meta": "" };
   return (
     <div className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-5 gap-y-10 md:grid-cols-12">
@@ -111,27 +113,28 @@ function HeroMeta({ study }: { study: CaseStudy }) {
           </UnderlineLink>
         ) : null}
       </div>
-      <Practices study={study} meta={meta} />
+      <Practices study={study} meta={meta} whatWeDid={whatWeDid} />
     </div>
   );
 }
 
-function ClosingMeta({ study }: { study: CaseStudy }) {
+function ClosingMeta({ study, caseStudy, whatWeDid }: { study: CaseStudy; caseStudy: string; whatWeDid: string }) {
   const meta = { "data-case-reveal": "" };
   return (
     <div className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-5 gap-y-10 md:grid-cols-12">
       <p {...meta} className={cn(label, "md:col-span-2")}>
-        Case study
+        {caseStudy}
       </p>
       <p {...meta} className="text-[24px] font-light leading-none tracking-[-0.04em] md:col-span-4">
         {study.name}
       </p>
-      <Practices study={study} meta={meta} />
+      <Practices study={study} meta={meta} whatWeDid={whatWeDid} />
     </div>
   );
 }
 
-export function CaseStudyView({ study }: { study: CaseStudy }) {
+export function CaseStudyView({ study, locale }: { study: CaseStudy; locale: Locale }) {
+  const { ui } = getContent(locale);
   const [visibleA, visibleB, visibleC, visibleD] = study.visible.items;
   const [pairNarrow, pairWide] = study.pair;
 
@@ -151,7 +154,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
                 <MaskedLine text={study.title[1]} />
               </h1>
               <div className="mt-14 md:mt-20">
-                <HeroMeta study={study} />
+                <HeroMeta study={study} whatWeDid={ui.whatWeDid} />
               </div>
             </header>
 
@@ -204,7 +207,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
               </div>
             </section>
 
-            <section aria-label="Gallery" className={cn(gutter, section, "grid gap-5")}>
+            <section aria-label={ui.gallery} className={cn(gutter, section, "grid gap-5")}>
               <Frame image={study.gallery.wide} sizes={FULL_WIDTH} className="md:aspect-[16/9]" eager />
               {study.gallery.trio.map((image) => (
                 <Frame key={image.src} image={image} sizes={FULL_WIDTH} natural />
@@ -273,7 +276,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
               </ul>
             </section>
 
-            <section aria-label="On the road" className={cn(gutter, section, "grid gap-5 md:grid-cols-[1fr_2fr]")}>
+            <section aria-label={ui.onTheRoad} className={cn(gutter, section, "grid gap-5 md:grid-cols-[1fr_2fr]")}>
               <Frame image={pairNarrow} sizes="(min-width: 768px) 33vw, 100vw" className="md:aspect-[3/4]" />
               <Frame image={pairWide} sizes="(min-width: 768px) 66vw, 100vw" className="md:aspect-auto md:h-full" />
             </section>
@@ -287,7 +290,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
                   <blockquote className="mx-auto mt-10 max-w-[34ch] text-[clamp(1.75rem,3vw,3.5rem)] font-light leading-[1.05] tracking-[-0.045em]">
                     <p>{study.quote.body}</p>
                   </blockquote>
-                  <figcaption className={cn(label, "mt-8")}>Founder, {study.name}</figcaption>
+                  <figcaption className={cn(label, "mt-8")}>{ui.founderOf(study.name)}</figcaption>
                 </figure>
               </section>
             ) : null}
@@ -347,8 +350,8 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
               </div>
             </section>
 
-            <section aria-label="Case details" className={cn(gutter, section, "pb-24 md:pb-40")}>
-              <ClosingMeta study={study} />
+            <section aria-label={ui.caseDetails} className={cn(gutter, section, "pb-24 md:pb-40")}>
+              <ClosingMeta study={study} caseStudy={ui.caseStudy} whatWeDid={ui.whatWeDid} />
             </section>
           </article>
         </CaseMotion>

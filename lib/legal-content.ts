@@ -13,6 +13,8 @@ export type LegalDocument = {
   slug: "privacy" | "terms";
   title: string;
   description: string;
+  /** Text before the date, e.g. "Updated". Spanish sets "Actualizado:". */
+  updatedLabel?: string;
   updated: string;
   intro: string;
   sections: readonly LegalSection[];

@@ -4,9 +4,11 @@ import { useRef } from "react";
 import type { CaseMoreItem } from "@/lib/case-study";
 import { gsap, registerGsap, useGSAP } from "./gsap";
 import { CasePhoto } from "./case-photo";
+import { useContent } from "./locale-provider";
 import { TransitionLink } from "./transition-link";
 
 export function CaseMore({ items }: { items: readonly CaseMoreItem[] }) {
+  const { moreWork } = useContent().ui;
   const rootRef = useRef<HTMLElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLUListElement>(null);
@@ -73,10 +75,10 @@ export function CaseMore({ items }: { items: readonly CaseMoreItem[] }) {
         id="case-more-title"
         className="px-5 text-center text-[clamp(5.5rem,16vw,14rem)] font-light leading-[0.82] tracking-[-0.06em] md:px-12"
       >
-        More work
+        {moreWork}
       </h2>
       <div ref={frameRef} className="swipe-track @container w-full overscroll-x-contain max-md:snap-x max-md:snap-mandatory max-md:scroll-px-5">
-        <ul ref={trackRef} aria-label="More work" className="flex w-max items-start gap-4 px-5 will-change-transform md:gap-5 md:px-12">
+        <ul ref={trackRef} aria-label={moreWork} className="flex w-max items-start gap-4 px-5 will-change-transform md:gap-5 md:px-12">
           {items.map((item) => (
             <li key={item.name} className="w-[84cqw] shrink-0 snap-start md:w-[calc((100cqw-6rem-1.25rem)/2)]">
               <TransitionLink

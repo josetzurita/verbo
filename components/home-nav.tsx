@@ -3,7 +3,10 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
-import { close, discoveryLabel, menu, type WorkCase } from "@/lib/home-content";
+import type { WorkCase } from "@/lib/home-content";
+import { stripLocale } from "@/lib/i18n";
+import { LanguageToggle } from "./language-toggle";
+import { useContent, useLocalePath } from "./locale-provider";
 import { gsap, registerGsap, ScrollTrigger, useGSAP } from "./gsap";
 import { imageBorders } from "./image-borders";
 import { NavMark } from "./nav-mark";
@@ -81,6 +84,8 @@ function NavLoopLabel({ children, padClassName = "px-[0.08em] py-[0.28em]" }: { 
 }
 
 export function HomeNav({ cases }: { cases: readonly WorkCase[] }) {
+  const { close, discoveryLabel, menu, ui } = useContent();
+  const localePath = useLocalePath();
   const headerRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -98,7 +103,7 @@ export function HomeNav({ cases }: { cases: readonly WorkCase[] }) {
     setPanelNode(node);
   }, []);
   // trailingSlash is on, so /work/slug arrives as /work/slug/. Compare without it.
-  const pathname = usePathname().replace(/(.)\/+$/, "$1");
+  const pathname = stripLocale(usePathname().replace(/(.)\/+$/, "$1"));
   const transition = useRouteTransition();
   const { scrollTo } = useSmoothScroll();
   const onHome = pathname === "/";
@@ -109,9 +114,9 @@ export function HomeNav({ cases }: { cases: readonly WorkCase[] }) {
   function hashHref(hash: string) {
     if (hash.startsWith("/")) {
       // Plain anchors skip Link's trailingSlash handling, so add it here to avoid a redirect hop.
-      return hash.endsWith("/") ? hash : `${hash}/`;
+      return localePath(hash.endsWith("/") ? hash : `${hash}/`);
     }
-    return onHome ? hash : `/${hash}`;
+    return onHome ? hash : localePath(`/${hash}`);
   }
 
   // Every way out of the menu (Close, Escape, a link) comes through here, so each one gets the exit:
@@ -155,13 +160,13 @@ export function HomeNav({ cases }: { cases: readonly WorkCase[] }) {
     const fromMenu = openRef.current;
     if (target.startsWith("/")) {
       if (pathname !== target) {
-        transition.navigate(target);
+        transition.navigate(localePath(target));
       }
       requestClose();
       return;
     }
     if (!onHome) {
-      transition.navigate(`/${target}`);
+      transition.navigate(localePath(`/${target}`));
       requestClose();
       return;
     }
@@ -445,10 +450,10 @@ export function HomeNav({ cases }: { cases: readonly WorkCase[] }) {
             </button>
           </span>
         </div>
-        <a href={onHome ? "#top" : "/"} onClick={(event) => navigateHome(event, "/")} className="nav-enter justify-self-center max-md:hidden" aria-label="Verbo, home" data-coordinate-mark="">
+        <a href={onHome ? "#top" : localePath("/")} onClick={(event) => navigateHome(event, localePath("/"))} className="nav-enter justify-self-center max-md:hidden" aria-label={ui.homeLabel} data-coordinate-mark="">
           <NavMark />
         </a>
-        <nav aria-label="Primary" className="hidden justify-self-end lg:block">
+        <nav aria-label={ui.primaryNav} className="hidden justify-self-end lg:block">
           <ul className="flex flex-nowrap items-center gap-10 xl:gap-16">
             {menu.links
               .filter((link) => headerTargets.has(link.target))
@@ -502,10 +507,10 @@ export function HomeNav({ cases }: { cases: readonly WorkCase[] }) {
                 </span>
               </div>
               <a
-                href={onHome ? "#top" : "/"}
-                onClick={(event) => (onHome ? go(event, "#top") : navigateHome(event, "/"))}
+                href={onHome ? "#top" : localePath("/")}
+                onClick={(event) => (onHome ? go(event, "#top") : navigateHome(event, localePath("/")))}
                 className={`menu-mark menu-fade-item justify-self-center max-md:hidden ${focusClass}`}
-                aria-label="Verbo, home"
+                aria-label={ui.homeLabel}
                 data-coordinate-mark=""
               >
                 <NavMark />
@@ -552,7 +557,7 @@ export function HomeNav({ cases }: { cases: readonly WorkCase[] }) {
                   </h2>
                   <div className="flex items-center gap-3">
                     <TransitionLink
-                      href={menu.allProjectsHref}
+                      href={localePath(menu.allProjectsHref)}
                       onClick={() => requestClose()}
                       aria-current={pathname === menu.allProjectsHref ? "page" : undefined}
                       data-coordinate-mark=""
@@ -591,7 +596,7 @@ export function HomeNav({ cases }: { cases: readonly WorkCase[] }) {
                     {featured.map((item) => (
                       <li key={item.name} className="menu-card-item menu-fade-item w-[86%] shrink-0 snap-start md:w-auto">
                         <TransitionLink
-                          href={item.href ?? menu.allProjectsHref}
+                          href={item.href ?? localePath(menu.allProjectsHref)}
                           onClick={() => requestClose()}
                           data-coordinate-project=""
                           className={`menu-card grid grid-cols-[5rem_minmax(0,1fr)] items-center gap-4 md:grid-cols-1 md:items-start md:gap-3 lg:grid-cols-[clamp(6.5rem,8vw,10rem)_minmax(0,1fr)_auto] lg:items-center lg:gap-5 ${focusClass}`}
@@ -628,7 +633,8 @@ export function HomeNav({ cases }: { cases: readonly WorkCase[] }) {
               <p className="whitespace-nowrap max-md:hidden">
                 {close.studio} - {close.practice}
               </p>
-              <div className="flex gap-x-6">
+              <div className="flex items-center gap-x-6">
+                <LanguageToggle className="min-h-11 items-center" />
                 <a href={close.emailHref} className={`inline-flex min-h-11 items-center ${focusClass}`}>
                   {close.email}
                 </a>

@@ -1,10 +1,9 @@
 "use client";
 
 import type { Service } from "@/lib/services";
+import { useContent } from "./locale-provider";
 
 export const HANDOFF_VIEWPORTS = 4;
-
-const serviceTitle = ["Our", "expertise"] as const;
 
 const serviceBorders = [
   "var(--trail-blue)",
@@ -51,6 +50,7 @@ export function ServicesHandoff({
   services: readonly Service[];
   variant: "stage" | "reading";
 }) {
+  const { expertiseTitle: serviceTitle } = useContent().ui;
   if (variant === "stage") {
     return (
       <div className="services-handoff-stage" data-theme="dark" aria-hidden="true">
@@ -81,7 +81,7 @@ export function ServicesHandoff({
     <div className="services-handoff-reading" data-theme="dark">
       <div className="mx-auto grid max-w-[84rem] gap-6 px-5 py-20 md:px-12">
         <h2 className="mb-6 text-[clamp(2.6rem,4vw,4.75rem)] font-light leading-[0.95] tracking-[-0.04em]">
-          Our expertise
+          {serviceTitle.join(" ")}
         </h2>
         {services.map((service, index) => (
           <ServiceCard

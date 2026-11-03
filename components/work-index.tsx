@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { WorkCase } from "@/lib/home-content";
 import type { Service } from "@/lib/services";
+import { useContent } from "./locale-provider";
 import { ResponsiveImage } from "./responsive-image";
 import { TransitionLink } from "./transition-link";
 import { ViewSquare } from "./view-square";
@@ -55,6 +56,7 @@ function Chip({
 }
 
 export function WorkIndex({ cases, services }: { cases: readonly WorkCase[]; services: readonly Service[] }) {
+  const { ui } = useContent();
   const [filter, setFilter] = useState<Filter>({ service: null, deliverable: null });
 
   useEffect(() => {
@@ -99,15 +101,15 @@ export function WorkIndex({ cases, services }: { cases: readonly WorkCase[]; ser
   return (
     <div className="work-index px-5 pt-[10rem] pb-24 md:px-12">
       <h1 className="text-[clamp(2.75rem,6vw,6.5rem)] font-light leading-[0.95] tracking-[-0.04em]">
-        Our selected
+        {ui.workTitle[0]}
         <br />
-        projects
+        {ui.workTitle[1]}
       </h1>
 
-      <div className="mt-12 grid gap-4" role="group" aria-label="Filter projects by service">
+      <div className="mt-12 grid gap-4" role="group" aria-label={ui.filterGroup}>
         <div className="work-filter-row">
           <Chip active={!filter.service} count={cases.length} onClick={() => select({ service: null, deliverable: null })}>
-            All
+            {ui.filterAll}
           </Chip>
           {withProjects.map(({ service, count }) => (
             <Chip
@@ -121,7 +123,7 @@ export function WorkIndex({ cases, services }: { cases: readonly WorkCase[]; ser
           ))}
         </div>
         {deliverables.length > 1 ? (
-          <div className="work-filter-row work-filter-row-sub" aria-label={`${activeService?.name} deliverables`}>
+          <div className="work-filter-row work-filter-row-sub" aria-label={ui.deliverablesOf(activeService?.name ?? "")}>
             {deliverables.map(({ deliverable, count }) => (
               <Chip
                 key={deliverable.slug}
@@ -142,14 +144,14 @@ export function WorkIndex({ cases, services }: { cases: readonly WorkCase[]; ser
       </div>
 
       <p className="mt-10 text-sm font-normal" aria-live="polite">
-        {shown.length === 1 ? "1 project" : `${shown.length} projects`}
+        {ui.projectCount(shown.length)}
       </p>
 
       {shown.length === 0 ? (
         <p className="mt-6 max-w-[40ch] text-base leading-relaxed">
-          No projects in this category yet.{" "}
+          {ui.emptyFilter}{" "}
           <button type="button" className="underline underline-offset-4" onClick={() => select({ service: null, deliverable: null })}>
-            Show all projects
+            {ui.showAll}
           </button>
         </p>
       ) : (

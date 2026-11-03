@@ -2,13 +2,14 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { close } from "@/lib/home-content";
+import { useContent } from "./locale-provider";
 
 // Phones only. The colored square is the same WhatsApp square the footer strip and the desktop cursor use.
 // On home it waits until the hero has been scrolled past, and it steps aside while the footer is on screen,
 // where the same square already sits in the strip. Other pages have no hero, so it shows from the start.
 export function WhatsappFab() {
   const pathname = usePathname();
+  const { close } = useContent();
   const [overHero, setOverHero] = useState(false);
   const [overFooter, setOverFooter] = useState(false);
 

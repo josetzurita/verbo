@@ -1,6 +1,6 @@
 "use client";
 
-import { ErrorFoundation } from "../components/error-foundation";
+import { ErrorFoundation } from "../../components/error-foundation";
 
 export default function ErrorPage({
   error,

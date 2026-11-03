@@ -13,6 +13,7 @@ import {
   type ReactNode,
 } from "react";
 import { classifyNavigation, shouldInterceptNavigation } from "./classify-navigation";
+import { isHomePath } from "@/lib/i18n";
 import { cancelHomeHero, homeHeroRequested, isHomeHeroHref } from "./home-scroll";
 import { MAIN_CONTENT_ID, ROUTE_TRANSITION_COVER_MS, ROUTE_TRANSITION_TIMEOUT_MS } from "./route-transition-types";
 import type {
@@ -84,7 +85,7 @@ export function RouteTransitionProvider({
     pendingRef.current = null;
     setHref(null);
     setPhase("idle");
-    if (pathname !== "/") {
+    if (!isHomePath(pathname)) {
       cancelHomeHero();
     }
     smooth.start();
@@ -128,7 +129,7 @@ export function RouteTransitionProvider({
       return;
     }
     previousPathname.current = pathname;
-    if (pathname === "/") {
+    if (isHomePath(pathname)) {
       snapHomeHero(smooth.scrollTo);
     }
     if (phase === "waiting") {

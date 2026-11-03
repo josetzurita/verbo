@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, type CSSProperties } from "react";
-import { close, legalLinks } from "@/lib/home-content";
 import { CONSENT_OPEN_EVENT, gaId } from "@/lib/analytics";
 import { verboWordLetters } from "@/lib/brand-paths";
 import { gsap, registerGsap, useGSAP } from "./gsap";
+import { useContent, useLocalePath } from "./locale-provider";
 import { ResponsiveImage } from "./responsive-image";
 
 const FRAMES = [
@@ -75,6 +75,8 @@ function frameSize(aspect: (typeof FRAMES)[number]["aspect"]) {
 const SLOW_RATE = 0.32;
 
 export function CloseSection() {
+  const { close, legalLinks, ui } = useContent();
+  const localePath = useLocalePath();
   const rootRef = useRef<HTMLElement>(null);
 
   // From md up the footer is fixed behind the whole page. Safari 26 (iPad too) tints its toolbars from
@@ -420,9 +422,9 @@ export function CloseSection() {
         </div>
         <div className="pointer-events-none relative z-30 flex items-center justify-between gap-6 px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-[12px] font-light leading-none tracking-[-0.03em] md:px-12">
           <p className="whitespace-nowrap">{close.studio}</p>
-          <nav aria-label="Legal" className="pointer-events-auto flex items-center gap-4 md:gap-6">
+          <nav aria-label={ui.legalNav} className="pointer-events-auto flex items-center gap-4 md:gap-6">
             {legalLinks.map((link) => (
-              <a key={link.href} href={link.href} className="whitespace-nowrap py-2 hover:opacity-70">
+              <a key={link.href} href={localePath(link.href)} className="whitespace-nowrap py-2 hover:opacity-70">
                 {link.label}
               </a>
             ))}
@@ -432,7 +434,7 @@ export function CloseSection() {
                 className="whitespace-nowrap py-2 hover:opacity-70"
                 onClick={() => window.dispatchEvent(new Event(CONSENT_OPEN_EVENT))}
               >
-                Cookies
+                {ui.cookiesLink}
               </button>
             ) : null}
           </nav>

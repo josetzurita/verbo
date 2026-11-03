@@ -1,8 +1,11 @@
-import { viewLabel } from "@/lib/home-content";
+"use client";
+
+import { useContent } from "./locale-provider";
 
 // The "View" square pinned to the bottom-right corner of a project image. Visual only: the card's own
 // link covers the whole card, so this adds no second link. The parent frame must be positioned.
 export function ViewSquare() {
+  const { viewLabel } = useContent();
   return (
     <span
       aria-hidden="true"

@@ -1,12 +1,13 @@
 "use client";
 
 import { Fragment, useCallback, useLayoutEffect, useRef, useState } from "react";
-import { about } from "@/lib/home-content";
+import { about as aboutEn } from "@/lib/home-content";
+import { useContent } from "./locale-provider";
 import { gsap, registerGsap, ScrollTrigger, useGSAP } from "./gsap";
 import { ResponsiveImage } from "./responsive-image";
 import { UnderlineLink } from "./underline-link";
 
-const COPY_BLOCKS = about.lead.length + 1;
+const COPY_BLOCKS = aboutEn.lead.length + 1;
 
 function groupWords(container: HTMLElement) {
   const tokens = [...container.querySelectorAll<HTMLElement>("[data-about-token]")];
@@ -143,6 +144,7 @@ function AboutWords({ text }: { text: string }) {
 }
 
 export function AboutSection() {
+  const { about, ui } = useContent();
   const rootRef = useRef<HTMLElement>(null);
   const readyCount = useRef(0);
   const [copyReady, setCopyReady] = useState(false);
@@ -339,7 +341,7 @@ export function AboutSection() {
               <div data-coordinate-label={member.name.toLowerCase()} className="about-portrait-frame relative aspect-[292/380] w-full overflow-hidden">
                 <ResponsiveImage
                   src={member.photo}
-                  alt={`Portrait of ${member.name}, ${member.role}`}
+                  alt={ui.portrait(member.name, member.role)}
                   quality={90}
                   width={1500}
                   height={2000}

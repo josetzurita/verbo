@@ -1,23 +1,26 @@
 import type { Metadata } from "next";
-import { NotFoundFoundation, type NotFoundProject } from "../components/not-found-foundation";
-import imageLoader from "../lib/image-loader";
-import { getCaseStudies, getWorkCases } from "../lib/projects";
-import { createMetadata } from "../lib/seo";
-import { projectConfig } from "../project.config";
+import { NotFoundFoundation, type NotFoundProject } from "@/components/not-found-foundation";
+import imageLoader from "@/lib/image-loader";
+import type { Locale } from "@/lib/i18n";
+import { getCaseStudies, getWorkCases } from "@/lib/projects";
+import { createMetadata } from "@/lib/seo";
+import { projectConfig } from "@/project.config";
 
-const base = createMetadata(projectConfig, {
-  title: "Page not found",
-  description: "This page does not exist. Head back to the Verbo home page.",
-  noIndex: true,
-});
+const copy = {
+  en: { title: "Page not found", description: "This page does not exist. Head back to the Verbo home page." },
+  es: { title: "Página no encontrada", description: "Esta página no existe. Vuelve a la página de inicio de Verbo." },
+} as const;
 
 // Next already adds its own noindex to the 404, so a second robots tag would only conflict. The page has
 // no address of its own, so og:url is dropped rather than pointing at the home page.
-export const metadata: Metadata = {
-  ...base,
-  robots: undefined,
-  openGraph: { ...base.openGraph, url: undefined },
-};
+export function notFoundMetadata(locale: Locale): Metadata {
+  const base = createMetadata(projectConfig, { ...copy[locale], noIndex: true }, locale);
+  return {
+    ...base,
+    robots: undefined,
+    openGraph: { ...base.openGraph, url: undefined },
+  };
+}
 
 const MAX_IMAGES = 40;
 
@@ -38,8 +41,8 @@ function collectImages(value: unknown, into: NotFoundProject[]) {
   for (const child of Object.values(record)) collectImages(child, into);
 }
 
-export default async function NotFound() {
-  const [cases, studies] = await Promise.all([getWorkCases(), getCaseStudies()]);
+export async function NotFoundPage({ locale }: { locale: Locale }) {
+  const [cases, studies] = await Promise.all([getWorkCases(locale), getCaseStudies(locale)]);
   const images: NotFoundProject[] = cases.map((project) => ({ src: project.image, focus: project.focus }));
   collectImages(studies, images);
 

@@ -1,0 +1,51 @@
+[
+  {
+    "slug": "research-and-benchmark",
+    "name": "Investigación y benchmark",
+    "title": ["Investigación y", "benchmark"],
+    "deliverables": ["Mapa de posicionamiento", "Revisión de categoría", "Estudio de referentes", "Brief de oportunidad"],
+    "description": "Antes de empezar a diseñar, nos tomamos el tiempo de entender tu mercado, tu audiencia y el mundo en el que vive tu marca. Miramos de cerca a los competidores, comparamos cómo se presentan y exploramos referentes dentro y fuera de tu categoría. Desde ahí mapeamos dónde está cada quien, qué se siente repetido y dónde hay espacio para hacer algo distinto, de modo que cada decisión creativa parta de una dirección clara."
+  },
+  {
+    "slug": "strategic-north",
+    "name": "Norte estratégico",
+    "title": ["Norte", "estratégico"],
+    "deliverables": ["Propósito", "Creencia", "Diferenciales", "Personalidad"],
+    "description": "El norte estratégico es el alma del negocio, puesta por escrito para que todo lo que sigue tenga dirección. Definimos el propósito, la creencia, los diferenciales y la personalidad, y los contrastamos con cómo se comporta realmente la empresa. La idea es un norte que la gente dentro de la empresa pueda usar, no una frase que solo se ve bien en una pared. Cuando está claro, el naming y la identidad dejan de tirar en direcciones distintas."
+  },
+  {
+    "slug": "brand-architecture",
+    "name": "Arquitectura de marca",
+    "title": ["Arquitectura", "de marca"],
+    "deliverables": ["Mapa de portafolio", "Jerarquía", "Roles", "Reglas de crecimiento"],
+    "description": "La arquitectura de marca es la organización del portafolio: productos, servicios e iniciativas, cada uno con un rol que no se come a los demás. Mapeamos lo que existe, lo que viene y cómo deben relacionarse las piezas, para que el sistema pueda crecer con orden. Una arquitectura clara evita que la marca se parta en versiones que ya no suenan a la misma empresa."
+  },
+  {
+    "slug": "naming-and-identity",
+    "name": "Naming e identidad",
+    "title": ["Naming e", "identidad"],
+    "deliverables": ["Nombre", "Logo", "Tipografía", "Color y tono"],
+    "description": "El naming y la identidad empiezan con un nombre que lleva la estrategia, y luego una identidad que hace visible ese nombre. Damos forma al logo, la tipografía, el color y el tono, y a los sistemas que mantienen la marca reconocible cuando otras personas deben usarla. El objetivo no es un solo símbolo ingenioso. Es una marca que alguien reconozca antes de leer el nombre."
+  },
+  {
+    "slug": "brand-book",
+    "name": "Brand book",
+    "title": ["Brand", "book"],
+    "deliverables": ["Brand book", "Aplicaciones", "Voz y tono", "Reglas por canal"],
+    "description": "El brand book es el sistema que mantiene la marca con la misma apariencia y sensación en todas partes, sin importar quién la ejecute ni en qué canal aparezca. Reúne las aplicaciones, la voz y las reglas para cuando la marca tiene que estirarse. Está escrito para quienes construirán la próxima página, la próxima publicación y el próximo espacio, para que no tengan que adivinar cuando la identidad salga de nuestras manos."
+  },
+  {
+    "slug": "website-design",
+    "name": "Diseño web",
+    "title": ["Diseño", "web"],
+    "deliverables": ["Mapa del sitio", "Wireframes", "Diseño de interfaz", "Entrega para desarrollo"],
+    "description": "El diseño web lleva la marca al lugar donde la mayoría de las personas la conoce primero. Planeamos la estructura alrededor de lo que los visitantes realmente vienen a buscar, damos forma al contenido con la voz de la marca y diseñamos cada página para que la identidad se sostenga desde un celular hasta una pantalla grande. El objetivo no es una vitrina que envejece en un año. Es un sitio que el equipo pueda seguir actualizando, que se lea con claridad y que se sienta como la misma marca que en todos los demás lugares."
+  },
+  {
+    "slug": "strategic-accompaniment",
+    "name": "Acompañamiento estratégico",
+    "title": ["Acompañamiento", "estratégico"],
+    "deliverables": ["Retainer", "Asesoría", "Revisión", "Alianza"],
+    "description": "El acompañamiento estratégico es un retainer y una asesoría continua para marcas que quieren seguir creciendo con criterio. Nos quedamos después de que la identidad sale al mundo, revisando las decisiones que aparecen en el uso real y ayudando a decidir lo que viene. No somos proveedores que entregan un archivo y desaparecen. Somos aliados para el tramo de trabajo que sigue."
+  }
+]

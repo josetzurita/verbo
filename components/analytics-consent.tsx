@@ -14,6 +14,8 @@ import {
   updateGaConsent,
   type ConsentChoice,
 } from "@/lib/analytics";
+import { isHomePath } from "@/lib/i18n";
+import { useContent, useLocalePath } from "./locale-provider";
 
 // The GA4 script loads only after the visitor accepts, so a visitor who rejects or never answers sends nothing
 // to Google. Consent Mode v2 still starts every storage type denied and grants analytics only from the stored
@@ -44,7 +46,7 @@ export function AnalyticsConsent() {
     window.addEventListener(CONSENT_OPEN_EVENT, reopen);
     let stopWaiting = () => {};
     let timer: ReturnType<typeof setTimeout> | undefined;
-    if (window.location.pathname === "/") {
+    if (isHomePath(window.location.pathname)) {
       stopWaiting = onHeroDone(() => setReady(true));
     } else {
       timer = setTimeout(() => setReady(true), PAGE_DELAY_MS);
@@ -141,31 +143,32 @@ function ConsentBanner({
     gsap.to(root, { y: 20, opacity: 0, duration: 0.35, ease: "power2.in", onComplete: () => onDecide(next) });
   }
 
+  const { consent } = useContent().ui;
+  const localePath = useLocalePath();
+
   return (
     <div
       ref={rootRef}
       role="dialog"
-      aria-label="Cookie preferences"
+      aria-label={consent.label}
       className="fixed inset-x-4 bottom-4 z-[var(--z-toast)] border border-foreground bg-background p-5 text-foreground md:inset-x-auto md:bottom-6 md:left-6 md:max-w-sm"
     >
       <p className="consent-rise type-body-sm text-copy">
-        We use cookies to measure how the site is used. Nothing is tracked unless you accept.{" "}
-        <a className="text-foreground underline underline-offset-4" href="/privacy/">
-          Privacy policy
+        {consent.text}{" "}
+        <a className="text-foreground underline underline-offset-4" href={localePath("/privacy/")}>
+          {consent.privacy}
         </a>
       </p>
       <div className="consent-rise mt-4 flex gap-3">
         <button type="button" className={buttonClass} onClick={() => leave("denied")}>
-          Reject
+          {consent.reject}
         </button>
         <button type="button" className={buttonClass} onClick={() => leave("granted")}>
-          Accept
+          {consent.accept}
         </button>
       </div>
       {choice ? (
-        <p className="consent-rise mt-3 text-[0.6875rem] text-copy">
-          Current choice: {choice === "granted" ? "accepted" : "rejected"}.
-        </p>
+        <p className="consent-rise mt-3 text-[0.6875rem] text-copy">{consent.current(choice === "granted")}</p>
       ) : null}
     </div>
   );
