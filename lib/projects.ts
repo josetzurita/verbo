@@ -71,6 +71,7 @@ type RawProject = {
   deliverables?: RawCategory[];
   moreLine?: string;
   designers?: string[];
+  strategists?: string[];
   es?: RawEs | null;
   image?: RawImage;
   hasCaseStudy?: boolean;
@@ -90,6 +91,7 @@ const PROJECTS_QUERY = `*[_type == "project" && defined(slug.current)] | order(o
   "deliverables": deliverables[]->{ "slug": slug.current, name, "nameEs": es.name },
   moreLine,
   designers,
+  strategists,
   es,
   "image": image${IMAGE},
   hasCaseStudy,
@@ -173,6 +175,7 @@ function toStudy(project: RawProject, raw: RawStudy, locale: Locale): Omit<CaseS
     siteLabel: raw.siteLabel || (locale === "es" ? "Visitar sitio" : "Visit site"),
     practices: raw.practices ?? [],
     designers: project.designers ?? [],
+    strategists: project.strategists ?? [],
     hero: img(raw.hero, "hero"),
     statement: need(raw.statement, "statement"),
     impactTitle: raw.impactTitle || (locale === "es" ? "Lo que cambió" : "What changed"),

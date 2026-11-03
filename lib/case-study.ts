@@ -41,6 +41,8 @@ export type CaseStudy = {
   practices: readonly string[];
   // The designers who made the brand, shown beside "What we did". Absent on placeholder studies.
   designers?: readonly string[];
+  // The strategic team, shown under the designers. Only on some projects.
+  strategists?: readonly string[];
   hero: CaseImage;
   statement: string;
   impactTitle: string;

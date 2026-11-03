@@ -31,7 +31,7 @@ export const menu: Widen<typeof menuEn> = {
   nextLabel: "Proyecto siguiente", // ES: review
 };
 
-export const discoveryLabel = "Agenda una sesión de descubrimiento gratuita";
+export const discoveryLabel = "Agenda una sesión de descubrimiento";
 export const viewLabel = "Ver";
 
 // Kept in English on purpose: the slogan is not translated.
@@ -134,6 +134,7 @@ export const ui: Ui = {
   caseStudy: "Caso de estudio",
   whatWeDid: "Lo que hicimos",
   designBy: "Diseño",
+  strategyBy: "Equipo estratégico",
   founderOf: (name) => `Fundador, ${name}`,
   moreWork: "Más trabajo",
   gallery: "Galería",
