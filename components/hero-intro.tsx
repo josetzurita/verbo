@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { verboWordLetters } from "@/lib/brand-paths";
 import { gsap, registerGsap, useGSAP } from "./gsap";
 import { markHeroDone, onIntroReveal } from "./intro-gate";
@@ -25,11 +25,35 @@ function MaskedWord({
   );
 }
 
+// Where the capital letters of the headline start, as a fraction of the font size below the top of its line box.
+const LANG_CAP_OFFSET_EM = 0.1;
+
 export function HeroIntro() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const { close, discoveryLabel, heroLead, heroSlogan, ui } = useContent();
   const firstLine = ui.heroTitle[0].split(" ");
   const secondLine = ui.heroTitle[1].split(" ");
+
+  // From md up the ENG / ESP switch sits on the top edge of the headline's first line (the guideline in the
+  // design), at the page's right margin. Measured from the heading so it holds on every screen size and language.
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    const title = titleRef.current;
+    if (!root || !title) {
+      return;
+    }
+    const place = () => {
+      const size = parseFloat(getComputedStyle(title).fontSize);
+      const top = title.getBoundingClientRect().top - root.getBoundingClientRect().top + size * LANG_CAP_OFFSET_EM;
+      root.style.setProperty("--lang-top", `${top}px`);
+    };
+    place();
+    const observer = new ResizeObserver(place);
+    observer.observe(title);
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, []);
 
   useGSAP(() => {
     registerGsap();
@@ -80,13 +104,14 @@ export function HeroIntro() {
 
   return (
     <div ref={rootRef} className="relative flex min-h-0 flex-1 flex-col">
-      <LanguageToggle className="hero-lang absolute top-24 right-5 z-[1] md:top-[8rem] md:right-12" />
+      <LanguageToggle className="hero-lang absolute top-24 right-5 z-[1] md:top-[var(--lang-top,8rem)] md:right-12" />
       <div className="hero-copy flex min-h-0 w-full flex-1 items-center px-5 pt-24 md:overflow-x-auto md:px-12 md:pt-[8rem]">
         <div className="relative flex w-full flex-col max-md:pb-[4.5rem] md:w-max">
           {/* The CTA sits beside the H1, not inside it, so the heading is only the line. Last-baseline
               alignment keeps it on the baseline of "world." as when it was inline. */}
           <div className="md:flex md:items-baseline-last">
             <h1
+              ref={titleRef}
               aria-label={ui.heroTitleLabel}
               className="text-[12.2vw] font-light leading-[0.96] tracking-[-0.04em] md:text-[clamp(1.7rem,6.66vw,7.184rem)]"
             >
