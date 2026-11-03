@@ -133,6 +133,7 @@ export const ui: Ui = {
   showAll: "Ver todos los proyectos",
   caseStudy: "Caso de estudio",
   whatWeDid: "Lo que hicimos",
+  designBy: "Diseño",
   founderOf: (name) => `Fundador, ${name}`,
   moreWork: "Más trabajo",
   gallery: "Galería",

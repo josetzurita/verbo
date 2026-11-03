@@ -86,13 +86,24 @@ function MaskedLine({ text }: { text: string }) {
   );
 }
 
-function Practices({ study, meta, whatWeDid }: { study: CaseStudy; meta: Record<string, string>; whatWeDid: string }) {
+function Practices({
+  study,
+  meta,
+  whatWeDid,
+  narrow = false,
+}: {
+  study: CaseStudy;
+  meta: Record<string, string>;
+  whatWeDid: string;
+  // The hero header leaves the last columns to the designer credits.
+  narrow?: boolean;
+}) {
   return (
     <>
       <p {...meta} className={cn(label, "col-start-1 md:col-span-2 md:col-start-7")}>
         {whatWeDid}
       </p>
-      <ul {...meta} className={cn(body, "md:col-span-4")}>
+      <ul {...meta} className={cn(body, narrow ? "md:col-span-4 lg:col-span-2" : "md:col-span-4")}>
         {study.practices.map((practice) => (
           <li key={practice}>{practice}</li>
         ))}
@@ -101,7 +112,7 @@ function Practices({ study, meta, whatWeDid }: { study: CaseStudy; meta: Record<
   );
 }
 
-function HeroMeta({ study, whatWeDid }: { study: CaseStudy; whatWeDid: string }) {
+function HeroMeta({ study, whatWeDid, designBy }: { study: CaseStudy; whatWeDid: string; designBy: string }) {
   const meta = { "data-case-hero-meta": "" };
   return (
     <div className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-5 gap-y-10 md:grid-cols-12">
@@ -113,7 +124,17 @@ function HeroMeta({ study, whatWeDid }: { study: CaseStudy; whatWeDid: string })
           </UnderlineLink>
         ) : null}
       </div>
-      <Practices study={study} meta={meta} whatWeDid={whatWeDid} />
+      <Practices study={study} meta={meta} whatWeDid={whatWeDid} narrow />
+      {study.designers && study.designers.length > 0 ? (
+        <div {...meta} className="col-span-2 md:col-span-4 md:col-start-9 lg:col-span-2 lg:col-start-11">
+          <p className={label}>{designBy}</p>
+          <ul className={cn(body, "mt-2")}>
+            {study.designers.map((name) => (
+              <li key={name}>{name}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -154,7 +175,7 @@ export function CaseStudyView({ study, locale }: { study: CaseStudy; locale: Loc
                 <MaskedLine text={study.title[1]} />
               </h1>
               <div className="mt-14 md:mt-20">
-                <HeroMeta study={study} whatWeDid={ui.whatWeDid} />
+                <HeroMeta study={study} whatWeDid={ui.whatWeDid} designBy={ui.designBy} />
               </div>
             </header>
 

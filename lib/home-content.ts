@@ -280,6 +280,7 @@ export type Ui = {
   showAll: string;
   caseStudy: string;
   whatWeDid: string;
+  designBy: string;
   founderOf: (name: string) => string;
   moreWork: string;
   gallery: string;
@@ -323,6 +324,7 @@ export const ui: Ui = {
   showAll: "Show all projects",
   caseStudy: "Case study",
   whatWeDid: "What we did",
+  designBy: "Design",
   founderOf: (name) => `Founder, ${name}`,
   moreWork: "More work",
   gallery: "Gallery",

@@ -39,6 +39,8 @@ export type CaseStudy = {
   siteHref: string;
   siteLabel: string;
   practices: readonly string[];
+  // The designers who made the brand, shown beside "What we did". Absent on placeholder studies.
+  designers?: readonly string[];
   hero: CaseImage;
   statement: string;
   impactTitle: string;

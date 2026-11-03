@@ -70,6 +70,7 @@ type RawProject = {
   services?: RawCategory[];
   deliverables?: RawCategory[];
   moreLine?: string;
+  designers?: string[];
   es?: RawEs | null;
   image?: RawImage;
   hasCaseStudy?: boolean;
@@ -88,6 +89,7 @@ const PROJECTS_QUERY = `*[_type == "project" && defined(slug.current)] | order(o
   "services": services[]->{ "slug": slug.current, name, "nameEs": es.name },
   "deliverables": deliverables[]->{ "slug": slug.current, name, "nameEs": es.name },
   moreLine,
+  designers,
   es,
   "image": image${IMAGE},
   hasCaseStudy,
@@ -170,6 +172,7 @@ function toStudy(project: RawProject, raw: RawStudy, locale: Locale): Omit<CaseS
     siteHref: raw.siteHref ?? "",
     siteLabel: raw.siteLabel || (locale === "es" ? "Visitar sitio" : "Visit site"),
     practices: raw.practices ?? [],
+    designers: project.designers ?? [],
     hero: img(raw.hero, "hero"),
     statement: need(raw.statement, "statement"),
     impactTitle: raw.impactTitle || (locale === "es" ? "Lo que cambió" : "What changed"),
