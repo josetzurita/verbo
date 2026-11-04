@@ -16,8 +16,10 @@ const pages = {
   },
   // From the translation file, section 1.
   es: {
-    title: "Nuestro trabajo",
-    description: "Ocho proyectos de marca que muestran cómo trabajan juntos la estrategia y la identidad.",
+    // Search-facing only, not shown on the page. Mirrors the English one.
+    title: "Proyectos de branding y casos de estudio",
+    description:
+      "Proyectos de branding de Verbo, agencia boutique de branding estratégico en Bogotá. Filtra por servicio para ver estrategia, naming, identidad y web.",
     path: "/work",
   },
 } as const;

@@ -19,9 +19,9 @@ export function canonicalUrl(config: ProjectConfig, path = "/"): string {
   return `${base}${last.includes(".") || normalized.endsWith("/") ? normalized : `${normalized}/`}`;
 }
 
-// Spanish site description, from the translation file (section 1).
+// Spanish site description. Search-facing only (meta and JSON-LD), so it carries "agencia" for Spanish queries.
 export const SITE_DESCRIPTION_ES =
-  "Construimos marcas que duran. Branding estratégico desde Bogotá para empresas que quieren crecer con claridad y propósito.";
+  "Verbo es una agencia y consultora boutique de branding estratégico en Bogotá. Construimos marcas que duran, para empresas que quieren crecer con claridad y propósito.";
 
 export function createMetadata(
   config: ProjectConfig,
@@ -119,6 +119,10 @@ export function jsonLdSite(config: ProjectConfig, services: readonly string[] = 
                 telephone: org.telephone,
               },
               address: { "@type": "PostalAddress", addressLocality: org.locality, addressCountry: org.country },
+              areaServed: [
+                { "@type": "City", name: org.locality },
+                { "@type": "Country", name: org.country },
+              ],
             }
           : {}),
         ...(services.length > 0 ? { knowsAbout: services } : {}),

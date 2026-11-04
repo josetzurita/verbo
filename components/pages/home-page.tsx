@@ -19,9 +19,10 @@ const meta = {
   },
   // From the translation file, section 1.
   es: {
-    title: "Consultora estratégica de branding en Bogotá",
+    // Title and description only show in the browser tab and in search results, not on the page.
+    title: "Agencia de branding estratégico en Bogotá",
     description:
-      "Construimos marcas que duran. Branding estratégico desde Bogotá para empresas que quieren crecer con claridad y propósito.",
+      "Agencia y consultora boutique de branding estratégico en Bogotá. Investigación, estrategia, naming, identidad y sitios web para marcas que duran.",
   },
 } as const;
 
