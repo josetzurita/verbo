@@ -80,7 +80,7 @@ type RawProject = {
 // lqip is a tiny blurred copy of the image; case pages show it while the real one loads.
 const IMAGE = `{ "src": asset->url, "width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height, "lqip": asset->metadata.lqip, alt, hotspot }`;
 
-const PROJECTS_QUERY = `*[_type == "project" && defined(slug.current)] | order(order asc) {
+const PROJECTS_QUERY = `*[_type == "project" && defined(slug.current) && hideFromSite != true] | order(order asc) {
   _updatedAt,
   name,
   "slug": slug.current,
