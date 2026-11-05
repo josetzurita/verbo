@@ -73,10 +73,10 @@ export const about: Widen<typeof aboutEn> = {
   ctaHref: "https://wa.me/573183460278?text=Hola%20Verbo%2C%20%C2%A1quiero%20conocer%20a%20su%20equipo!",
   team: [
     { name: "Juliana", role: "Fundadora y Directora", photo: "/about/juliana.webp", tone: "var(--trail-yellow)" },
-    { name: "Adriana", role: "Dirección creativa", photo: "/about/adriana.webp", tone: "var(--foreground)" },
-    { name: "José", role: "Diseño web senior", photo: "/about/jose.webp", tone: "var(--trail-blue)" },
-    { name: "Andrea", role: "Diseño senior", photo: "/about/andrea.webp", tone: "var(--about-card-plain)" },
-    { name: "Valentina", role: "Diseño senior", photo: "/about/valentina.webp", tone: "var(--trail-amber)" },
+    { name: "Tatiana", role: "Diseñadora senior", photo: "/about/tatiana.webp", tone: "var(--foreground)" },
+    { name: "José", role: "Diseñador web senior", photo: "/about/jose.webp", tone: "var(--trail-blue)" },
+    { name: "Andrea", role: "Directora creativa", photo: "/about/andrea.webp", tone: "var(--about-card-plain)" },
+    { name: "Valentina", role: "Diseñadora senior", photo: "/about/valentina.webp", tone: "var(--trail-amber)" },
   ],
 };
 

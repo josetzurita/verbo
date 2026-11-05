@@ -114,9 +114,9 @@ export const about = {
   ctaHref: "https://wa.me/573183460278?text=Hi%20Verbo%2C%20I%20want%20to%20meet%20your%20team%21",
   team: [
     { name: "Juliana", role: "Founder & Director", photo: "/about/juliana.webp", tone: "var(--trail-yellow)" },
-    { name: "Adriana", role: "Creative Director", photo: "/about/adriana.webp", tone: "var(--foreground)" },
+    { name: "Tatiana", role: "Senior Designer", photo: "/about/tatiana.webp", tone: "var(--foreground)" },
     { name: "José", role: "Senior Web Designer", photo: "/about/jose.webp", tone: "var(--trail-blue)" },
-    { name: "Andrea", role: "Senior Designer", photo: "/about/andrea.webp", tone: "var(--about-card-plain)" },
+    { name: "Andrea", role: "Creative Director", photo: "/about/andrea.webp", tone: "var(--about-card-plain)" },
     { name: "Valentina", role: "Senior Designer", photo: "/about/valentina.webp", tone: "var(--trail-amber)" },
   ] as const,
 };
