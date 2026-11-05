@@ -28,6 +28,8 @@ const PAGE_DELAY_MS = 900;
 
 const buttonClass =
   "flex-1 border border-foreground px-5 py-3 text-[0.6875rem] uppercase tracking-[0.12em] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
+// Accept is the filled one so it leads the pair.
+const acceptClass = `${buttonClass} bg-foreground text-background`;
 
 export function AnalyticsConsent() {
   const pathname = usePathname();
@@ -163,7 +165,7 @@ function ConsentBanner({
         <button type="button" className={buttonClass} onClick={() => leave("denied")}>
           {consent.reject}
         </button>
-        <button type="button" className={buttonClass} onClick={() => leave("granted")}>
+        <button type="button" className={acceptClass} onClick={() => leave("granted")}>
           {consent.accept}
         </button>
       </div>

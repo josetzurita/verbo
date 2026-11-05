@@ -13,18 +13,26 @@ declare global {
   }
 }
 
-export function readConsent(): ConsentChoice | null {
+// Accept is remembered on the device. Reject only lasts for the browsing session (sessionStorage), so the banner
+// asks again next time the visitor comes back.
+function readFrom(storage: () => Storage): ConsentChoice | null {
   try {
-    const value = window.localStorage.getItem(CONSENT_KEY);
+    const value = storage().getItem(CONSENT_KEY);
     return value === "granted" || value === "denied" ? value : null;
   } catch {
     return null;
   }
 }
 
+export function readConsent(): ConsentChoice | null {
+  return readFrom(() => window.localStorage) ?? readFrom(() => window.sessionStorage);
+}
+
 export function storeConsent(choice: ConsentChoice) {
+  const keep = choice === "granted";
   try {
-    window.localStorage.setItem(CONSENT_KEY, choice);
+    (keep ? window.localStorage : window.sessionStorage).setItem(CONSENT_KEY, choice);
+    (keep ? window.sessionStorage : window.localStorage).removeItem(CONSENT_KEY);
   } catch {
     // Storage can be blocked; the choice then lasts for this visit only.
   }

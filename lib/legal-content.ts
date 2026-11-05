@@ -78,7 +78,7 @@ export const privacyPolicy: LegalDocument = {
         "The site works fully without cookies. We use only two kinds of browser storage:",
       ],
       list: [
-        "Your cookie choice. We save whether you accepted or rejected analytics in your browser's local storage (as verbo-consent), so the banner does not appear on every visit. It stays on your device and is not sent to us.",
+        "Your cookie choice. If you accept analytics, we save that in your browser's local storage (as verbo-consent), so the banner does not appear on every visit. If you reject, we only remember it until you close the browser tab, then we ask again. It stays on your device and is not sent to us.",
         "Google Analytics cookies, only after you accept: _ga and _ga_<ID>. They tell apart visits from the same browser and expire after 2 years.",
       ],
     },

@@ -55,7 +55,7 @@ export const privacyPolicyEs: LegalDocument = {
       heading: "Cookies",
       paragraphs: ["El sitio funciona completamente sin cookies. Solo usamos dos tipos de almacenamiento en el navegador:"],
       list: [
-        "Tu elección de cookies. Guardamos si aceptaste o rechazaste la analítica en el almacenamiento local de tu navegador (como verbo-consent), para que el banner no aparezca en cada visita. Permanece en tu dispositivo y no nos lo envías.",
+        "Tu elección de cookies. Si aceptas la analítica, lo guardamos en el almacenamiento local de tu navegador (como verbo-consent), para que el banner no aparezca en cada visita. Si rechazas, solo lo recordamos hasta que cierres la pestaña y luego volvemos a preguntar. Permanece en tu dispositivo y no nos lo envías.",
         "Cookies de Google Analytics, solo después de que aceptes: _ga y _ga_<ID>. Distinguen las visitas del mismo navegador y expiran después de 2 años.",
       ],
     },
