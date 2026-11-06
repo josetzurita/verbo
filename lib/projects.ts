@@ -379,7 +379,7 @@ function placeholders(locale: Locale): Projects {
 }
 
 function loadProjects(locale: Locale): Promise<Projects> {
-  rawProjects ??= sanityClient.fetch<RawProject[]>(PROJECTS_QUERY, {}, { cache: "no-store" });
+  rawProjects ??= sanityClient.fetch<RawProject[]>(PROJECTS_QUERY);
   let result = built.get(locale);
   if (!result) {
     result = rawProjects.then((raw) => (raw.length > 0 ? fromSanity(raw, locale) : placeholders(locale)));

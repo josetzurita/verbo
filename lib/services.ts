@@ -97,7 +97,7 @@ let rawServices: Promise<RawService[]> | undefined;
 const built = new Map<Locale, Promise<readonly Service[]>>();
 
 export function getServices(locale: Locale = "en"): Promise<readonly Service[]> {
-  rawServices ??= sanityClient.fetch<RawService[]>(SERVICES_QUERY, {}, { cache: "no-store" });
+  rawServices ??= sanityClient.fetch<RawService[]>(SERVICES_QUERY);
   let result = built.get(locale);
   if (!result) {
     result = rawServices.then((raw) => {

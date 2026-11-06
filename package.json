@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0 --port 4317",
-    "build": "next build && node scripts/prune-export.mjs",
+    "build": "node -e \"require('fs').rmSync('.next/cache/fetch-cache',{recursive:true,force:true})\" && next build && node scripts/prune-export.mjs",
     "start": "next start --hostname 0.0.0.0 --port 4317",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
